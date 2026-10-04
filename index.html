@@ -13,89 +13,170 @@
     --bg:#121212; --list-bg:#1e1e1e; --card-bg:#2d2d2d; --text:#e0e0e0;
     --muted:#9e9e9e; --accent:#e07b39; --border:#444444; --input-bg:#1e1e1e;
   }
-  *{box-sizing:border-box;}
-  html,body{height:100%; margin:0;}
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
     background:var(--bg); color:var(--text); display:flex; flex-direction:column;
     overflow:hidden; transition: background 0.3s, color 0.3s;
   }
+  
   header{
-    display:flex; align-items:center; gap:10px; padding:10px 18px;
-    background:var(--card-bg); border-bottom:1px solid var(--border); flex:0 0 auto; z-index:10;
-    transition: background 0.3s;
+    display:flex; align-items:center; gap:10px; padding:10px 18px; background:var(--card-bg);
+    border-bottom:1px solid var(--border); flex:0 0 auto; z-index:10; flex-wrap: wrap;
+    box-shadow:0 2px 5px rgba(0,0,0,.05);
   }
-  header h1{font-size:16px; margin:0; font-weight:700;}
-  .logo{font-size:20px;} .spacer{flex:1;}
+  header h1{font-size:16px; margin:0; font-weight:700; letter-spacing:.3px;}
+  .logo{font-size:20px;}
+  .spacer{flex:1;}
   .btn{
     border:1px solid var(--border); background:var(--card-bg); color:var(--text);
-    padding:7px 12px; border-radius:8px; font-size:13px; cursor:pointer; font-family:inherit; transition:.15s;
+    padding:7px 12px; border-radius:8px; font-size:13px; cursor:pointer;
+    font-family:inherit; transition:.15s; white-space:nowrap;
   }
   .btn:hover{background:var(--list-bg);}
   .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff;}
   .btn.primary:hover{background:#b35726;}
   .btn.danger{color:#d0453a; border-color:#f0cfcc;}
   .btn.danger:hover{background:#fdf1f0;}
+  .btn.small{padding:5px 10px; font-size:12px;}
 
-  #board{flex:1; display:flex; gap:14px; padding:18px 20px 24px; overflow-x:auto; overflow-y:hidden; align-items:flex-start;}
+  #breadcrumb {
+    display: flex; align-items: center; gap: 8px; padding: 8px 20px;
+    background: var(--bg); font-size: 13px; color: var(--muted);
+    border-bottom: 1px solid var(--border); display: none;
+  }
+  #breadcrumb.show { display: flex; }
+  #breadcrumb span { cursor: pointer; }
+  #breadcrumb span:hover { color: var(--accent); text-decoration: underline; }
+  #breadcrumb .current { color: var(--text); font-weight: 600; cursor: default; }
+  #breadcrumb .current:hover { text-decoration: none; color: var(--text); }
+  #breadcrumb .arrow { color: var(--muted); cursor: default; }
+  #breadcrumb .arrow:hover { text-decoration: none; color: var(--muted); }
+
+  #board{
+    flex:1; display:flex; gap:14px; padding:18px 20px 24px;
+    overflow-x:auto; overflow-y:hidden; align-items:flex-start;
+  }
   .empty{margin:auto; color:var(--muted); font-size:14px;}
-  .list{flex:0 0 280px; width:280px; background:var(--list-bg); border-radius:12px; display:flex; flex-direction:column; max-height:100%; padding:4px; transition:background 0.3s;}
-  .list-placeholder{flex:0 0 auto; border-radius:12px; background:rgba(0,0,0,.06); border:1px dashed rgba(0,0,0,.15);}
-  .list-header{display:flex; align-items:center; gap:8px; padding:8px 10px; cursor:grab; user-select:none;}
+
+  .list{
+    flex:0 0 280px; width:280px; background:var(--list-bg);
+    border-radius:12px; display:flex; flex-direction:column; max-height:100%; padding:4px;
+    transition:background 0.3s;
+  }
+  .list-header{
+    display:flex; align-items:center; gap:8px; padding:8px 10px; cursor:grab; user-select:none;
+  }
   .list-header:active{cursor:grabbing;}
-  .list-title{font-weight:600; font-size:14px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-radius:6px; padding:2px 4px; margin:-2px -4px;}
+  .list-title{
+    font-weight:600; font-size:14px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    border-radius:6px; padding:2px 4px; margin:-2px -4px;
+  }
   .list-title:hover{background:rgba(0,0,0,.06);}
-  .list-count{font-size:12px; color:var(--muted); background:rgba(0,0,0,.06); border-radius:10px; padding:1px 7px;}
-  .icon-btn{border:none; background:transparent; color:var(--muted); font-size:13px; cursor:pointer; padding:2px 6px; border-radius:6px; opacity:0; transition:.15s; line-height:1;}
-  .list:hover .icon-btn{opacity:1;} .icon-btn:hover{background:rgba(0,0,0,.08); color:#d0453a;}
-  .cards{flex:1; overflow-y:auto; overflow-x:hidden; padding:2px 6px 0; min-height:12px;}
-  .cards::-webkit-scrollbar{width:8px;} .cards::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15); border-radius:4px;}
+  .list-count{
+    font-size:12px; color:var(--muted); background:rgba(0,0,0,.06); border-radius:10px; padding:1px 7px;
+  }
+  .icon-btn{
+    border:none; background:transparent; color:var(--muted); font-size:13px; cursor:pointer; padding:2px 6px; border-radius:6px;
+    opacity:0; transition:.15s; line-height:1;
+  }
+  .list:hover .icon-btn{opacity:1;}
+  .icon-btn:hover{background:rgba(0,0,0,.08); color:#d0453a;}
+
+  .cards{
+    flex:1; overflow-y:auto; overflow-x:hidden; padding:2px 6px 0; min-height:12px;
+  }
+  .cards::-webkit-scrollbar{width:8px;}
+  .cards::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15); border-radius:4px;}
 
   .card{
     position:relative; overflow:hidden; background:var(--card-bg); border-radius:10px;
-    padding:10px 12px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.07);
+    padding:10px 12px 30px 12px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.07);
     cursor:pointer; -webkit-touch-callout: none; user-select: none;
     transition: box-shadow .15s, background 0.3s;
   }
   .card:hover{box-shadow:0 3px 10px rgba(0,0,0,.12);}
   .card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:transparent;}
-  .card.p-high::before{background:#e2574c;} .card.p-medium::before{background:#e8a33d;} .card.p-low::before{background:#3f9d7c;}
+  .card.p-high::before{background:#e2574c;}
+  .card.p-medium::before{background:#e8a33d;}
+  .card.p-low::before{background:#3f9d7c;}
+
   .card-title{font-size:14px; line-height:1.45; word-break:break-word;}
   .card-tags{display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px;}
   .tag{font-size:11px; padding:1px 7px; border-radius:6px; background:rgba(0,0,0,.05); color:var(--muted);}
   .card-meta{display:flex; align-items:center; gap:8px; margin-top:7px; font-size:11px; color:var(--muted);}
-  .due{display:inline-flex; align-items:center; gap:3px;} .due.overdue{color:#d0453a; font-weight:600;}
+  .due{display:inline-flex; align-items:center; gap:3px;}
+  .due.overdue{color:#d0453a; font-weight:600;}
   .pri{font-size:11px; padding:1px 6px; border-radius:6px; background:rgba(0,0,0,.05);}
-  .pri.high{color:#e2574c;} .pri.medium{color:#d08a1e;} .pri.low{color:#3f9d7c;}
-  
-  /* 新增：图片样式 */
-  .card-img { max-width:100%; border-radius:6px; margin-top:8px; display:block; }
+  .pri.high{color:#e2574c;}
+  .pri.medium{color:#d08a1e;}
+  .pri.low{color:#3f9d7c;}
+  .sub-board-tag { font-size: 10px; background: var(--accent); color: #fff; padding: 1px 4px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
 
-  .add-card-btn{margin:6px; padding:8px; border:none; background:transparent; color:var(--muted); text-align:left; border-radius:8px; cursor:pointer; font-size:13px; font-family:inherit; transition:.15s;}
+  /* 快捷移动按钮 */
+  .quick-move-btn {
+    position: absolute; right: 8px; bottom: 6px;
+    background: rgba(200,102,47,.1); color: var(--accent); border: none;
+    font-size: 14px; padding: 4px 8px; border-radius: 6px; cursor: pointer;
+    font-weight: bold; transition: .15s;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2;
+  }
+  .quick-move-btn:hover { background: var(--accent); color: #fff; }
+
+  .add-card-btn{
+    margin:6px; padding:8px; border:none; background:transparent; color:var(--muted); text-align:left; border-radius:8px;
+    cursor:pointer; font-size:13px; font-family:inherit; transition:.15s;
+  }
   .add-card-btn:hover{background:rgba(0,0,0,.06); color:var(--text);}
-  .composer{padding-bottom:8px;}
-  .composer textarea{width:100%; height:62px; resize:none; border:1px solid var(--accent); border-radius:10px; padding:8px 10px; font-size:14px; font-family:inherit; outline:none; background:var(--card-bg); color:var(--text); box-shadow:0 0 0 3px rgba(200,102,47,.1);}
 
-  .overlay{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
+  .composer{padding-bottom:8px;}
+  .composer textarea{
+    width:100%; height:62px; resize:none; border:1px solid var(--accent); border-radius:10px;
+    padding:8px 10px; font-size:14px; font-family:inherit; outline:none;
+    background:var(--card-bg); color:var(--text); box-shadow:0 0 0 3px rgba(200,102,47,.1);
+  }
+
+  .overlay{position:fixed; inset:0; background:rgba(30,25,20,.45); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
   .overlay.show{display:flex;}
-  .modal{background:var(--card-bg); border-radius:14px; width:100%; max-width:520px; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.25); max-height:90vh; overflow-y:auto; animation:pop .16s ease-out; transition: background 0.3s;}
+  .modal{
+    background:var(--card-bg); border-radius:14px; width:100%; max-width:520px;
+    padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.25); max-height:90vh; overflow-y:auto;
+    animation:pop .16s ease-out; transition: background 0.3s;
+  }
   @keyframes pop{from{transform:translateY(8px); opacity:0;} to{transform:none; opacity:1;}}
   .m-title{font-size:17px; font-weight:600; margin-bottom:12px;}
   .modal textarea{width:100%; height:90px; resize:vertical; margin-bottom:14px;}
   .field{margin-bottom:14px;}
   .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px;}
-  .modal input[type="text"], .modal select, .modal textarea, .modal input[type="date"]{
-    width:100%; border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:14px; font-family:inherit; color:var(--text); background:var(--input-bg); outline:none; transition:.15s;
+  .modal input, .modal select, .modal textarea {
+    width:100%; border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:14px;
+    font-family:inherit; color:var(--text); background:var(--input-bg); outline:none; transition:.15s;
   }
-  .modal input:focus, .modal select:focus, .modal textarea:focus{border-color:var(--accent); background:var(--card-bg); box-shadow:0 0 0 3px rgba(200,102,47,.12);}
+  .modal input:focus, .modal select:focus, .modal textarea:focus {
+    border-color:var(--accent); background:var(--card-bg); box-shadow:0 0 0 3px rgba(200,102,47,.12);
+  }
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
   .modal-actions{display:flex; gap:8px; margin-top:6px; align-items:center;}
-  
-  /* 新增：上传按钮样式 */
-  .file-upload { display: inline-block; padding:6px 12px; background:var(--list-bg); border:1px dashed var(--border); border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); text-align:center; width:100%; }
-  .file-upload:active { background:var(--border); }
-  #mImage { display: none; }
-  .img-preview { max-width:100%; max-height:150px; border-radius:6px; margin-top:8px; display:none; }
+
+  /* 快捷移动底部弹窗 */
+  #quickMoveOverlay { align-items: flex-end; padding: 0; }
+  #quickMoveMenu {
+    background: var(--card-bg); width: 100%; border-radius: 16px 16px 0 0;
+    padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,.2);
+    animation: slideUp .2s ease-out; max-height: 70vh; overflow-y: auto;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  #quickMoveMenu h3 { font-size: 16px; margin-bottom: 15px; text-align: center; color: var(--muted); }
+  .move-option {
+    display: block; width: 100%; padding: 12px; margin-bottom: 8px;
+    background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 10px; font-size: 15px; color: var(--text); cursor: pointer;
+    text-align: center; transition: .15s;
+  }
+  .move-option:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .move-option:disabled { opacity: 0.4; cursor: not-allowed; background: var(--border); }
 </style>
 </head>
 <body>
@@ -104,27 +185,24 @@
   <span class="logo">🌰</span>
   <h1>栗子看板</h1>
   <div class="spacer"></div>
+  <button class="btn small" id="backupBtn">📥 备份JSON</button>
+  <button class="btn small" id="importBtn">📤 导入JSON</button>
+  <input type="file" id="importFileInput" accept=".json" style="display:none;">
+  
   <button class="btn" id="addListBtn">＋ 新建列表</button>
   <button class="btn" id="exportBtn">导出Excel</button>
   <button class="btn" id="themeToggle" title="切换深色/浅色">🌙</button>
-  <button class="btn" id="resetBtn">重置</button>
+  <button class="btn danger" id="resetBtn">重置</button>
 </header>
 
+<div id="breadcrumb"></div>
 <main id="board"></main>
 
+<!-- 卡片编辑弹窗 -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <input id="mTitle" class="m-title" placeholder="卡片标题">
     <textarea id="mDesc" placeholder="添加更详细的描述…"></textarea>
-    
-    <!-- 新增：图片上传区域 -->
-    <div class="field">
-      <label>添加图片（仅限小于500KB的图片）</label>
-      <label for="mImage" class="file-upload">📷 点击选择本地图片</label>
-      <input type="file" id="mImage" accept="image/*">
-      <img id="imgPreview" class="img-preview" src="">
-    </div>
-
     <div class="field">
       <label>所属列表</label>
       <select id="mList"></select>
@@ -149,24 +227,48 @@
     <div class="modal-actions">
       <button class="btn danger" id="mDelete">删除</button>
       <div class="spacer"></div>
+      <button class="btn primary" id="mEnterSubBoard" style="display:none;">进入子看板</button>
       <button class="btn" id="mCancel">取消</button>
       <button class="btn primary" id="mSave">保存</button>
     </div>
   </div>
 </div>
 
+<!-- 快捷移动底部弹窗 -->
+<div class="overlay" id="quickMoveOverlay">
+  <div id="quickMoveMenu">
+    <h3>选择要移动到的列表</h3>
+    <div id="quickMoveList"></div>
+    <button class="btn danger" id="quickMoveCancel" style="width:100%; margin-top:10px;">取消</button>
+  </div>
+</div>
+
 <script>
+/* =========================================================
+   数据层
+   ========================================================= */
 const STORAGE_KEY = 'chestnut-kanban-v1';
 const THEME_KEY = 'chestnut-kanban-theme';
 const uid = () => Math.random().toString(36).slice(2, 10);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const PRIORITY = { high:{label:'高',cls:'high'}, medium:{label:'中',cls:'medium'}, low:{label:'低',cls:'low'}, none:{label:'',cls:''} };
+const PRIORITY = {
+  high:   { label: '高', cls: 'high' },
+  medium: { label: '中', cls: 'medium' },
+  low:    { label: '低', cls: 'low' },
+  none:   { label: '',   cls: '' }
+};
 
 function defaultData() {
   return {
     lists: [
-      { id: uid(), title: '待办', cards: [ { id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片可以编辑详情。', tags: ['入门'], priority: 'high', due: '', image: '' } ] },
+      {
+        id: uid(), title: '待办',
+        cards: [
+          { id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片右下角的 ⇄ 可以快速移动到其他列表。', tags: ['入门'], priority: 'high', due: '', subBoard: null },
+          { id: uid(), title: '点击卡片可以创建子看板', desc: '这是一个带有子看板的卡片示例。', tags: ['功能'], priority: 'medium', due: '', subBoard: { lists: [{ id: uid(), title: '子任务', cards: [{ id: uid(), title: '这是一个子卡片', desc: '', tags: [], priority: 'none', due: '', subBoard: null }] }] } }
+        ]
+      },
       { id: uid(), title: '进行中', cards: [] },
       { id: uid(), title: '已完成', cards: [] }
     ]
@@ -176,16 +278,20 @@ function defaultData() {
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) { const data = JSON.parse(raw); if (data && Array.isArray(data.lists)) return data; }
+    if (raw) { const d = JSON.parse(raw); if (d && Array.isArray(d.lists)) return d; }
   } catch (e) {}
   return defaultData();
 }
-function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { alert('存储空间不足，图片可能太大导致保存失败！'); } }
+function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { alert('存储空间不足！'); } }
 
 let state = loadState();
-let listDrag = null; let editing = null;
+let boardStack = [{ lists: state.lists, title: '主看板' }]; 
+let editing = null; 
+let listDrag = null;
 
-// 主题切换
+/* =========================================================
+   主题切换
+   ========================================================= */
 const themeBtn = document.getElementById('themeToggle');
 function applyTheme(theme) {
   if (theme === 'dark') { document.body.classList.add('dark'); themeBtn.textContent = '☀️'; }
@@ -196,8 +302,15 @@ if (savedTheme) { applyTheme(savedTheme); } else {
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   applyTheme(prefersDark ? 'dark' : 'light');
 }
-themeBtn.onclick = () => { const isDark = document.body.classList.contains('dark'); const t = isDark ? 'light' : 'dark'; applyTheme(t); localStorage.setItem(THEME_KEY, t); };
+themeBtn.onclick = () => {
+  const isDark = document.body.classList.contains('dark');
+  const t = isDark ? 'light' : 'dark';
+  applyTheme(t); localStorage.setItem(THEME_KEY, t);
+};
 
+/* =========================================================
+   DOM 引用
+   ========================================================= */
 const board = document.getElementById('board');
 const overlay = document.getElementById('overlay');
 const mTitle = document.getElementById('mTitle');
@@ -206,15 +319,33 @@ const mTags = document.getElementById('mTags');
 const mPriority = document.getElementById('mPriority');
 const mDue = document.getElementById('mDue');
 const mList = document.getElementById('mList');
-const mImage = document.getElementById('mImage');
-const imgPreview = document.getElementById('imgPreview');
+const mEnterSubBoard = document.getElementById('mEnterSubBoard');
+const breadcrumb = document.getElementById('breadcrumb');
+const quickMoveOverlay = document.getElementById('quickMoveOverlay');
+const quickMoveList = document.getElementById('quickMoveList');
 
-// 新增：当前卡片图片临时变量
-let currentImageBase64 = '';
-
+/* =========================================================
+   渲染
+   ========================================================= */
 function render() {
-  if (!state.lists.length) { board.innerHTML = '<div class="empty">还没有列表，点右上角「新建列表」开始吧</div>'; saveState(); return; }
-  board.innerHTML = state.lists.map(renderList).join('');
+  const currentBoard = boardStack[boardStack.length - 1];
+  
+  if (boardStack.length > 1) {
+    breadcrumb.classList.add('show');
+    breadcrumb.innerHTML = boardStack.map((b, i) => {
+      if (i === boardStack.length - 1) return `<span class="current">${esc(b.title)}</span>`;
+      return `<span onclick="goBackTo(${i})">${esc(b.title)}</span><span class="arrow">›</span>`;
+    }).join('');
+  } else {
+    breadcrumb.classList.remove('show');
+  }
+
+  if (!currentBoard.lists.length) {
+    board.innerHTML = '<div class="empty">当前看板还没有列表，点右上角「新建列表」开始吧</div>';
+    saveState();
+    return;
+  }
+  board.innerHTML = currentBoard.lists.map(renderList).join('');
   saveState();
 }
 
@@ -230,7 +361,8 @@ function renderList(list) {
         ${list.cards.map(renderCard).join('')}
       </div>
       <button class="add-card-btn" data-act="add-card">＋ 添加卡片</button>
-    </div>`;
+    </div>
+  `;
 }
 
 function renderCard(card) {
@@ -241,71 +373,121 @@ function renderCard(card) {
   const pri = p.label ? `<span class="pri ${p.cls}">${p.label}</span>` : '';
   const meta = (due || pri) ? `<div class="card-meta">${due}${pri}</div>` : '';
   const pClass = card.priority && card.priority !== 'none' ? ` p-${card.priority}` : '';
-  
-  // 新增：渲染图片
-  const imgHtml = card.image ? `<img src="${card.image}" class="card-img">` : '';
+  const subBoardTag = card.subBoard ? `<span class="sub-board-tag">📁 子看板</span>` : '';
 
   return `
     <div class="card${pClass}" data-id="${card.id}">
       ${tags}
-      <div class="card-title">${esc(card.title)}</div>
-      ${imgHtml}
+      <div class="card-title">${esc(card.title)}${subBoardTag}</div>
       ${meta}
-    </div>`;
+      <!-- 快捷移动按钮 -->
+      <button class="quick-move-btn" data-act="quick-move" data-card-id="${card.id}" title="快速移动到其他列表">⇄</button>
+    </div>
+  `;
 }
 
-document.getElementById('addListBtn').onclick = () => { const title = prompt('新列表名称', '新列表'); if (title !== null) { state.lists.push({ id: uid(), title: title.trim() || '新列表', cards: [] }); render(); } };
-document.getElementById('resetBtn').onclick = () => { if (confirm('确定清空所有数据并恢复初始状态吗？')) { state = defaultData(); render(); } };
-
-document.getElementById('exportBtn').onclick = () => {
-  let csvContent = "\uFEFF列表,标题,描述,标签,优先级,截止日期\n";
-  state.lists.forEach(list => { list.cards.forEach(card => {
-    csvContent += [`"${list.title}"`, `"${card.title}"`, `"${(card.desc || '').replace(/"/g, '""')}"`, `"${(card.tags || []).join(' ')}"`, `"${PRIORITY[card.priority]?.label || '无'}"`, `"${card.due || ''}"`].join(",") + "\n";
-  }); });
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = '栗子看板导出.csv'; link.click(); URL.revokeObjectURL(link.href);
+/* =========================================================
+   看板层级切换
+   ========================================================= */
+window.goBackTo = function(index) {
+  boardStack = boardStack.slice(0, index + 1);
+  render();
 };
 
-board.addEventListener('click', (e) => {
-  const actEl = e.target.closest('[data-act]');
-  if (actEl) {
-    const listEl = actEl.closest('.list'); const listId = listEl && listEl.dataset.id; const act = actEl.dataset.act;
-    if (act === 'add-card') { startAddCard(listEl, listId); return; }
-    if (act === 'del-list') { const list = state.lists.find(l => l.id === listId); if (list && confirm(`确定删除列表「${list.title}」？`)) { state.lists = state.lists.filter(l => l.id !== listId); render(); } return; }
-    if (act === 'rename-list') { const list = state.lists.find(l => l.id === listId); if (!list) return; const t = prompt('重命名列表', list.title); if (t !== null) { list.title = t.trim() || list.title; render(); } return; }
+function enterSubBoard(card) {
+  if (!card.subBoard) {
+    card.subBoard = { lists: [{ id: uid(), title: '子任务', cards: [] }] };
   }
-  const cardEl = e.target.closest('.card');
-  if (cardEl) openCard(cardEl.dataset.id);
-});
-
-function startAddCard(listEl, listId) {
-  if (!listEl) return;
-  const exist = listEl.querySelector('.composer textarea'); if (exist) { exist.focus(); return; }
-  const cardsEl = listEl.querySelector('.cards'); const composer = document.createElement('div'); composer.className = 'composer';
-  const ta = document.createElement('textarea'); ta.placeholder = '输入标题，回车添加（Esc 取消）';
-  composer.appendChild(ta); cardsEl.appendChild(composer); ta.focus(); cardsEl.scrollTop = cardsEl.scrollHeight;
-  const commit = () => {
-    const v = ta.value.trim(); if (!v) { composer.remove(); return; }
-    const list = state.lists.find(l => l.id === listId); if (!list) return;
-    list.cards.push({ id: uid(), title: v, desc: '', tags: [], priority: 'none', due: '', image: '' });
-    render();
-  };
-  ta.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); commit(); } else if (ev.key === 'Escape') { composer.remove(); } });
-  ta.addEventListener('blur', () => { setTimeout(() => { if (composer.isConnected && !ta.value.trim()) composer.remove(); }, 150); });
+  boardStack.push({ lists: card.subBoard.lists, title: card.title });
+  closeModal();
+  render();
 }
 
+/* =========================================================
+   快捷移动逻辑（核心新增）
+   ========================================================= */
+function openQuickMoveMenu(cardId) {
+  const currentBoard = boardStack[boardStack.length - 1];
+  quickMoveList.innerHTML = '';
+  
+  let currentListId = '';
+  currentBoard.lists.forEach(list => {
+    if (list.cards.some(c => c.id === cardId)) currentListId = list.id;
+  });
+
+  currentBoard.lists.forEach(list => {
+    const btn = document.createElement('button');
+    btn.className = 'move-option';
+    btn.textContent = list.title;
+    if (list.id === currentListId) {
+      btn.textContent += ' (当前列表)';
+      btn.disabled = true;
+    }
+    btn.onclick = () => {
+      moveCard(cardId, list.id);
+      quickMoveOverlay.classList.remove('show');
+    };
+    quickMoveList.appendChild(btn);
+  });
+
+  quickMoveOverlay.classList.add('show');
+}
+
+function moveCard(cardId, targetListId) {
+  const currentBoard = boardStack[boardStack.length - 1];
+  let cardToMove = null;
+  let sourceList = null;
+  
+  for (const list of currentBoard.lists) {
+    const idx = list.cards.findIndex(c => c.id === cardId);
+    if (idx !== -1) {
+      sourceList = list;
+      cardToMove = list.cards.splice(idx, 1)[0];
+      break;
+    }
+  }
+  
+  if (cardToMove && sourceList && sourceList.id !== targetListId) {
+    const targetList = currentBoard.lists.find(l => l.id === targetListId);
+    if (targetList) {
+      targetList.cards.push(cardToMove);
+    } else {
+      sourceList.cards.push(cardToMove); // 恢复
+    }
+  }
+  
+  render();
+  saveState();
+}
+
+document.getElementById('quickMoveCancel').onclick = () => quickMoveOverlay.classList.remove('show');
+
+/* =========================================================
+   卡片详情弹窗
+   ========================================================= */
 function openCard(cardId) {
-  for (const list of state.lists) {
-    const card = list.cards.find(c => c.id === cardId); if (!card) continue;
+  const currentBoard = boardStack[boardStack.length - 1];
+  for (const list of currentBoard.lists) {
+    const card = list.cards.find(c => c.id === cardId);
+    if (!card) continue;
     editing = { listId: list.id, cardId };
-    mTitle.value = card.title; mDesc.value = card.desc || ''; mTags.value = (card.tags || []).join(', ');
-    mPriority.value = card.priority || 'none'; mDue.value = card.due || '';
-    mList.innerHTML = state.lists.map(l => `<option value="${l.id}" ${l.id === list.id ? 'selected' : ''}>${esc(l.title)}</option>`).join('');
+    mTitle.value = card.title;
+    mDesc.value = card.desc || '';
+    mTags.value = (card.tags || []).join(', ');
+    mPriority.value = card.priority || 'none';
+    mDue.value = card.due || '';
     
-    // 新增：加载已有图片
-    currentImageBase64 = card.image || '';
-    if (currentImageBase64) { imgPreview.src = currentImageBase64; imgPreview.style.display = 'block'; }
-    else { imgPreview.src = ''; imgPreview.style.display = 'none'; }
+    mList.innerHTML = currentBoard.lists.map(l => 
+      `<option value="${l.id}" ${l.id === list.id ? 'selected' : ''}>${esc(l.title)}</option>`
+    ).join('');
+
+    if (card.subBoard) {
+      mEnterSubBoard.textContent = '进入子看板';
+      mEnterSubBoard.style.display = 'block';
+    } else {
+      mEnterSubBoard.textContent = '创建子看板';
+      mEnterSubBoard.style.display = 'block';
+    }
 
     overlay.classList.add('show');
     setTimeout(() => { mTitle.focus(); mTitle.select(); }, 30);
@@ -313,65 +495,244 @@ function openCard(cardId) {
   }
 }
 
-// 新增：处理本地图片选择
-mImage.onchange = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  if (file.size > 500 * 1024) { // 限制 500KB
-    alert('图片太大啦！为了不撑爆浏览器存储，请选择小于 500KB 的小图片。\n可以先用微信/截图工具压缩一下。');
-    mImage.value = ''; return;
-  }
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    currentImageBase64 = ev.target.result;
-    imgPreview.src = currentImageBase64; imgPreview.style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-};
-
-function closeModal() { overlay.classList.remove('show'); editing = null; mImage.value = ''; }
-
-document.getElementById('mSave').onclick = () => {
-  if (!editing) return closeModal();
-  const list = state.lists.find(l => l.id === editing.listId); const card = list && list.cards.find(c => c.id === editing.cardId);
-  if (!card) return closeModal();
-
-  card.title = mTitle.value.trim() || '未命名卡片';
-  card.desc = mDesc.value.trim();
-  card.tags = mTags.value.split(/[,，]/).map(s => s.trim()).filter(Boolean);
-  card.priority = mPriority.value; card.due = mDue.value;
-  card.image = currentImageBase64; // 新增：保存图片
-
-  const newListId = mList.value;
-  if (newListId !== editing.listId) {
-    const oldList = state.lists.find(l => l.id === editing.listId);
-    const idx = oldList.cards.findIndex(c => c.id === editing.cardId); const [moved] = oldList.cards.splice(idx, 1);
-    const newList = state.lists.find(l => l.id === newListId); newList.cards.push(moved);
-  }
-  closeModal(); render();
-};
-
-document.getElementById('mDelete').onclick = () => {
-  if (!editing) return; if (!confirm('确定删除这张卡片？')) return;
-  const list = state.lists.find(l => l.id === editing.listId); if (list) list.cards = list.cards.filter(c => c.id !== editing.cardId);
-  closeModal(); render();
-};
+function closeModal() { overlay.classList.remove('show'); editing = null; }
 
 document.getElementById('mCancel').onclick = closeModal;
 overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal(); });
 mTitle.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('mSave').click(); });
 
-board.addEventListener('dragstart', (e) => { if (e.target.classList && e.target.classList.contains('list-header')) startListDrag(e, e.target.closest('.list')); });
-function startListDrag(e, listEl) {
-  if (!listEl) return; const ph = document.createElement('div'); ph.className = 'list-placeholder';
-  ph.style.width = listEl.getBoundingClientRect().width + 'px'; ph.style.height = listEl.getBoundingClientRect().height + 'px';
-  listDrag = { el: listEl, ph }; e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', listEl.dataset.id); } catch (err) {} setTimeout(() => listEl.classList.add('dragging'), 0);
+document.getElementById('mSave').onclick = () => {
+  if (!editing) return closeModal();
+  const currentBoard = boardStack[boardStack.length - 1];
+  const list = currentBoard.lists.find(l => l.id === editing.listId);
+  const card = list && list.cards.find(c => c.id === editing.cardId);
+  if (!card) return closeModal();
+
+  card.title = mTitle.value.trim() || '未命名卡片';
+  card.desc = mDesc.value.trim();
+  card.tags = mTags.value.split(/[,，]/).map(s => s.trim()).filter(Boolean);
+  card.priority = mPriority.value;
+  card.due = mDue.value;
+
+  const newListId = mList.value;
+  if (newListId !== editing.listId) {
+    const oldList = currentBoard.lists.find(l => l.id === editing.listId);
+    const idx = oldList.cards.findIndex(c => c.id === editing.cardId);
+    const [moved] = oldList.cards.splice(idx, 1);
+    const newList = currentBoard.lists.find(l => l.id === newListId);
+    newList.cards.push(moved);
+  }
+  closeModal(); render();
+};
+
+document.getElementById('mEnterSubBoard').onclick = () => {
+  if (!editing) return;
+  const currentBoard = boardStack[boardStack.length - 1];
+  const list = currentBoard.lists.find(l => l.id === editing.listId);
+  const card = list && list.cards.find(c => c.id === editing.cardId);
+  if (card) enterSubBoard(card);
+};
+
+document.getElementById('mDelete').onclick = () => {
+  if (!editing) return;
+  if (!confirm('确定删除这张卡片？子看板也会被删除。')) return;
+  const currentBoard = boardStack[boardStack.length - 1];
+  const list = currentBoard.lists.find(l => l.id === editing.listId);
+  if (list) list.cards = list.cards.filter(c => c.id !== editing.cardId);
+  closeModal(); render();
+};
+
+/* =========================================================
+   看板点击事件
+   ========================================================= */
+board.addEventListener('click', (e) => {
+  const moveBtn = e.target.closest('.quick-move-btn');
+  if (moveBtn) {
+    e.stopPropagation();
+    openQuickMoveMenu(moveBtn.dataset.cardId);
+    return;
+  }
+
+  const actEl = e.target.closest('[data-act]');
+  if (actEl) {
+    const listEl = actEl.closest('.list');
+    const listId = listEl && listEl.dataset.id;
+    const act = actEl.dataset.act;
+
+    if (act === 'add-card') { startAddCard(listEl, listId); return; }
+    if (act === 'del-list') {
+      const currentBoard = boardStack[boardStack.length - 1];
+      const list = currentBoard.lists.find(l => l.id === listId);
+      if (list && confirm(`确定删除列表「${list.title}」？`)) {
+        currentBoard.lists = currentBoard.lists.filter(l => l.id !== listId);
+        render();
+      }
+      return;
+    }
+    if (act === 'rename-list') {
+      const currentBoard = boardStack[boardStack.length - 1];
+      const list = currentBoard.lists.find(l => l.id === listId);
+      if (!list) return;
+      const t = prompt('重命名列表', list.title);
+      if (t !== null) { list.title = t.trim() || list.title; render(); }
+      return;
+    }
+  }
+
+  const cardEl = e.target.closest('.card');
+  if (cardEl) openCard(cardEl.dataset.id);
+});
+
+/* ---------- 快速添加卡片 ---------- */
+function startAddCard(listEl, listId) {
+  if (!listEl) return;
+  const exist = listEl.querySelector('.composer textarea');
+  if (exist) { exist.focus(); return; }
+
+  const cardsEl = listEl.querySelector('.cards');
+  const composer = document.createElement('div');
+  composer.className = 'composer';
+  const ta = document.createElement('textarea');
+  ta.placeholder = '输入标题，回车添加（Esc 取消）';
+  composer.appendChild(ta);
+  cardsEl.appendChild(composer);
+  ta.focus();
+  cardsEl.scrollTop = cardsEl.scrollHeight;
+
+  const commit = () => {
+    const v = ta.value.trim();
+    if (!v) { composer.remove(); return; }
+    const currentBoard = boardStack[boardStack.length - 1];
+    const list = currentBoard.lists.find(l => l.id === listId);
+    if (!list) return;
+    list.cards.push({ id: uid(), title: v, desc: '', tags: [], priority: 'none', due: '', subBoard: null });
+    render();
+  };
+
+  ta.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); commit(); }
+    else if (ev.key === 'Escape') { composer.remove(); }
+  });
+  ta.addEventListener('blur', () => {
+    setTimeout(() => { if (composer.isConnected && !ta.value.trim()) composer.remove(); }, 150);
+  });
 }
-board.addEventListener('dragover', (e) => { if (listDrag) { e.preventDefault(); const after = getAfterListX(e.clientX); if (after) board.insertBefore(listDrag.ph, after); else board.appendChild(listDrag.ph); } });
-board.addEventListener('dragend', () => { if (listDrag) { if (listDrag.ph.isConnected) listDrag.ph.replaceWith(listDrag.el); listDrag.el.classList.remove('dragging'); listDrag = null; syncOrder(); render(); } });
-function getAfterListX(x) { const els = [...board.querySelectorAll('.list:not(.dragging)')]; let closest = null, closestOffset = -Infinity; for (const el of els) { const box = el.getBoundingClientRect(); const offset = x - box.left - box.width / 2; if (offset < 0 && offset > closestOffset) { closestOffset = offset; closest = el; } } return closest; }
-function syncOrder() { const listEls = [...board.querySelectorAll('.list')]; const newLists = []; for (const le of listEls) { const old = state.lists.find(l => l.id === le.dataset.id); if (!old) continue; const cards = [...le.querySelectorAll('.cards > .card')].map(ce => old.cards.find(c => c.id === ce.dataset.id)).filter(Boolean); newLists.push({ id: old.id, title: old.title, cards }); } if (newLists.length === state.lists.length) state.lists = newLists; }
+
+/* =========================================================
+   备份与导入
+   ========================================================= */
+document.getElementById('backupBtn').onclick = () => {
+  const dataStr = JSON.stringify(state, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `栗子看板备份_${new Date().toISOString().slice(0,10)}.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+};
+
+const importFileInput = document.getElementById('importFileInput');
+document.getElementById('importBtn').onclick = () => importFileInput.click();
+
+importFileInput.onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const importedData = JSON.parse(ev.target.result);
+      if (importedData && Array.isArray(importedData.lists)) {
+        if (confirm('导入会覆盖当前所有数据，确定吗？')) {
+          state = importedData;
+          boardStack = [{ lists: state.lists, title: '主看板' }];
+          saveState();
+          render();
+          alert('✅ 数据导入成功！');
+        }
+      } else {
+        alert('❌ 文件格式错误：这不是有效的看板备份文件。');
+      }
+    } catch (err) {
+      alert('❌ 读取失败：文件可能已损坏。');
+    }
+  };
+  reader.readAsText(file);
+  importFileInput.value = '';
+};
+
+document.getElementById('resetBtn').onclick = () => {
+  if (!confirm('确定清空所有数据并恢复初始状态吗？')) return;
+  state = defaultData();
+  boardStack = [{ lists: state.lists, title: '主看板' }];
+  render();
+};
+
+/* =========================================================
+   列表拖拽排序
+   ========================================================= */
+board.addEventListener('dragstart', (e) => {
+  if (e.target.classList && e.target.classList.contains('list-header')) {
+    startListDrag(e, e.target.closest('.list'));
+  }
+});
+
+function startListDrag(e, listEl) {
+  if (!listEl) return;
+  const ph = document.createElement('div');
+  ph.className = 'list-placeholder';
+  ph.style.width = listEl.getBoundingClientRect().width + 'px';
+  ph.style.height = listEl.getBoundingClientRect().height + 'px';
+
+  listDrag = { el: listEl, ph };
+  e.dataTransfer.effectAllowed = 'move';
+  try { e.dataTransfer.setData('text/plain', listEl.dataset.id); } catch (err) {}
+  setTimeout(() => listEl.classList.add('dragging'), 0);
+}
+
+board.addEventListener('dragover', (e) => {
+  if (listDrag) {
+    e.preventDefault();
+    const after = getAfterListX(e.clientX);
+    if (after) board.insertBefore(listDrag.ph, after);
+    else board.appendChild(listDrag.ph);
+  }
+});
+
+board.addEventListener('dragend', () => {
+  if (listDrag) {
+    if (listDrag.ph.isConnected) listDrag.ph.replaceWith(listDrag.el);
+    listDrag.el.classList.remove('dragging');
+    listDrag = null;
+    syncOrder();
+    render();
+  }
+});
+
+function getAfterListX(x) {
+  const els = [...board.querySelectorAll('.list:not(.dragging)')];
+  let closest = null, closestOffset = -Infinity;
+  for (const el of els) {
+    const box = el.getBoundingClientRect();
+    const offset = x - box.left - box.width / 2;
+    if (offset < 0 && offset > closestOffset) { closestOffset = offset; closest = el; }
+  }
+  return closest;
+}
+
+function syncOrder() {
+  const currentBoard = boardStack[boardStack.length - 1];
+  const listEls = [...board.querySelectorAll('.list')];
+  const newLists = [];
+  for (const le of listEls) {
+    const old = currentBoard.lists.find(l => l.id === le.dataset.id);
+    if (!old) continue;
+    const cards = [...le.querySelectorAll('.cards > .card')]
+      .map(ce => old.cards.find(c => c.id === ce.dataset.id)).filter(Boolean);
+    newLists.push({ id: old.id, title: old.title, cards });
+  }
+  if (newLists.length === currentBoard.lists.length) currentBoard.lists = newLists;
+}
 
 render();
 </script>
