@@ -8,10 +8,12 @@
   :root{
     --bg:#f5f2ed; --list-bg:#e9e4db; --card-bg:#fff; --text:#2e2a26;
     --muted:#8c8377; --accent:#c8662f; --border:#e2dbd1; --input-bg:#fdfcfa;
+    --sub-bg:#f9f6f2; --sub-border:#e8e0d5;
   }
   body.dark {
     --bg:#121212; --list-bg:#1e1e1e; --card-bg:#2d2d2d; --text:#e0e0e0;
     --muted:#9e9e9e; --accent:#e07b39; --border:#444444; --input-bg:#1e1e1e;
+    --sub-bg:#222; --sub-border:#3a3a3a;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{height:100%;}
@@ -92,9 +94,10 @@
 
   .card{
     position:relative; overflow:hidden; background:var(--card-bg); border-radius:10px;
-    padding:10px 12px 30px 12px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.07);
+    padding:10px 12px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.07);
     cursor:pointer; -webkit-touch-callout: none; user-select: none;
     transition: box-shadow .15s, background 0.3s;
+    display: flex; flex-direction: column;
   }
   .card:hover{box-shadow:0 3px 10px rgba(0,0,0,.12);}
   .card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:transparent;}
@@ -102,6 +105,8 @@
   .card.p-medium::before{background:#e8a33d;}
   .card.p-low::before{background:#3f9d7c;}
 
+  .card-main { padding-bottom: 26px; } /* 给底部按钮留空间 */
+  
   .card-title{font-size:14px; line-height:1.45; word-break:break-word;}
   .card-tags{display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px;}
   .tag{font-size:11px; padding:1px 7px; border-radius:6px; background:rgba(0,0,0,.05); color:var(--muted);}
@@ -112,18 +117,45 @@
   .pri.high{color:#e2574c;}
   .pri.medium{color:#d08a1e;}
   .pri.low{color:#3f9d7c;}
-  .sub-board-tag { font-size: 10px; background: var(--accent); color: #fff; padding: 1px 4px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
 
-  /* 快捷移动按钮 */
+  /* 底部按钮区 */
+  .card-footer {
+    position: absolute; bottom: 6px; left: 10px; right: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
   .quick-move-btn {
-    position: absolute; right: 8px; bottom: 6px;
     background: rgba(200,102,47,.1); color: var(--accent); border: none;
-    font-size: 14px; padding: 4px 8px; border-radius: 6px; cursor: pointer;
+    font-size: 13px; padding: 3px 8px; border-radius: 6px; cursor: pointer;
     font-weight: bold; transition: .15s;
-    display: flex; align-items: center; justify-content: center;
-    z-index: 2;
   }
   .quick-move-btn:hover { background: var(--accent); color: #fff; }
+  
+  .expand-sub-btn {
+    background: rgba(100,100,100,.08); color: var(--muted); border: none;
+    font-size: 12px; padding: 3px 8px; border-radius: 6px; cursor: pointer;
+    transition: .15s;
+  }
+  .expand-sub-btn:hover { background: var(--accent); color: #fff; }
+  .expand-sub-btn.expanded { background: var(--accent); color: #fff; }
+
+  /* 折叠子看板区域 */
+  .sub-board-preview {
+    margin-top: 10px; padding: 10px; background: var(--sub-bg);
+    border-radius: 8px; border: 1px solid var(--sub-border);
+    animation: slideDown 0.2s ease-out;
+  }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+  .sub-board-preview .sub-list-title {
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    margin-bottom: 6px; display: flex; align-items: center; gap: 4px;
+  }
+  .sub-board-preview .sub-card-item {
+    font-size: 13px; padding: 5px 8px; background: var(--card-bg);
+    border-radius: 6px; margin-bottom: 4px; border: 1px solid var(--border);
+    cursor: pointer; transition: .15s; display: flex; justify-content: space-between;
+  }
+  .sub-board-preview .sub-card-item:hover { border-color: var(--accent); color: var(--accent); }
+  .sub-board-preview .empty-sub { font-size: 12px; color: var(--muted); font-style: italic; }
 
   .add-card-btn{
     margin:6px; padding:8px; border:none; background:transparent; color:var(--muted); text-align:left; border-radius:8px;
@@ -265,8 +297,15 @@ function defaultData() {
       {
         id: uid(), title: '待办',
         cards: [
-          { id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片右下角的 ⇄ 可以快速移动到其他列表。', tags: ['入门'], priority: 'high', due: '', subBoard: null },
-          { id: uid(), title: '点击卡片可以创建子看板', desc: '这是一个带有子看板的卡片示例。', tags: ['功能'], priority: 'medium', due: '', subBoard: { lists: [{ id: uid(), title: '子任务', cards: [{ id: uid(), title: '这是一个子卡片', desc: '', tags: [], priority: 'none', due: '', subBoard: null }] }] } }
+          { id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片右下角的 ⇄ 可以快速移动到其他列表。', tags: ['入门'], priority: 'high', due: '', subBoard: null, isExpanded: false },
+          { id: uid(), title: '点击卡片可以创建子看板', desc: '这是一个带有子看板的卡片示例。', tags: ['功能'], priority: 'medium', due: '', isExpanded: false,
+            subBoard: { lists: [
+              { id: uid(), title: '子任务', cards: [
+                { id: uid(), title: '这是一个子卡片', desc: '', tags: [], priority: 'none', due: '', subBoard: null },
+                { id: uid(), title: '这也是一个子卡片', desc: '', tags: [], priority: 'none', due: '', subBoard: null }
+              ] }
+            ] }
+          }
         ]
       },
       { id: uid(), title: '进行中', cards: [] },
@@ -373,15 +412,54 @@ function renderCard(card) {
   const pri = p.label ? `<span class="pri ${p.cls}">${p.label}</span>` : '';
   const meta = (due || pri) ? `<div class="card-meta">${due}${pri}</div>` : '';
   const pClass = card.priority && card.priority !== 'none' ? ` p-${card.priority}` : '';
-  const subBoardTag = card.subBoard ? `<span class="sub-board-tag">📁 子看板</span>` : '';
+  
+  // 子看板折叠区域
+  let subBoardHtml = '';
+  if (card.subBoard) {
+    const isExpanded = card.isExpanded || false;
+    const totalCards = card.subBoard.lists.reduce((sum, list) => sum + list.cards.length, 0);
+    
+    let contentHtml = '';
+    if (isExpanded) {
+      if (totalCards === 0) {
+        contentHtml = '<div class="empty-sub">子看板为空，点击右上角进入并添加卡片</div>';
+      } else {
+        card.subBoard.lists.forEach(list => {
+          contentHtml += `<div class="sub-list-title">📁 ${esc(list.title)} (${list.cards.length})</div>`;
+          if (list.cards.length === 0) {
+            contentHtml += `<div style="font-size:12px;color:var(--muted);padding-left:8px;margin-bottom:4px;">（空）</div>`;
+          } else {
+            list.cards.forEach(c => {
+              contentHtml += `<div class="sub-card-item" data-sub-card-id="${c.id}" data-sub-list-id="${list.id}">${esc(c.title)} <span style="color:var(--muted);font-size:11px;">›</span></div>`;
+            });
+          }
+        });
+      }
+    }
+    
+    subBoardHtml = `
+      <div class="sub-board-preview" style="display: ${isExpanded ? 'block' : 'none'};">
+        ${contentHtml}
+      </div>
+    `;
+  }
+
+  const subBoardBtn = card.subBoard 
+    ? `<button class="expand-sub-btn ${card.isExpanded ? 'expanded' : ''}" data-act="toggle-sub" data-card-id="${card.id}">${card.isExpanded ? '[-] 收起' : '[+] 子看板'}</button>` 
+    : '';
 
   return `
     <div class="card${pClass}" data-id="${card.id}">
-      ${tags}
-      <div class="card-title">${esc(card.title)}${subBoardTag}</div>
-      ${meta}
-      <!-- 快捷移动按钮 -->
-      <button class="quick-move-btn" data-act="quick-move" data-card-id="${card.id}" title="快速移动到其他列表">⇄</button>
+      <div class="card-main">
+        ${tags}
+        <div class="card-title">${esc(card.title)}</div>
+        ${meta}
+      </div>
+      ${subBoardHtml}
+      <div class="card-footer">
+        <button class="quick-move-btn" data-act="quick-move" data-card-id="${card.id}" title="快速移动到其他列表">⇄ 移动</button>
+        ${subBoardBtn}
+      </div>
     </div>
   `;
 }
@@ -397,6 +475,7 @@ window.goBackTo = function(index) {
 function enterSubBoard(card) {
   if (!card.subBoard) {
     card.subBoard = { lists: [{ id: uid(), title: '子任务', cards: [] }] };
+    card.isExpanded = true; // 默认展开新建的子看板
   }
   boardStack.push({ lists: card.subBoard.lists, title: card.title });
   closeModal();
@@ -404,7 +483,7 @@ function enterSubBoard(card) {
 }
 
 /* =========================================================
-   快捷移动逻辑（核心新增）
+   快捷移动逻辑
    ========================================================= */
 function openQuickMoveMenu(cardId) {
   const currentBoard = boardStack[boardStack.length - 1];
@@ -547,13 +626,53 @@ document.getElementById('mDelete').onclick = () => {
    看板点击事件
    ========================================================= */
 board.addEventListener('click', (e) => {
-  const moveBtn = e.target.closest('.quick-move-btn');
+  // 快捷移动
+  const moveBtn = e.target.closest('[data-act="quick-move"]');
   if (moveBtn) {
     e.stopPropagation();
     openQuickMoveMenu(moveBtn.dataset.cardId);
     return;
   }
 
+  // 展开/折叠子看板
+  const toggleBtn = e.target.closest('[data-act="toggle-sub"]');
+  if (toggleBtn) {
+    e.stopPropagation();
+    const cardId = toggleBtn.dataset.cardId;
+    const currentBoard = boardStack[boardStack.length - 1];
+    for (const list of currentBoard.lists) {
+      const card = list.cards.find(c => c.id === cardId);
+      if (card) {
+        card.isExpanded = !card.isExpanded;
+        break;
+      }
+    }
+    render();
+    saveState();
+    return;
+  }
+
+  // 点击展开区域内的子卡片，直接进入子看板
+  const subCardItem = e.target.closest('.sub-card-item');
+  if (subCardItem) {
+    e.stopPropagation();
+    const cardEl = e.target.closest('.card');
+    if (cardEl) {
+      const cardId = cardEl.dataset.id;
+      const currentBoard = boardStack[boardStack.length - 1];
+      for (const list of currentBoard.lists) {
+        const card = list.cards.find(c => c.id === cardId);
+        if (card && card.subBoard) {
+          boardStack.push({ lists: card.subBoard.lists, title: card.title });
+          render();
+          break;
+        }
+      }
+    }
+    return;
+  }
+
+  // 列表操作
   const actEl = e.target.closest('[data-act]');
   if (actEl) {
     const listEl = actEl.closest('.list');
@@ -580,6 +699,7 @@ board.addEventListener('click', (e) => {
     }
   }
 
+  // 打开卡片详情
   const cardEl = e.target.closest('.card');
   if (cardEl) openCard(cardEl.dataset.id);
 });
@@ -606,7 +726,7 @@ function startAddCard(listEl, listId) {
     const currentBoard = boardStack[boardStack.length - 1];
     const list = currentBoard.lists.find(l => l.id === listId);
     if (!list) return;
-    list.cards.push({ id: uid(), title: v, desc: '', tags: [], priority: 'none', due: '', subBoard: null });
+    list.cards.push({ id: uid(), title: v, desc: '', tags: [], priority: 'none', due: '', subBoard: null, isExpanded: false });
     render();
   };
 
