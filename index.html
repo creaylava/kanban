@@ -22,18 +22,16 @@
     background:var(--bg); color:var(--text); display:flex; flex-direction:column;
     overflow:hidden; transition: background 0.3s, color 0.3s;
   }
-  
   header{
-    display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--card-bg);
+    display:flex; align-items:center; gap:6px; padding:8px 12px; background:var(--card-bg);
     border-bottom:1px solid var(--border); flex:0 0 auto; z-index:10; flex-wrap: wrap;
     box-shadow:0 2px 5px rgba(0,0,0,.05);
   }
-  header h1{font-size:15px; margin:0; font-weight:700; letter-spacing:.3px;}
-  .logo{font-size:20px;}
+  header .logo{font-size:20px;}
   .spacer{flex:1;}
   .btn{
     border:1px solid var(--border); background:var(--card-bg); color:var(--text);
-    padding:6px 11px; border-radius:8px; font-size:12px; cursor:pointer;
+    padding:6px 10px; border-radius:8px; font-size:12px; cursor:pointer;
     font-family:inherit; transition:.15s; white-space:nowrap;
   }
   .btn:hover{background:var(--list-bg);}
@@ -42,33 +40,32 @@
   .btn.danger{color:#d0453a; border-color:#f0cfcc;}
   .btn.danger:hover{background:#fdf1f0;}
   .btn.small{padding:5px 10px; font-size:12px;}
+  .btn.icon{padding:6px 9px; font-size:15px;}
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .board-selector {
     padding:6px 10px; border:1px solid var(--border); border-radius:8px;
     background:var(--input-bg); color:var(--text); font-size:13px; outline:none;
-    font-family:inherit; font-weight:600; max-width:150px;
+    font-family:inherit; font-weight:600; max-width:140px;
   }
 
   #breadcrumb {
-    display: flex; align-items: center; gap: 8px; padding: 8px 20px;
-    background: var(--bg); font-size: 13px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px; padding: 6px 18px;
+    background: var(--bg); font-size: 12px; color: var(--muted);
     border-bottom: 1px solid var(--border); display: none;
   }
   #breadcrumb.show { display: flex; }
   #breadcrumb span { cursor: pointer; }
   #breadcrumb span:hover { color: var(--accent); text-decoration: underline; }
   #breadcrumb .current { color: var(--text); font-weight: 600; cursor: default; }
-  #breadcrumb .current:hover { text-decoration: none; color: var(--text); }
   #breadcrumb .arrow { color: var(--muted); cursor: default; }
-  #breadcrumb .arrow:hover { text-decoration: none; color: var(--muted); }
 
   #board{
-    flex:1; display:flex; gap:14px; padding:18px 20px 24px;
+    flex:1; display:flex; gap:14px; padding:16px 18px 24px;
     overflow-x:auto; overflow-y:hidden; align-items:flex-start;
   }
   .empty{margin:auto; color:var(--muted); font-size:14px;}
 
-  /* 列表容器 */
   .list{
     flex:0 0 280px; width:280px; background:var(--list-bg);
     border-radius:12px; display:flex; flex-direction:column; max-height:100%; padding:4px;
@@ -80,8 +77,7 @@
   .list-title{
     font-weight:600; font-size:14px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     border-radius:6px; padding:4px 6px; margin:-2px -4px;
-    cursor: pointer; position: relative;
-    transition: background 0.15s;
+    cursor: pointer; transition: background 0.15s;
   }
   .list-title:hover{background:rgba(0,0,0,.08);}
   .list-title::after {
@@ -147,14 +143,14 @@
   }
   .action-btn:hover { background: var(--accent); color: #fff; }
   .action-btn:disabled { opacity: 0.3; cursor: not-allowed; background: transparent; }
-  
+
   .quick-move-btn {
     background: rgba(200,102,47,.1); color: var(--accent); border: none;
     font-size: 13px; padding: 3px 8px; border-radius: 6px; cursor: pointer;
     font-weight: bold; transition: .15s;
   }
   .quick-move-btn:hover { background: var(--accent); color: #fff; }
-  
+
   .expand-sub-btn {
     background: rgba(100,100,100,.08); color: var(--muted); border: none;
     font-size: 12px; padding: 3px 8px; border-radius: 6px; cursor: pointer;
@@ -166,9 +162,7 @@
   .sub-board-preview {
     margin-top: 10px; padding: 10px; background: var(--sub-bg);
     border-radius: 8px; border: 1px solid var(--sub-border);
-    animation: slideDown 0.2s ease-out;
   }
-  @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
   .sub-board-preview .sub-list-title {
     font-size: 12px; font-weight: 600; color: var(--muted);
     margin-bottom: 6px;
@@ -194,15 +188,13 @@
     background:var(--card-bg); color:var(--text); box-shadow:0 0 0 3px rgba(200,102,47,.1);
   }
 
-  /* 新增列表按钮（放在列表末尾） */
   .add-list-btn {
     flex:0 0 100px; width:100px; height:48px;
     border:2px dashed var(--border); background:transparent;
     border-radius:12px; color:var(--muted); cursor:pointer;
     font-size:13px; font-family:inherit; font-weight:600;
     display:flex; align-items:center; justify-content:center; gap:4px;
-    transition:.15s;
-    margin-top: 4px;
+    transition:.15s; margin-top:4px;
   }
   .add-list-btn:hover {
     border-color: var(--accent); color: var(--accent);
@@ -214,10 +206,9 @@
   .modal{
     background:var(--card-bg); border-radius:14px; width:100%; max-width:520px;
     padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.25); max-height:90vh; overflow-y:auto;
-    animation:pop .16s ease-out; transition: background 0.3s;
+    transition: background 0.3s;
   }
-  @keyframes pop{from{transform:translateY(8px); opacity:0;} to{transform:none; opacity:1;}}
-  .m-title{font-size:17px; font-weight:600; margin-bottom:12px;}
+  .m-title{font-size:17px; font-weight:600; margin-bottom:14px;}
   .modal textarea{width:100%; height:90px; resize:vertical; margin-bottom:14px;}
   .field{margin-bottom:14px;}
   .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px;}
@@ -229,44 +220,34 @@
     border-color:var(--accent); background:var(--card-bg); box-shadow:0 0 0 3px rgba(200,102,47,.12);
   }
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
-  .modal-actions{display:flex; gap:8px; margin-top:6px; align-items:center;}
+  .modal-actions{display:flex; gap:8px; margin-top:10px; align-items:center;}
 
-  #quickMoveOverlay { align-items: flex-end; padding: 0; }
-  #quickMoveMenu {
-    background: var(--card-bg); width: 100%; border-radius: 16px 16px 0 0;
-    padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,.2);
-    animation: slideUp .2s ease-out; max-height: 70vh; overflow-y: auto;
-  }
-  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-  #quickMoveMenu h3 { font-size: 16px; margin-bottom: 15px; text-align: center; color: var(--muted); }
-  .move-option {
-    display: block; width: 100%; padding: 12px; margin-bottom: 8px;
+  /* 同步弹窗 */
+  .sync-status {
+    padding: 10px 12px; border-radius: 10px; font-size: 12px;
     background: var(--input-bg); border: 1px solid var(--border);
-    border-radius: 10px; font-size: 15px; color: var(--text); cursor: pointer;
-    text-align: center; transition: .15s;
+    margin-bottom: 14px; line-height: 1.6; white-space: pre-wrap;
   }
-  .move-option:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .move-option:disabled { opacity: 0.4; cursor: not-allowed; background: var(--border); }
+  .sync-status.ok { border-color: #22c55e; background: rgba(34,197,94,.08); color: #22c55e; }
+  .sync-status.err { border-color: #ef4444; background: rgba(239,68,68,.08); color: #ef4444; }
+  .sync-status.info { border-color: var(--accent); background: rgba(200,102,47,.06); color: var(--accent); }
+  .checkbox-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 0;
+  }
+  .checkbox-row input[type="checkbox"] { width: auto; }
+  .checkbox-row label { margin: 0; font-size: 13px; color: var(--text); cursor: pointer; }
+  .help-text {
+    font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.6;
+  }
+  .help-text code {
+    background: var(--input-bg); padding: 1px 5px; border-radius: 4px;
+    font-family: ui-monospace, monospace; font-size: 10px;
+  }
+  .help-text a { color: var(--accent); }
 
-  #renameListOverlay { align-items: center; padding: 20px; }
-  #renameListModal {
-    background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 380px;
-    padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
-    animation: pop .16s ease-out;
-  }
-  #renameListModal h3 { font-size: 16px; margin-bottom: 15px; text-align: center; }
-  #renameListModal input {
-    width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
-    font-size: 15px; font-family: inherit; color: var(--text); background: var(--input-bg);
-    outline: none; transition: .15s; margin-bottom: 15px;
-  }
-  #renameListModal input:focus { border-color: var(--accent); background: var(--card-bg); box-shadow: 0 0 0 3px rgba(200,102,47,.15); }
-  .rename-actions { display: flex; gap: 10px; }
-
-  /* 移动端适配 */
   @media (max-width: 640px) {
-    header h1 { display: none; }
-    .board-selector { max-width: 110px; font-size: 12px; }
+    .board-selector { max-width: 100px; font-size: 12px; }
     .list { flex: 0 0 250px; width: 250px; }
   }
 </style>
@@ -276,22 +257,18 @@
 <header>
   <span class="logo">🌰</span>
   <select class="board-selector" id="boardSelect"></select>
-  <button class="btn primary small" id="addBoardBtn">＋ 看板</button>
-  <button class="btn small" id="renameBoardBtn" title="重命名当前看板">✎</button>
-  <button class="btn danger small" id="delBoardBtn" title="删除当前看板">🗑</button>
-  <div class="spacer"></div>
+  <button class="btn small" id="addBoardBtn">＋ 看板</button>
   <button class="btn primary small" id="addListBtn">＋ 列表</button>
-  <button class="btn small" id="exportBtn">导出Excel</button>
-  <button class="btn small" id="backupBtn">📥 备份</button>
-  <button class="btn small" id="importBtn">📤 导入</button>
-  <input type="file" id="importFileInput" accept=".json" style="display:none;">
-  <button class="btn small" id="themeToggle" title="切换深色/浅色">🌙</button>
-  <button class="btn danger small" id="resetBtn">重置</button>
+  <div class="spacer"></div>
+  <button class="btn icon" id="syncBtn" title="GitHub 同步">☁️</button>
+  <button class="btn icon" id="settingsBtn" title="设置">⚙️</button>
+  <button class="btn icon" id="themeToggle" title="切换深色/浅色">🌙</button>
 </header>
 
 <div id="breadcrumb"></div>
 <main id="board"></main>
 
+<!-- 卡片编辑弹窗 -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <input id="mTitle" class="m-title" placeholder="卡片标题">
@@ -327,21 +304,84 @@
   </div>
 </div>
 
+<!-- 快捷移动弹窗 -->
 <div class="overlay" id="quickMoveOverlay">
-  <div id="quickMoveMenu">
-    <h3>选择要移动到的列表</h3>
+  <div class="modal" style="align-self:flex-end; max-width:100%; border-radius:16px 16px 0 0;">
+    <h3 style="font-size:16px; margin-bottom:15px; text-align:center; color:var(--muted); font-weight:600;">选择要移动到的列表</h3>
     <div id="quickMoveList"></div>
     <button class="btn danger" id="quickMoveCancel" style="width:100%; margin-top:10px;">取消</button>
   </div>
 </div>
 
+<!-- 列表重命名弹窗 -->
 <div class="overlay" id="renameListOverlay">
-  <div id="renameListModal">
-    <h3 id="renameListTitle">重命名列表</h3>
+  <div class="modal" style="max-width:380px;">
+    <h3 style="font-size:16px; margin-bottom:15px; text-align:center;">重命名列表</h3>
     <input id="renameListInput" placeholder="输入新的列表名称">
-    <div class="rename-actions">
+    <div class="modal-actions" style="margin-top:14px;">
       <button class="btn" id="renameListCancel" style="flex:1;">取消</button>
       <button class="btn primary" id="renameListConfirm" style="flex:1;">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 设置弹窗 -->
+<div class="overlay" id="settingsOverlay">
+  <div class="modal" style="max-width:420px;">
+    <div class="m-title">⚙️ 设置</div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button class="btn" id="renameBoardBtn">✎ 重命名当前看板</button>
+      <button class="btn danger" id="delBoardBtn">🗑 删除当前看板</button>
+      <button class="btn" id="exportBtn">📊 导出 Excel（CSV）</button>
+      <button class="btn" id="backupBtn">📥 备份 JSON</button>
+      <button class="btn" id="importBtn">📤 导入 JSON</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none;">
+      <button class="btn danger" id="resetBtn">⚠️ 重置全部数据</button>
+    </div>
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="btn" id="settingsCloseBtn" style="flex:1;">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- GitHub 同步弹窗 -->
+<div class="overlay" id="syncOverlay">
+  <div class="modal" style="max-width:480px;">
+    <div class="m-title">☁️ GitHub 同步</div>
+
+    <div class="sync-status" id="syncStatusBox">检查配置...</div>
+
+    <div class="field">
+      <label>GitHub Token（只存在本机，不会上传）</label>
+      <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxx 或 github_pat_xxx">
+      <div class="help-text">
+        去 <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a>
+        生成一个 <b>Classic token</b>，只需勾选 <code>gist</code> 权限。建议设置有效期 90 天以上。
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Gist ID</label>
+      <input type="text" id="ghGistInput" placeholder="例如 a1b2c3d4e5f6...">
+      <div class="help-text">
+        <b>首次使用：</b>先去 <a href="https://gist.github.com" target="_blank">gist.github.com</a> 创建一个 <b>Secret</b> Gist，
+        文件名填 <code>kanban.json</code>，内容填 <code>{}</code>。创建后地址栏最后一段就是 Gist ID。
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="autoSyncCheck">
+      <label for="autoSyncCheck">自动同步（每次修改后 3 秒自动上传）</label>
+    </div>
+
+    <div class="modal-actions" style="margin-top:10px;">
+      <button class="btn" id="testConnBtn">🔌 测试连接</button>
+      <button class="btn" id="syncPullBtn">⬇️ 从云端拉取</button>
+      <button class="btn primary" id="syncPushBtn">⬆️ 推送到云端</button>
+    </div>
+    <div class="modal-actions" style="margin-top:8px;">
+      <button class="btn" id="syncSaveConfigBtn" style="flex:1;">💾 保存配置</button>
+      <button class="btn" id="syncCloseBtn" style="flex:1;">关闭</button>
     </div>
   </div>
 </div>
@@ -350,8 +390,11 @@
 /* =========================================================
    数据层
    ========================================================= */
-const STORAGE_KEY = 'chestnut-kanban-v3';
+const STORAGE_KEY = 'chestnut-kanban-v5';
 const THEME_KEY = 'chestnut-kanban-theme';
+const GH_TOKEN_KEY = 'chestnut-kanban-gh-token';
+const GH_GIST_KEY = 'chestnut-kanban-gh-gist';
+const AUTO_SYNC_KEY = 'chestnut-kanban-auto-sync';
 const uid = () => Math.random().toString(36).slice(2, 10);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -369,7 +412,7 @@ function defaultData() {
     lists: [
       { id: uid(), title: '待办', cards: [
         { id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片可以编辑详情。', tags: ['入门'], priority: 'high', due: '', subBoard: null, isExpanded: false },
-        { id: uid(), title: '点列表标题可以重命名', desc: '点列表标题旁边的铅笔图标即可修改列名。', tags: ['功能'], priority: 'medium', due: '', subBoard: null, isExpanded: false }
+        { id: uid(), title: '点列表标题可以重命名', desc: '点列表标题即可修改列名。', tags: ['功能'], priority: 'medium', due: '', subBoard: null, isExpanded: false }
       ] },
       { id: uid(), title: '进行中', cards: [] },
       { id: uid(), title: '已完成', cards: [] }
@@ -380,7 +423,7 @@ function defaultData() {
 
 function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('chestnut-kanban-v2');
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('chestnut-kanban-v4');
     if (raw) {
       const d = JSON.parse(raw);
       if (d && Array.isArray(d.boards) && d.boards.length > 0) {
@@ -397,7 +440,11 @@ function loadState() {
   } catch (e) {}
   return defaultData();
 }
-function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { alert('存储空间不足！'); } }
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  if (autoSyncEnabled) schedulePush();
+}
 
 let state = loadState();
 let boardStack = [];
@@ -416,7 +463,154 @@ function syncBoardStack() {
 }
 
 /* =========================================================
-   主题切换
+   GitHub 同步
+   ========================================================= */
+let ghToken = localStorage.getItem(GH_TOKEN_KEY) || '';
+let ghGistId = localStorage.getItem(GH_GIST_KEY) || '';
+let autoSyncEnabled = localStorage.getItem(AUTO_SYNC_KEY) === '1';
+let _isPushing = false;
+let _pushTimer = null;
+let _lastSyncTime = null;
+
+function setSyncStatus(msg, type) {
+  const box = document.getElementById('syncStatusBox');
+  if (!box) return;
+  box.textContent = msg;
+  box.className = 'sync-status ' + (type || '');
+}
+
+function schedulePush() {
+  if (_pushTimer) clearTimeout(_pushTimer);
+  _pushTimer = setTimeout(() => { pushToCloud({ silent: true }); }, 3000);
+}
+
+// 读取 gist 里的 kanban.json
+async function ghFetchGist() {
+  const res = await fetch(`https://api.github.com/gists/${ghGistId}`, {
+    headers: {
+      'Authorization': `token ${ghToken}`,
+      'Accept': 'application/vnd.github+json'
+    }
+  });
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`HTTP ${res.status}: ${txt.slice(0, 150)}`);
+  }
+  return res.json();
+}
+
+// 更新 gist 里的 kanban.json
+async function ghUpdateGist(content) {
+  const res = await fetch(`https://api.github.com/gists/${ghGistId}`, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `token ${ghToken}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      files: {
+        'kanban.json': { content: content }
+      }
+    })
+  });
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`HTTP ${res.status}: ${txt.slice(0, 150)}`);
+  }
+  return res.json();
+}
+
+// 测试连接
+async function testConnection() {
+  if (!ghToken || !ghGistId) {
+    setSyncStatus('❌ 请先填写 Token 和 Gist ID', 'err');
+    return false;
+  }
+  try {
+    setSyncStatus('🔌 正在测试连接...', 'info');
+    const gist = await ghFetchGist();
+    const file = gist.files && gist.files['kanban.json'];
+    if (!file) {
+      setSyncStatus('⚠️ 连接成功，但 Gist 里没有 kanban.json 文件。请检查文件名。', 'info');
+      return false;
+    }
+    setSyncStatus(`✅ 连接成功！\nGist 文件大小：${file.size} 字节\n最后更新：${new Date(gist.updated_at).toLocaleString()}`, 'ok');
+    return true;
+  } catch (e) {
+    setSyncStatus('❌ 连接失败：' + e.message, 'err');
+    return false;
+  }
+}
+
+// 推送到云端
+async function pushToCloud(opts = {}) {
+  if (!ghToken || !ghGistId) {
+    if (!opts.silent) setSyncStatus('❌ 请先填写 Token 和 Gist ID', 'err');
+    return;
+  }
+  try {
+    _isPushing = true;
+    setSyncStatus('⏫ 上传中...', 'info');
+    const content = JSON.stringify(state, null, 2);
+    await ghUpdateGist(content);
+    _lastSyncTime = new Date();
+    setSyncStatus('✅ 已上传到 GitHub（' + _lastSyncTime.toLocaleTimeString() + '）', 'ok');
+  } catch (e) {
+    console.error(e);
+    setSyncStatus('❌ 上传失败：' + e.message, 'err');
+    if (!opts.silent) alert('上传失败：' + e.message);
+  } finally {
+    setTimeout(() => { _isPushing = false; }, 500);
+  }
+}
+
+// 从云端拉取
+async function pullFromCloud(opts = {}) {
+  if (!ghToken || !ghGistId) {
+    if (!opts.silent) setSyncStatus('❌ 请先填写 Token 和 Gist ID', 'err');
+    return;
+  }
+  try {
+    setSyncStatus('⏬ 拉取中...', 'info');
+    const gist = await ghFetchGist();
+    const file = gist.files && gist.files['kanban.json'];
+    if (!file) {
+      setSyncStatus('⚠️ Gist 里没有 kanban.json 文件', 'err');
+      return;
+    }
+    const raw = file.content || '';
+    if (!raw.trim() || raw.trim() === '{}') {
+      setSyncStatus('ℹ️ 云端还是空的（kanban.json 内容是 {}），请先点「推送到云端」上传。', 'info');
+      return;
+    }
+    const cloudData = JSON.parse(raw);
+    if (!cloudData.boards || !Array.isArray(cloudData.boards)) {
+      throw new Error('云端数据格式不对（不是看板数据）');
+    }
+    // 拉取时不要触发自动同步回推
+    _isPushing = true;
+    state = cloudData;
+    if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
+      state.currentBoardId = state.boards[0].id;
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    syncBoardStack();
+    renderBoardSelect();
+    render();
+    setTimeout(() => { _isPushing = false; }, 500);
+
+    _lastSyncTime = new Date();
+    setSyncStatus('✅ 已从 GitHub 同步（' + _lastSyncTime.toLocaleTimeString() + '）', 'ok');
+  } catch (e) {
+    console.error(e);
+    setSyncStatus('❌ 拉取失败：' + e.message, 'err');
+    if (!opts.silent) alert('拉取失败：' + e.message);
+  }
+}
+
+/* =========================================================
+   主题
    ========================================================= */
 const themeBtn = document.getElementById('themeToggle');
 function applyTheme(theme) {
@@ -451,6 +645,8 @@ const quickMoveList = document.getElementById('quickMoveList');
 const boardSelect = document.getElementById('boardSelect');
 const renameListOverlay = document.getElementById('renameListOverlay');
 const renameListInput = document.getElementById('renameListInput');
+const settingsOverlay = document.getElementById('settingsOverlay');
+const syncOverlay = document.getElementById('syncOverlay');
 
 /* =========================================================
    看板选择器
@@ -474,9 +670,7 @@ document.getElementById('addBoardBtn').onclick = () => {
   const newBoard = {
     id: uid(),
     name: name.trim() || '新看板',
-    lists: [
-      { id: uid(), title: '待办', cards: [] }
-    ]
+    lists: [{ id: uid(), title: '待办', cards: [] }]
   };
   state.boards.push(newBoard);
   state.currentBoardId = newBoard.id;
@@ -486,31 +680,13 @@ document.getElementById('addBoardBtn').onclick = () => {
   render();
 };
 
-document.getElementById('renameBoardBtn').onclick = () => {
-  const b = getCurrentBoard();
-  if (!b) return;
-  const name = prompt('重命名看板', b.name);
-  if (name === null) return;
-  b.name = name.trim() || b.name;
-  boardStack[0].title = b.name;
-  renderBoardSelect();
-  saveState();
+document.getElementById('addListBtn').onclick = () => {
+  const title = prompt('新列表名称', '新列表');
+  if (title === null) return;
+  const cb = boardStack[boardStack.length - 1];
+  cb.lists.push({ id: uid(), title: title.trim() || '新列表', cards: [] });
   render();
-};
-
-document.getElementById('delBoardBtn').onclick = () => {
-  if (state.boards.length <= 1) {
-    alert('至少保留一个看板');
-    return;
-  }
-  const b = getCurrentBoard();
-  if (!confirm(`确定删除看板「${b.name}」及其所有内容吗？`)) return;
-  state.boards = state.boards.filter(x => x.id !== b.id);
-  state.currentBoardId = state.boards[0].id;
-  syncBoardStack();
-  renderBoardSelect();
   saveState();
-  render();
 };
 
 /* =========================================================
@@ -518,7 +694,7 @@ document.getElementById('delBoardBtn').onclick = () => {
    ========================================================= */
 function render() {
   const currentBoard = boardStack[boardStack.length - 1];
-  
+
   if (boardStack.length > 1) {
     breadcrumb.classList.add('show');
     breadcrumb.innerHTML = boardStack.map((b, i) => {
@@ -529,7 +705,6 @@ function render() {
     breadcrumb.classList.remove('show');
   }
 
-  // 渲染所有列表 + 末尾的"添加列表"按钮
   const listsHtml = currentBoard.lists.map(renderList).join('');
   const addListBtnHtml = `
     <button class="add-list-btn" id="addListInlineBtn" title="添加新列表">
@@ -537,8 +712,7 @@ function render() {
     </button>
   `;
   board.innerHTML = listsHtml + addListBtnHtml;
-  
-  // 绑定"添加列表"按钮
+
   document.getElementById('addListInlineBtn').onclick = () => {
     const title = prompt('新列表名称', '新列表');
     if (title === null) return;
@@ -547,7 +721,7 @@ function render() {
     render();
     saveState();
   };
-  
+
   saveState();
 }
 
@@ -575,7 +749,7 @@ function renderCard(card) {
   const pri = p.label ? `<span class="pri ${p.cls}">${p.label}</span>` : '';
   const meta = (due || pri) ? `<div class="card-meta">${due}${pri}</div>` : '';
   const pClass = card.priority && card.priority !== 'none' ? ` p-${card.priority}` : '';
-  
+
   let subBoardHtml = '';
   if (card.subBoard) {
     const isExpanded = card.isExpanded || false;
@@ -600,8 +774,8 @@ function renderCard(card) {
     `;
   }
 
-  const subBoardBtn = card.subBoard 
-    ? `<button class="expand-sub-btn ${card.isExpanded ? 'expanded' : ''}" data-act="toggle-sub" data-card-id="${card.id}">${card.isExpanded ? '[-] 收起' : '[+] 子看板'}</button>` 
+  const subBoardBtn = card.subBoard
+    ? `<button class="expand-sub-btn ${card.isExpanded ? 'expanded' : ''}" data-act="toggle-sub" data-card-id="${card.id}">${card.isExpanded ? '[-] 收起' : '[+] 子看板'}</button>`
     : '';
 
   const upBtn = `<button class="action-btn" data-act="move-up" data-card-id="${card.id}" title="上移">↑</button>`;
@@ -621,7 +795,7 @@ function renderCard(card) {
           ${downBtn}
         </div>
         <div class="footer-right">
-          <button class="quick-move-btn" data-act="quick-move" data-card-id="${card.id}" title="移动到其他列表">⇄ 移动</button>
+          <button class="quick-move-btn" data-act="quick-move" data-card-id="${card.id}">⇄ 移动</button>
           ${subBoardBtn}
         </div>
       </div>
@@ -630,7 +804,7 @@ function renderCard(card) {
 }
 
 /* =========================================================
-   看板层级切换
+   层级切换
    ========================================================= */
 window.goBackTo = function(index) {
   boardStack = boardStack.slice(0, index + 1);
@@ -640,7 +814,7 @@ window.goBackTo = function(index) {
 function enterSubBoard(card) {
   if (!card.subBoard) {
     card.subBoard = { lists: [{ id: uid(), title: '子任务', cards: [] }] };
-    card.isExpanded = true; 
+    card.isExpanded = true;
   }
   boardStack.push({ lists: card.subBoard.lists, title: card.title });
   closeModal();
@@ -674,7 +848,7 @@ function moveCardPriority(cardId, direction) {
 function openQuickMoveMenu(cardId) {
   const currentBoard = boardStack[boardStack.length - 1];
   quickMoveList.innerHTML = '';
-  
+
   let currentListId = '';
   currentBoard.lists.forEach(list => {
     if (list.cards.some(c => c.id === cardId)) currentListId = list.id;
@@ -682,11 +856,13 @@ function openQuickMoveMenu(cardId) {
 
   currentBoard.lists.forEach(list => {
     const btn = document.createElement('button');
-    btn.className = 'move-option';
+    btn.className = 'btn';
+    btn.style.cssText = 'display:block;width:100%;padding:12px;margin-bottom:8px;text-align:center;font-size:15px;';
     btn.textContent = list.title;
     if (list.id === currentListId) {
       btn.textContent += ' (当前列表)';
       btn.disabled = true;
+      btn.style.opacity = '0.5';
     }
     btn.onclick = () => {
       moveCard(cardId, list.id);
@@ -702,7 +878,7 @@ function moveCard(cardId, targetListId) {
   const currentBoard = boardStack[boardStack.length - 1];
   let cardToMove = null;
   let sourceList = null;
-  
+
   for (const list of currentBoard.lists) {
     const idx = list.cards.findIndex(c => c.id === cardId);
     if (idx !== -1) {
@@ -711,13 +887,13 @@ function moveCard(cardId, targetListId) {
       break;
     }
   }
-  
+
   if (cardToMove && sourceList && sourceList.id !== targetListId) {
     const targetList = currentBoard.lists.find(l => l.id === targetListId);
     if (targetList) targetList.cards.push(cardToMove);
     else sourceList.cards.push(cardToMove);
   }
-  
+
   render();
   saveState();
 }
@@ -780,18 +956,17 @@ function openCard(cardId) {
     mTags.value = (card.tags || []).join(', ');
     mPriority.value = card.priority || 'none';
     mDue.value = card.due || '';
-    
-    mList.innerHTML = currentBoard.lists.map(l => 
+
+    mList.innerHTML = currentBoard.lists.map(l =>
       `<option value="${l.id}" ${l.id === list.id ? 'selected' : ''}>${esc(l.title)}</option>`
     ).join('');
 
     if (card.subBoard) {
       mEnterSubBoard.textContent = '进入子看板';
-      mEnterSubBoard.style.display = 'block';
     } else {
       mEnterSubBoard.textContent = '创建子看板';
-      mEnterSubBoard.style.display = 'block';
     }
+    mEnterSubBoard.style.display = 'block';
 
     overlay.classList.add('show');
     setTimeout(() => { mTitle.focus(); mTitle.select(); }, 30);
@@ -903,10 +1078,7 @@ board.addEventListener('click', (e) => {
       const currentBoard = boardStack[boardStack.length - 1];
       const list = currentBoard.lists.find(l => l.id === listId);
       if (!list) return;
-      if (currentBoard.lists.length <= 1) {
-        alert('至少保留一个列表');
-        return;
-      }
+      if (currentBoard.lists.length <= 1) { alert('至少保留一个列表'); return; }
       if (confirm(`确定删除列表「${list.title}」及其所有卡片吗？`)) {
         currentBoard.lists = currentBoard.lists.filter(l => l.id !== listId);
         render();
@@ -962,33 +1134,35 @@ function startAddCard(listEl, listId) {
 }
 
 /* =========================================================
-   顶栏操作
+   设置弹窗
    ========================================================= */
-document.getElementById('addListBtn').onclick = () => {
-  const title = prompt('新列表名称', '新列表');
-  if (title === null) return;
-  const cb = boardStack[boardStack.length - 1];
-  cb.lists.push({ id: uid(), title: title.trim() || '新列表', cards: [] });
-  render();
+document.getElementById('settingsBtn').onclick = () => settingsOverlay.classList.add('show');
+document.getElementById('settingsCloseBtn').onclick = () => settingsOverlay.classList.remove('show');
+settingsOverlay.addEventListener('click', e => { if (e.target === settingsOverlay) settingsOverlay.classList.remove('show'); });
+
+document.getElementById('renameBoardBtn').onclick = () => {
+  const b = getCurrentBoard();
+  if (!b) return;
+  const name = prompt('重命名看板', b.name);
+  if (name === null) return;
+  b.name = name.trim() || b.name;
+  boardStack[0].title = b.name;
+  renderBoardSelect();
   saveState();
+  render();
 };
 
-document.getElementById('resetBtn').onclick = () => {
-  const answer = prompt(
-    '⚠️ 重置会清空所有看板数据，且不可恢复。\n\n' +
-    '如果确定要重置，请手动输入以下文字：\n' +
-    '我知道重置会把所有内容清空'
-  );
-  if (answer !== '我知道重置会把所有内容清空') {
-    if (answer !== null) alert('❌ 输入不正确，重置已取消。');
-    return;
-  }
-  state = defaultData();
+document.getElementById('delBoardBtn').onclick = () => {
+  if (state.boards.length <= 1) { alert('至少保留一个看板'); return; }
+  const b = getCurrentBoard();
+  if (!confirm(`确定删除看板「${b.name}」及其所有内容吗？`)) return;
+  state.boards = state.boards.filter(x => x.id !== b.id);
+  state.currentBoardId = state.boards[0].id;
   syncBoardStack();
   renderBoardSelect();
   saveState();
   render();
-  alert('✅ 已重置。');
+  settingsOverlay.classList.remove('show');
 };
 
 document.getElementById('exportBtn').onclick = () => {
@@ -1059,17 +1233,100 @@ importFileInput.onchange = (e) => {
           renderBoardSelect();
           saveState();
           render();
-          alert('✅ 数据导入成功（已升级）！');
+          alert('✅ 数据导入成功！');
         }
         return;
       }
-      alert('❌ 文件格式错误：这不是有效的看板备份文件。');
-    } catch (err) {
-      alert('❌ 读取失败：文件可能已损坏。');
-    }
+      alert('❌ 文件格式错误');
+    } catch (err) { alert('❌ 读取失败'); }
   };
   reader.readAsText(file);
   importFileInput.value = '';
+};
+
+document.getElementById('resetBtn').onclick = () => {
+  const answer = prompt(
+    '⚠️ 重置会清空所有数据，且不可恢复。\n\n' +
+    '如果确定要重置，请手动输入：\n' +
+    '我知道重置会把所有内容清空'
+  );
+  if (answer !== '我知道重置会把所有内容清空') {
+    if (answer !== null) alert('❌ 输入不正确，重置已取消。');
+    return;
+  }
+  state = defaultData();
+  syncBoardStack();
+  renderBoardSelect();
+  saveState();
+  render();
+  settingsOverlay.classList.remove('show');
+  alert('✅ 已重置。');
+};
+
+/* =========================================================
+   GitHub 同步 UI
+   ========================================================= */
+const syncBtn = document.getElementById('syncBtn');
+const ghTokenInput = document.getElementById('ghTokenInput');
+const ghGistInput = document.getElementById('ghGistInput');
+const autoSyncCheck = document.getElementById('autoSyncCheck');
+
+syncBtn.onclick = () => {
+  ghTokenInput.value = ghToken;
+  ghGistInput.value = ghGistId;
+  autoSyncCheck.checked = autoSyncEnabled;
+  if (!ghToken || !ghGistId) {
+    setSyncStatus('ℹ️ 首次使用，请按下面的说明配置：\n1. 生成 GitHub Token（只需 gist 权限）\n2. 创建一个 Gist，文件名 kanban.json，内容 {}\n3. 把 Token 和 Gist ID 填进来，点「保存配置」\n4. 点「推送到云端」上传当前数据', 'info');
+  } else if (_lastSyncTime) {
+    setSyncStatus('✅ 上次同步：' + _lastSyncTime.toLocaleString(), 'ok');
+  } else {
+    setSyncStatus('ℹ️ 已配置。可点「测试连接」验证，或直接「推送到云端」。', 'info');
+  }
+  syncOverlay.classList.add('show');
+};
+
+document.getElementById('syncCloseBtn').onclick = () => syncOverlay.classList.remove('show');
+syncOverlay.addEventListener('click', e => { if (e.target === syncOverlay) syncOverlay.classList.remove('show'); });
+
+document.getElementById('syncSaveConfigBtn').onclick = () => {
+  ghToken = ghTokenInput.value.trim();
+  ghGistId = ghGistInput.value.trim();
+  localStorage.setItem(GH_TOKEN_KEY, ghToken);
+  localStorage.setItem(GH_GIST_KEY, ghGistId);
+  setSyncStatus('✅ 配置已保存到本机。可点「测试连接」验证。', 'ok');
+};
+
+document.getElementById('testConnBtn').onclick = () => {
+  ghToken = ghTokenInput.value.trim();
+  ghGistId = ghGistInput.value.trim();
+  localStorage.setItem(GH_TOKEN_KEY, ghToken);
+  localStorage.setItem(GH_GIST_KEY, ghGistId);
+  testConnection();
+};
+
+autoSyncCheck.onchange = () => {
+  autoSyncEnabled = autoSyncCheck.checked;
+  localStorage.setItem(AUTO_SYNC_KEY, autoSyncEnabled ? '1' : '0');
+  if (autoSyncEnabled && ghToken && ghGistId) {
+    pushToCloud({ silent: true });
+  }
+};
+
+document.getElementById('syncPushBtn').onclick = () => {
+  ghToken = ghTokenInput.value.trim();
+  ghGistId = ghGistInput.value.trim();
+  localStorage.setItem(GH_TOKEN_KEY, ghToken);
+  localStorage.setItem(GH_GIST_KEY, ghGistId);
+  pushToCloud();
+};
+
+document.getElementById('syncPullBtn').onclick = () => {
+  ghToken = ghTokenInput.value.trim();
+  ghGistId = ghGistInput.value.trim();
+  localStorage.setItem(GH_TOKEN_KEY, ghToken);
+  localStorage.setItem(GH_GIST_KEY, ghGistId);
+  if (!confirm('拉取会用云端数据覆盖本地，确定吗？')) return;
+  pullFromCloud();
 };
 
 /* =========================================================
