@@ -24,16 +24,16 @@
   }
   
   header{
-    display:flex; align-items:center; gap:10px; padding:10px 18px; background:var(--card-bg);
+    display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--card-bg);
     border-bottom:1px solid var(--border); flex:0 0 auto; z-index:10; flex-wrap: wrap;
     box-shadow:0 2px 5px rgba(0,0,0,.05);
   }
-  header h1{font-size:16px; margin:0; font-weight:700; letter-spacing:.3px;}
+  header h1{font-size:15px; margin:0; font-weight:700; letter-spacing:.3px;}
   .logo{font-size:20px;}
   .spacer{flex:1;}
   .btn{
     border:1px solid var(--border); background:var(--card-bg); color:var(--text);
-    padding:7px 12px; border-radius:8px; font-size:13px; cursor:pointer;
+    padding:6px 11px; border-radius:8px; font-size:12px; cursor:pointer;
     font-family:inherit; transition:.15s; white-space:nowrap;
   }
   .btn:hover{background:var(--list-bg);}
@@ -42,6 +42,12 @@
   .btn.danger{color:#d0453a; border-color:#f0cfcc;}
   .btn.danger:hover{background:#fdf1f0;}
   .btn.small{padding:5px 10px; font-size:12px;}
+
+  .board-selector {
+    padding:6px 10px; border:1px solid var(--border); border-radius:8px;
+    background:var(--input-bg); color:var(--text); font-size:13px; outline:none;
+    font-family:inherit; font-weight:600; max-width:150px;
+  }
 
   #breadcrumb {
     display: flex; align-items: center; gap: 8px; padding: 8px 20px;
@@ -62,29 +68,40 @@
   }
   .empty{margin:auto; color:var(--muted); font-size:14px;}
 
+  /* 列表容器 */
   .list{
     flex:0 0 280px; width:280px; background:var(--list-bg);
     border-radius:12px; display:flex; flex-direction:column; max-height:100%; padding:4px;
     transition:background 0.3s;
   }
   .list-header{
-    display:flex; align-items:center; gap:8px; padding:8px 10px; cursor:grab; user-select:none;
+    display:flex; align-items:center; gap:6px; padding:8px 10px;
   }
-  .list-header:active{cursor:grabbing;}
   .list-title{
     font-weight:600; font-size:14px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    border-radius:6px; padding:2px 4px; margin:-2px -4px;
+    border-radius:6px; padding:4px 6px; margin:-2px -4px;
+    cursor: pointer; position: relative;
+    transition: background 0.15s;
   }
-  .list-title:hover{background:rgba(0,0,0,.06);}
+  .list-title:hover{background:rgba(0,0,0,.08);}
+  .list-title::after {
+    content: '✎';
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 6px;
+    opacity: 0.4;
+  }
+  .list-title:hover::after { opacity: 0.9; }
   .list-count{
     font-size:12px; color:var(--muted); background:rgba(0,0,0,.06); border-radius:10px; padding:1px 7px;
+    flex-shrink: 0;
   }
   .icon-btn{
-    border:none; background:transparent; color:var(--muted); font-size:13px; cursor:pointer; padding:2px 6px; border-radius:6px;
-    opacity:0; transition:.15s; line-height:1;
+    border:none; background:transparent; color:var(--muted); font-size:15px;
+    cursor:pointer; padding:4px 6px; border-radius:6px;
+    line-height:1; flex-shrink: 0; transition:.15s;
   }
-  .list:hover .icon-btn{opacity:1;}
-  .icon-btn:hover{background:rgba(0,0,0,.08); color:#d0453a;}
+  .icon-btn:hover{background:rgba(208,69,58,.15); color:#d0453a;}
 
   .cards{
     flex:1; overflow-y:auto; overflow-x:hidden; padding:2px 6px 0; min-height:12px;
@@ -116,7 +133,6 @@
   .pri.medium{color:#d08a1e;}
   .pri.low{color:#3f9d7c;}
 
-  /* 底部按钮区 */
   .card-footer {
     position: absolute; bottom: 6px; left: 10px; right: 10px;
     display: flex; justify-content: space-between; align-items: center;
@@ -128,7 +144,6 @@
     background: rgba(100,100,100,.08); color: var(--muted); border: none;
     font-size: 13px; padding: 3px 8px; border-radius: 6px; cursor: pointer;
     font-weight: bold; transition: .15s;
-    display: flex; align-items: center; justify-content: center;
   }
   .action-btn:hover { background: var(--accent); color: #fff; }
   .action-btn:disabled { opacity: 0.3; cursor: not-allowed; background: transparent; }
@@ -148,7 +163,6 @@
   .expand-sub-btn:hover { background: var(--accent); color: #fff; }
   .expand-sub-btn.expanded { background: var(--accent); color: #fff; }
 
-  /* 折叠子看板区域 */
   .sub-board-preview {
     margin-top: 10px; padding: 10px; background: var(--sub-bg);
     border-radius: 8px; border: 1px solid var(--sub-border);
@@ -157,7 +171,7 @@
   @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
   .sub-board-preview .sub-list-title {
     font-size: 12px; font-weight: 600; color: var(--muted);
-    margin-bottom: 6px; display: flex; align-items: center; gap: 4px;
+    margin-bottom: 6px;
   }
   .sub-board-preview .sub-card-item {
     font-size: 13px; padding: 5px 8px; background: var(--card-bg);
@@ -178,6 +192,21 @@
     width:100%; height:62px; resize:none; border:1px solid var(--accent); border-radius:10px;
     padding:8px 10px; font-size:14px; font-family:inherit; outline:none;
     background:var(--card-bg); color:var(--text); box-shadow:0 0 0 3px rgba(200,102,47,.1);
+  }
+
+  /* 新增列表按钮（放在列表末尾） */
+  .add-list-btn {
+    flex:0 0 100px; width:100px; height:48px;
+    border:2px dashed var(--border); background:transparent;
+    border-radius:12px; color:var(--muted); cursor:pointer;
+    font-size:13px; font-family:inherit; font-weight:600;
+    display:flex; align-items:center; justify-content:center; gap:4px;
+    transition:.15s;
+    margin-top: 4px;
+  }
+  .add-list-btn:hover {
+    border-color: var(--accent); color: var(--accent);
+    background: rgba(200,102,47,.05);
   }
 
   .overlay{position:fixed; inset:0; background:rgba(30,25,20,.45); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
@@ -202,7 +231,6 @@
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
   .modal-actions{display:flex; gap:8px; margin-top:6px; align-items:center;}
 
-  /* 快捷移动底部弹窗 */
   #quickMoveOverlay { align-items: flex-end; padding: 0; }
   #quickMoveMenu {
     background: var(--card-bg); width: 100%; border-radius: 16px 16px 0 0;
@@ -219,28 +247,51 @@
   }
   .move-option:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
   .move-option:disabled { opacity: 0.4; cursor: not-allowed; background: var(--border); }
+
+  #renameListOverlay { align-items: center; padding: 20px; }
+  #renameListModal {
+    background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 380px;
+    padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    animation: pop .16s ease-out;
+  }
+  #renameListModal h3 { font-size: 16px; margin-bottom: 15px; text-align: center; }
+  #renameListModal input {
+    width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
+    font-size: 15px; font-family: inherit; color: var(--text); background: var(--input-bg);
+    outline: none; transition: .15s; margin-bottom: 15px;
+  }
+  #renameListModal input:focus { border-color: var(--accent); background: var(--card-bg); box-shadow: 0 0 0 3px rgba(200,102,47,.15); }
+  .rename-actions { display: flex; gap: 10px; }
+
+  /* 移动端适配 */
+  @media (max-width: 640px) {
+    header h1 { display: none; }
+    .board-selector { max-width: 110px; font-size: 12px; }
+    .list { flex: 0 0 250px; width: 250px; }
+  }
 </style>
 </head>
 <body>
 
 <header>
   <span class="logo">🌰</span>
-  <h1>栗子看板</h1>
+  <select class="board-selector" id="boardSelect"></select>
+  <button class="btn primary small" id="addBoardBtn">＋ 看板</button>
+  <button class="btn small" id="renameBoardBtn" title="重命名当前看板">✎</button>
+  <button class="btn danger small" id="delBoardBtn" title="删除当前看板">🗑</button>
   <div class="spacer"></div>
-  <button class="btn small" id="backupBtn">📥 备份JSON</button>
-  <button class="btn small" id="importBtn">📤 导入JSON</button>
+  <button class="btn primary small" id="addListBtn">＋ 列表</button>
+  <button class="btn small" id="exportBtn">导出Excel</button>
+  <button class="btn small" id="backupBtn">📥 备份</button>
+  <button class="btn small" id="importBtn">📤 导入</button>
   <input type="file" id="importFileInput" accept=".json" style="display:none;">
-  
-  <button class="btn" id="addListBtn">＋ 新建列表</button>
-  <button class="btn" id="exportBtn">导出Excel</button>
-  <button class="btn" id="themeToggle" title="切换深色/浅色">🌙</button>
-  <button class="btn danger" id="resetBtn">重置</button>
+  <button class="btn small" id="themeToggle" title="切换深色/浅色">🌙</button>
+  <button class="btn danger small" id="resetBtn">重置</button>
 </header>
 
 <div id="breadcrumb"></div>
 <main id="board"></main>
 
-<!-- 卡片编辑弹窗 -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <input id="mTitle" class="m-title" placeholder="卡片标题">
@@ -276,7 +327,6 @@
   </div>
 </div>
 
-<!-- 快捷移动底部弹窗 -->
 <div class="overlay" id="quickMoveOverlay">
   <div id="quickMoveMenu">
     <h3>选择要移动到的列表</h3>
@@ -285,11 +335,22 @@
   </div>
 </div>
 
+<div class="overlay" id="renameListOverlay">
+  <div id="renameListModal">
+    <h3 id="renameListTitle">重命名列表</h3>
+    <input id="renameListInput" placeholder="输入新的列表名称">
+    <div class="rename-actions">
+      <button class="btn" id="renameListCancel" style="flex:1;">取消</button>
+      <button class="btn primary" id="renameListConfirm" style="flex:1;">确定</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* =========================================================
    数据层
    ========================================================= */
-const STORAGE_KEY = 'chestnut-kanban-v1';
+const STORAGE_KEY = 'chestnut-kanban-v3';
 const THEME_KEY = 'chestnut-kanban-theme';
 const uid = () => Math.random().toString(36).slice(2, 10);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -302,41 +363,57 @@ const PRIORITY = {
 };
 
 function defaultData() {
-  return {
+  const board = {
+    id: uid(),
+    name: '我的看板',
     lists: [
-      {
-        id: uid(), title: '待办',
-        cards: [
-          { id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片可以编辑详情。', tags: ['入门'], priority: 'high', due: '', subBoard: null, isExpanded: false },
-          { id: uid(), title: '点击卡片可以创建子看板', desc: '这是一个带有子看板的卡片示例。', tags: ['功能'], priority: 'medium', due: '', isExpanded: false,
-            subBoard: { lists: [
-              { id: uid(), title: '子任务', cards: [
-                { id: uid(), title: '这是一个子卡片', desc: '', tags: [], priority: 'none', due: '', subBoard: null },
-                { id: uid(), title: '这也是一个子卡片', desc: '', tags: [], priority: 'none', due: '', subBoard: null }
-              ] }
-            ] }
-          }
-        ]
-      },
+      { id: uid(), title: '待办', cards: [
+        { id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片可以编辑详情。', tags: ['入门'], priority: 'high', due: '', subBoard: null, isExpanded: false },
+        { id: uid(), title: '点列表标题可以重命名', desc: '点列表标题旁边的铅笔图标即可修改列名。', tags: ['功能'], priority: 'medium', due: '', subBoard: null, isExpanded: false }
+      ] },
       { id: uid(), title: '进行中', cards: [] },
       { id: uid(), title: '已完成', cards: [] }
     ]
   };
+  return { boards: [board], currentBoardId: board.id };
 }
 
 function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) { const d = JSON.parse(raw); if (d && Array.isArray(d.lists)) return d; }
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('chestnut-kanban-v2');
+    if (raw) {
+      const d = JSON.parse(raw);
+      if (d && Array.isArray(d.boards) && d.boards.length > 0) {
+        if (!d.currentBoardId || !d.boards.some(b => b.id === d.currentBoardId)) {
+          d.currentBoardId = d.boards[0].id;
+        }
+        return d;
+      }
+      if (d && Array.isArray(d.lists)) {
+        const upgradeBoard = { id: uid(), name: '我的看板', lists: d.lists };
+        return { boards: [upgradeBoard], currentBoardId: upgradeBoard.id };
+      }
+    }
   } catch (e) {}
   return defaultData();
 }
 function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { alert('存储空间不足！'); } }
 
 let state = loadState();
-let boardStack = [{ lists: state.lists, title: '主看板' }]; 
-let editing = null; 
-let listDrag = null;
+let boardStack = [];
+let editing = null;
+let renamingListId = null;
+
+function getCurrentBoard() {
+  let b = state.boards.find(b => b.id === state.currentBoardId);
+  if (!b) { b = state.boards[0]; if (b) state.currentBoardId = b.id; }
+  return b;
+}
+
+function syncBoardStack() {
+  const b = getCurrentBoard();
+  boardStack = [{ lists: b.lists, title: b.name }];
+}
 
 /* =========================================================
    主题切换
@@ -348,8 +425,7 @@ function applyTheme(theme) {
 }
 const savedTheme = localStorage.getItem(THEME_KEY);
 if (savedTheme) { applyTheme(savedTheme); } else {
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  applyTheme(prefersDark ? 'dark' : 'light');
+  applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 }
 themeBtn.onclick = () => {
   const isDark = document.body.classList.contains('dark');
@@ -358,7 +434,7 @@ themeBtn.onclick = () => {
 };
 
 /* =========================================================
-   DOM 引用
+   DOM
    ========================================================= */
 const board = document.getElementById('board');
 const overlay = document.getElementById('overlay');
@@ -372,6 +448,70 @@ const mEnterSubBoard = document.getElementById('mEnterSubBoard');
 const breadcrumb = document.getElementById('breadcrumb');
 const quickMoveOverlay = document.getElementById('quickMoveOverlay');
 const quickMoveList = document.getElementById('quickMoveList');
+const boardSelect = document.getElementById('boardSelect');
+const renameListOverlay = document.getElementById('renameListOverlay');
+const renameListInput = document.getElementById('renameListInput');
+
+/* =========================================================
+   看板选择器
+   ========================================================= */
+function renderBoardSelect() {
+  boardSelect.innerHTML = state.boards.map(b =>
+    `<option value="${b.id}" ${b.id === state.currentBoardId ? 'selected' : ''}>${esc(b.name)}</option>`
+  ).join('');
+}
+
+boardSelect.onchange = (e) => {
+  state.currentBoardId = e.target.value;
+  syncBoardStack();
+  saveState();
+  render();
+};
+
+document.getElementById('addBoardBtn').onclick = () => {
+  const name = prompt('新看板名称', '新看板');
+  if (name === null) return;
+  const newBoard = {
+    id: uid(),
+    name: name.trim() || '新看板',
+    lists: [
+      { id: uid(), title: '待办', cards: [] }
+    ]
+  };
+  state.boards.push(newBoard);
+  state.currentBoardId = newBoard.id;
+  syncBoardStack();
+  renderBoardSelect();
+  saveState();
+  render();
+};
+
+document.getElementById('renameBoardBtn').onclick = () => {
+  const b = getCurrentBoard();
+  if (!b) return;
+  const name = prompt('重命名看板', b.name);
+  if (name === null) return;
+  b.name = name.trim() || b.name;
+  boardStack[0].title = b.name;
+  renderBoardSelect();
+  saveState();
+  render();
+};
+
+document.getElementById('delBoardBtn').onclick = () => {
+  if (state.boards.length <= 1) {
+    alert('至少保留一个看板');
+    return;
+  }
+  const b = getCurrentBoard();
+  if (!confirm(`确定删除看板「${b.name}」及其所有内容吗？`)) return;
+  state.boards = state.boards.filter(x => x.id !== b.id);
+  state.currentBoardId = state.boards[0].id;
+  syncBoardStack();
+  renderBoardSelect();
+  saveState();
+  render();
+};
 
 /* =========================================================
    渲染
@@ -389,27 +529,40 @@ function render() {
     breadcrumb.classList.remove('show');
   }
 
-  if (!currentBoard.lists.length) {
-    board.innerHTML = '<div class="empty">当前看板还没有列表，点右上角「新建列表」开始吧</div>';
+  // 渲染所有列表 + 末尾的"添加列表"按钮
+  const listsHtml = currentBoard.lists.map(renderList).join('');
+  const addListBtnHtml = `
+    <button class="add-list-btn" id="addListInlineBtn" title="添加新列表">
+      <span style="font-size:18px; line-height:1;">＋</span> 列表
+    </button>
+  `;
+  board.innerHTML = listsHtml + addListBtnHtml;
+  
+  // 绑定"添加列表"按钮
+  document.getElementById('addListInlineBtn').onclick = () => {
+    const title = prompt('新列表名称', '新列表');
+    if (title === null) return;
+    const cb = boardStack[boardStack.length - 1];
+    cb.lists.push({ id: uid(), title: title.trim() || '新列表', cards: [] });
+    render();
     saveState();
-    return;
-  }
-  board.innerHTML = currentBoard.lists.map(renderList).join('');
+  };
+  
   saveState();
 }
 
 function renderList(list) {
   return `
     <div class="list" data-id="${list.id}">
-      <div class="list-header" draggable="true">
-        <span class="list-title" data-act="rename-list" title="点击重命名">${esc(list.title)}</span>
+      <div class="list-header">
+        <span class="list-title" data-act="rename-list" data-list-id="${list.id}" title="点击重命名">${esc(list.title)}</span>
         <span class="list-count">${list.cards.length}</span>
-        <button class="icon-btn" data-act="del-list" title="删除列表">✕</button>
+        <button class="icon-btn" data-act="del-list" data-list-id="${list.id}" title="删除列表">✕</button>
       </div>
       <div class="cards" data-list="${list.id}">
         ${list.cards.map(renderCard).join('')}
       </div>
-      <button class="add-card-btn" data-act="add-card">＋ 添加卡片</button>
+      <button class="add-card-btn" data-act="add-card" data-list-id="${list.id}">＋ 添加卡片</button>
     </div>
   `;
 }
@@ -423,30 +576,23 @@ function renderCard(card) {
   const meta = (due || pri) ? `<div class="card-meta">${due}${pri}</div>` : '';
   const pClass = card.priority && card.priority !== 'none' ? ` p-${card.priority}` : '';
   
-  // 子看板折叠区域
   let subBoardHtml = '';
   if (card.subBoard) {
     const isExpanded = card.isExpanded || false;
     const totalCards = card.subBoard.lists.reduce((sum, list) => sum + list.cards.length, 0);
-    
     let contentHtml = '';
     if (isExpanded) {
       if (totalCards === 0) {
-        contentHtml = '<div class="empty-sub">子看板为空，点击右上角进入并添加卡片</div>';
+        contentHtml = '<div class="empty-sub">子看板为空</div>';
       } else {
         card.subBoard.lists.forEach(list => {
           contentHtml += `<div class="sub-list-title">📁 ${esc(list.title)} (${list.cards.length})</div>`;
-          if (list.cards.length === 0) {
-            contentHtml += `<div style="font-size:12px;color:var(--muted);padding-left:8px;margin-bottom:4px;">（空）</div>`;
-          } else {
-            list.cards.forEach(c => {
-              contentHtml += `<div class="sub-card-item" data-sub-card-id="${c.id}" data-sub-list-id="${list.id}">${esc(c.title)} <span style="color:var(--muted);font-size:11px;">›</span></div>`;
-            });
-          }
+          list.cards.forEach(c => {
+            contentHtml += `<div class="sub-card-item" data-sub-card-id="${c.id}" data-sub-list-id="${list.id}">${esc(c.title)} <span style="color:var(--muted);font-size:11px;">›</span></div>`;
+          });
         });
       }
     }
-    
     subBoardHtml = `
       <div class="sub-board-preview" style="display: ${isExpanded ? 'block' : 'none'};">
         ${contentHtml}
@@ -458,8 +604,8 @@ function renderCard(card) {
     ? `<button class="expand-sub-btn ${card.isExpanded ? 'expanded' : ''}" data-act="toggle-sub" data-card-id="${card.id}">${card.isExpanded ? '[-] 收起' : '[+] 子看板'}</button>` 
     : '';
 
-  const upBtn = `<button class="action-btn" data-act="move-up" data-card-id="${card.id}" title="上移优先级">↑</button>`;
-  const downBtn = `<button class="action-btn" data-act="move-down" data-card-id="${card.id}" title="下移优先级">↓</button>`;
+  const upBtn = `<button class="action-btn" data-act="move-up" data-card-id="${card.id}" title="上移">↑</button>`;
+  const downBtn = `<button class="action-btn" data-act="move-down" data-card-id="${card.id}" title="下移">↓</button>`;
 
   return `
     <div class="card${pClass}" data-id="${card.id}">
@@ -502,7 +648,7 @@ function enterSubBoard(card) {
 }
 
 /* =========================================================
-   优先级移动逻辑（在列表内上下移动）
+   优先级移动
    ========================================================= */
 function moveCardPriority(cardId, direction) {
   const currentBoard = boardStack[boardStack.length - 1];
@@ -523,7 +669,7 @@ function moveCardPriority(cardId, direction) {
 }
 
 /* =========================================================
-   快捷移动逻辑（跨列表移动）
+   快捷移动
    ========================================================= */
 function openQuickMoveMenu(cardId) {
   const currentBoard = boardStack[boardStack.length - 1];
@@ -568,11 +714,8 @@ function moveCard(cardId, targetListId) {
   
   if (cardToMove && sourceList && sourceList.id !== targetListId) {
     const targetList = currentBoard.lists.find(l => l.id === targetListId);
-    if (targetList) {
-      targetList.cards.push(cardToMove);
-    } else {
-      sourceList.cards.push(cardToMove);
-    }
+    if (targetList) targetList.cards.push(cardToMove);
+    else sourceList.cards.push(cardToMove);
   }
   
   render();
@@ -580,6 +723,48 @@ function moveCard(cardId, targetListId) {
 }
 
 document.getElementById('quickMoveCancel').onclick = () => quickMoveOverlay.classList.remove('show');
+
+/* =========================================================
+   列表重命名
+   ========================================================= */
+function openRenameListModal(listId, currentTitle) {
+  renamingListId = listId;
+  renameListInput.value = currentTitle;
+  renameListOverlay.classList.add('show');
+  setTimeout(() => { renameListInput.focus(); renameListInput.select(); }, 30);
+}
+
+document.getElementById('renameListCancel').onclick = () => {
+  renameListOverlay.classList.remove('show');
+  renamingListId = null;
+};
+
+document.getElementById('renameListConfirm').onclick = () => {
+  const newName = renameListInput.value.trim();
+  if (newName && renamingListId) {
+    const currentBoard = boardStack[boardStack.length - 1];
+    const list = currentBoard.lists.find(l => l.id === renamingListId);
+    if (list) {
+      list.title = newName;
+      saveState();
+      render();
+    }
+  }
+  renameListOverlay.classList.remove('show');
+  renamingListId = null;
+};
+
+renameListInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('renameListConfirm').click();
+  else if (e.key === 'Escape') document.getElementById('renameListCancel').click();
+});
+
+renameListOverlay.addEventListener('click', (e) => {
+  if (e.target === renameListOverlay) {
+    renameListOverlay.classList.remove('show');
+    renamingListId = null;
+  }
+});
 
 /* =========================================================
    卡片详情弹窗
@@ -640,7 +825,7 @@ document.getElementById('mSave').onclick = () => {
     const idx = oldList.cards.findIndex(c => c.id === editing.cardId);
     const [moved] = oldList.cards.splice(idx, 1);
     const newList = currentBoard.lists.find(l => l.id === newListId);
-    newList.cards.push(moved);
+    if (newList) newList.cards.push(moved);
   }
   closeModal(); render();
 };
@@ -666,17 +851,14 @@ document.getElementById('mDelete').onclick = () => {
    看板点击事件
    ========================================================= */
 board.addEventListener('click', (e) => {
-  // 上移/下移优先级
   const upBtn = e.target.closest('[data-act="move-up"]');
   if (upBtn) { e.stopPropagation(); moveCardPriority(upBtn.dataset.cardId, -1); return; }
   const downBtn = e.target.closest('[data-act="move-down"]');
   if (downBtn) { e.stopPropagation(); moveCardPriority(downBtn.dataset.cardId, 1); return; }
 
-  // 快捷移动
   const moveBtn = e.target.closest('[data-act="quick-move"]');
   if (moveBtn) { e.stopPropagation(); openQuickMoveMenu(moveBtn.dataset.cardId); return; }
 
-  // 展开/折叠子看板
   const toggleBtn = e.target.closest('[data-act="toggle-sub"]');
   if (toggleBtn) {
     e.stopPropagation();
@@ -689,7 +871,6 @@ board.addEventListener('click', (e) => {
     render(); saveState(); return;
   }
 
-  // 点击子看板内的子卡片，进入子看板
   const subCardItem = e.target.closest('.sub-card-item');
   if (subCardItem) {
     e.stopPropagation();
@@ -708,18 +889,25 @@ board.addEventListener('click', (e) => {
     return;
   }
 
-  // 列表操作
   const actEl = e.target.closest('[data-act]');
   if (actEl) {
-    const listEl = actEl.closest('.list');
-    const listId = listEl && listEl.dataset.id;
     const act = actEl.dataset.act;
+    const listId = actEl.dataset.listId || (actEl.closest('.list') && actEl.closest('.list').dataset.id);
 
-    if (act === 'add-card') { startAddCard(listEl, listId); return; }
+    if (act === 'add-card') {
+      const listEl = actEl.closest('.list');
+      startAddCard(listEl, listId);
+      return;
+    }
     if (act === 'del-list') {
       const currentBoard = boardStack[boardStack.length - 1];
       const list = currentBoard.lists.find(l => l.id === listId);
-      if (list && confirm(`确定删除列表「${list.title}」？`)) {
+      if (!list) return;
+      if (currentBoard.lists.length <= 1) {
+        alert('至少保留一个列表');
+        return;
+      }
+      if (confirm(`确定删除列表「${list.title}」及其所有卡片吗？`)) {
         currentBoard.lists = currentBoard.lists.filter(l => l.id !== listId);
         render();
       }
@@ -729,8 +917,7 @@ board.addEventListener('click', (e) => {
       const currentBoard = boardStack[boardStack.length - 1];
       const list = currentBoard.lists.find(l => l.id === listId);
       if (!list) return;
-      const t = prompt('重命名列表', list.title);
-      if (t !== null) { list.title = t.trim() || list.title; render(); }
+      openRenameListModal(listId, list.title);
       return;
     }
   }
@@ -780,14 +967,15 @@ function startAddCard(listEl, listId) {
 document.getElementById('addListBtn').onclick = () => {
   const title = prompt('新列表名称', '新列表');
   if (title === null) return;
-  const currentBoard = boardStack[boardStack.length - 1];
-  currentBoard.lists.push({ id: uid(), title: title.trim() || '新列表', cards: [] });
+  const cb = boardStack[boardStack.length - 1];
+  cb.lists.push({ id: uid(), title: title.trim() || '新列表', cards: [] });
   render();
+  saveState();
 };
 
 document.getElementById('resetBtn').onclick = () => {
   const answer = prompt(
-    '⚠️ 重置会清空所有数据，且不可恢复。\n\n' +
+    '⚠️ 重置会清空所有看板数据，且不可恢复。\n\n' +
     '如果确定要重置，请手动输入以下文字：\n' +
     '我知道重置会把所有内容清空'
   );
@@ -796,13 +984,39 @@ document.getElementById('resetBtn').onclick = () => {
     return;
   }
   state = defaultData();
-  boardStack = [{ lists: state.lists, title: '主看板' }];
+  syncBoardStack();
+  renderBoardSelect();
   saveState();
   render();
   alert('✅ 已重置。');
 };
 
-/* ---------- 备份与导入 ---------- */
+document.getElementById('exportBtn').onclick = () => {
+  const cb = boardStack[boardStack.length - 1];
+  const boardName = boardStack[0].title;
+  let csv = `\uFEFF看板: ${boardName}\n列表,标题,描述,标签,优先级,截止日期\n`;
+  cb.lists.forEach(list => {
+    list.cards.forEach(card => {
+      const tags = (card.tags || []).join(' ');
+      const clean = s => String(s || '').replace(/"/g, '""').replace(/\n/g, ' ');
+      csv += [
+        `"${clean(list.title)}"`,
+        `"${clean(card.title)}"`,
+        `"${clean(card.desc)}"`,
+        `"${clean(tags)}"`,
+        `"${card.priority || 'none'}"`,
+        `"${card.due || ''}"`
+      ].join(',') + '\n';
+    });
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `栗子看板_${boardName}_${new Date().toISOString().slice(0,10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+};
+
 document.getElementById('backupBtn').onclick = () => {
   const dataStr = JSON.stringify(state, null, 2);
   const blob = new Blob([dataStr], { type: 'application/json' });
@@ -823,17 +1037,33 @@ importFileInput.onchange = (e) => {
   reader.onload = (ev) => {
     try {
       const importedData = JSON.parse(ev.target.result);
-      if (importedData && Array.isArray(importedData.lists)) {
+      if (importedData && Array.isArray(importedData.boards)) {
         if (confirm('导入会覆盖当前所有数据，确定吗？')) {
           state = importedData;
-          boardStack = [{ lists: state.lists, title: '主看板' }];
+          if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
+            state.currentBoardId = state.boards[0].id;
+          }
+          syncBoardStack();
+          renderBoardSelect();
           saveState();
           render();
           alert('✅ 数据导入成功！');
         }
-      } else {
-        alert('❌ 文件格式错误：这不是有效的看板备份文件。');
+        return;
       }
+      if (importedData && Array.isArray(importedData.lists)) {
+        if (confirm('导入会覆盖当前所有数据，确定吗？')) {
+          const upgradeBoard = { id: uid(), name: '导入的看板', lists: importedData.lists };
+          state = { boards: [upgradeBoard], currentBoardId: upgradeBoard.id };
+          syncBoardStack();
+          renderBoardSelect();
+          saveState();
+          render();
+          alert('✅ 数据导入成功（已升级）！');
+        }
+        return;
+      }
+      alert('❌ 文件格式错误：这不是有效的看板备份文件。');
     } catch (err) {
       alert('❌ 读取失败：文件可能已损坏。');
     }
@@ -843,71 +1073,10 @@ importFileInput.onchange = (e) => {
 };
 
 /* =========================================================
-   列表拖拽排序
+   初始化
    ========================================================= */
-board.addEventListener('dragstart', (e) => {
-  if (e.target.classList && e.target.classList.contains('list-header')) {
-    startListDrag(e, e.target.closest('.list'));
-  }
-});
-
-function startListDrag(e, listEl) {
-  if (!listEl) return;
-  const ph = document.createElement('div');
-  ph.className = 'list-placeholder';
-  ph.style.width = listEl.getBoundingClientRect().width + 'px';
-  ph.style.height = listEl.getBoundingClientRect().height + 'px';
-
-  listDrag = { el: listEl, ph };
-  e.dataTransfer.effectAllowed = 'move';
-  try { e.dataTransfer.setData('text/plain', listEl.dataset.id); } catch (err) {}
-  setTimeout(() => listEl.classList.add('dragging'), 0);
-}
-
-board.addEventListener('dragover', (e) => {
-  if (listDrag) {
-    e.preventDefault();
-    const after = getAfterListX(e.clientX);
-    if (after) board.insertBefore(listDrag.ph, after);
-    else board.appendChild(listDrag.ph);
-  }
-});
-
-board.addEventListener('dragend', () => {
-  if (listDrag) {
-    if (listDrag.ph.isConnected) listDrag.ph.replaceWith(listDrag.el);
-    listDrag.el.classList.remove('dragging');
-    listDrag = null;
-    syncOrder();
-    render();
-  }
-});
-
-function getAfterListX(x) {
-  const els = [...board.querySelectorAll('.list:not(.dragging)')];
-  let closest = null, closestOffset = -Infinity;
-  for (const el of els) {
-    const box = el.getBoundingClientRect();
-    const offset = x - box.left - box.width / 2;
-    if (offset < 0 && offset > closestOffset) { closestOffset = offset; closest = el; }
-  }
-  return closest;
-}
-
-function syncOrder() {
-  const currentBoard = boardStack[boardStack.length - 1];
-  const listEls = [...board.querySelectorAll('.list')];
-  const newLists = [];
-  for (const le of listEls) {
-    const old = currentBoard.lists.find(l => l.id === le.dataset.id);
-    if (!old) continue;
-    const cards = [...le.querySelectorAll('.cards > .card')]
-      .map(ce => old.cards.find(c => c.id === ce.dataset.id)).filter(Boolean);
-    newLists.push({ id: old.id, title: old.title, cards });
-  }
-  if (newLists.length === currentBoard.lists.length) currentBoard.lists = newLists;
-}
-
+syncBoardStack();
+renderBoardSelect();
 render();
 </script>
 </body>
