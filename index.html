@@ -22,13 +22,12 @@
     background:var(--bg); color:var(--text); display:flex; flex-direction:column;
     overflow:hidden; transition: background 0.3s, color 0.3s;
   }
-  
   header{
     display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--card-bg);
     border-bottom:1px solid var(--border); flex:0 0 auto; z-index:10; flex-wrap: wrap;
     box-shadow:0 2px 5px rgba(0,0,0,.05);
   }
-  header h1{font-size:15px; margin:0; font-weight:700; letter-spacing:.3px;}
+  header h1{font-size:15px; margin:0; font-weight:700;}
   .logo{font-size:20px;}
   .spacer{flex:1;}
   .btn{
@@ -42,13 +41,13 @@
   .btn.danger{color:#d0453a; border-color:#f0cfcc;}
   .btn.danger:hover{background:#fdf1f0;}
   .btn.small{padding:5px 10px; font-size:12px;}
+  .btn.icon{padding:6px 9px; font-size:15px;}
 
   .board-selector {
     padding:6px 10px; border:1px solid var(--border); border-radius:8px;
     background:var(--input-bg); color:var(--text); font-size:13px; outline:none;
-    font-family:inherit; font-weight:600; max-width:150px;
+    font-family:inherit; font-weight:600; max-width:140px;
   }
-
   #breadcrumb {
     display: flex; align-items: center; gap: 8px; padding: 8px 20px;
     background: var(--bg); font-size: 13px; color: var(--muted);
@@ -65,51 +64,28 @@
     overflow-x:auto; overflow-y:hidden; align-items:flex-start;
   }
   .empty{margin:auto; color:var(--muted); font-size:14px;}
-
   .list{
     flex:0 0 280px; width:280px; background:var(--list-bg);
     border-radius:12px; display:flex; flex-direction:column; max-height:100%; padding:4px;
-    transition:background 0.3s;
   }
-  .list-header{
-    display:flex; align-items:center; gap:6px; padding:8px 10px;
-  }
+  .list-header{display:flex; align-items:center; gap:6px; padding:8px 10px;}
   .list-title{
     font-weight:600; font-size:14px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    border-radius:6px; padding:4px 6px; margin:-2px -4px;
-    cursor: pointer; transition: background 0.15s;
+    border-radius:6px; padding:4px 6px; margin:-2px -4px; cursor: pointer; transition: background 0.15s;
   }
   .list-title:hover{background:rgba(0,0,0,.08);}
-  .list-title::after {
-    content: '✎';
-    font-size: 11px;
-    color: var(--muted);
-    margin-left: 6px;
-    opacity: 0.4;
-  }
+  .list-title::after {content: '✎'; font-size: 11px; color: var(--muted); margin-left: 6px; opacity: 0.4;}
   .list-title:hover::after { opacity: 0.9; }
-  .list-count{
-    font-size:12px; color:var(--muted); background:rgba(0,0,0,.06); border-radius:10px; padding:1px 7px;
-    flex-shrink: 0;
-  }
-  .icon-btn{
-    border:none; background:transparent; color:var(--muted); font-size:15px;
-    cursor:pointer; padding:4px 6px; border-radius:6px;
-    line-height:1; flex-shrink: 0; transition:.15s;
-  }
+  .list-count{font-size:12px; color:var(--muted); background:rgba(0,0,0,.06); border-radius:10px; padding:1px 7px; flex-shrink: 0;}
+  .icon-btn{border:none; background:transparent; color:var(--muted); font-size:15px; cursor:pointer; padding:4px 6px; border-radius:6px; line-height:1; flex-shrink: 0; transition:.15s;}
   .icon-btn:hover{background:rgba(208,69,58,.15); color:#d0453a;}
-
-  .cards{
-    flex:1; overflow-y:auto; overflow-x:hidden; padding:2px 6px 0; min-height:12px;
-  }
+  .cards{flex:1; overflow-y:auto; overflow-x:hidden; padding:2px 6px 0; min-height:12px;}
   .cards::-webkit-scrollbar{width:8px;}
   .cards::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15); border-radius:4px;}
-
   .card{
     position:relative; overflow:hidden; background:var(--card-bg); border-radius:10px;
     padding:10px 12px 32px 12px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.07);
     cursor:pointer; -webkit-touch-callout: none; user-select: none;
-    transition: box-shadow .15s, background 0.3s;
     display: flex; flex-direction: column;
   }
   .card:hover{box-shadow:0 3px 10px rgba(0,0,0,.12);}
@@ -117,285 +93,120 @@
   .card.p-high::before{background:#e2574c;}
   .card.p-medium::before{background:#e8a33d;}
   .card.p-low::before{background:#3f9d7c;}
-
   .card-title{font-size:14px; line-height:1.45; word-break:break-word;}
   .card-tags{display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px;}
   .tag{font-size:11px; padding:1px 7px; border-radius:6px; background:rgba(0,0,0,.05); color:var(--muted);}
   .card-meta{display:flex; align-items:center; gap:8px; margin-top:7px; font-size:11px; color:var(--muted); flex-wrap: wrap;}
-  .due{display:inline-flex; align-items:center; gap:3px;}
   .due.overdue{color:#d0453a; font-weight:600;}
   .pri{font-size:11px; padding:1px 6px; border-radius:6px; background:rgba(0,0,0,.05);}
-  .pri.high{color:#e2574c;}
-  .pri.medium{color:#d08a1e;}
-  .pri.low{color:#3f9d7c;}
-  
-  .card-indicators {
-    display: flex; gap: 8px; margin-top: 6px;
-    font-size: 11px; color: var(--muted); align-items: center; flex-wrap: wrap;
-  }
+  .pri.high{color:#e2574c;} .pri.medium{color:#d08a1e;} .pri.low{color:#3f9d7c;}
+  .card-indicators {display: flex; gap: 8px; margin-top: 6px; font-size: 11px; color: var(--muted); align-items: center; flex-wrap: wrap;}
   .indicator { display: inline-flex; align-items: center; gap: 3px; }
   .indicator.checked { color: var(--accent); }
-
-  .card-footer {
-    position: absolute; bottom: 6px; left: 10px; right: 10px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .footer-left { display: flex; gap: 5px; }
-  .footer-right { display: flex; gap: 5px; }
-
-  .action-btn {
-    background: rgba(100,100,100,.08); color: var(--muted); border: none;
-    font-size: 13px; padding: 3px 8px; border-radius: 6px; cursor: pointer;
-    font-weight: bold; transition: .15s;
-  }
+  .card-footer {position: absolute; bottom: 6px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: center;}
+  .footer-left, .footer-right { display: flex; gap: 5px; }
+  .action-btn {background: rgba(100,100,100,.08); color: var(--muted); border: none; font-size: 13px; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: .15s;}
   .action-btn:hover { background: var(--accent); color: #fff; }
-  .action-btn:disabled { opacity: 0.3; cursor: not-allowed; background: transparent; }
-  
-  .quick-move-btn {
-    background: rgba(200,102,47,.1); color: var(--accent); border: none;
-    font-size: 13px; padding: 3px 8px; border-radius: 6px; cursor: pointer;
-    font-weight: bold; transition: .15s;
-  }
+  .quick-move-btn {background: rgba(200,102,47,.1); color: var(--accent); border: none; font-size: 13px; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-weight: bold;}
   .quick-move-btn:hover { background: var(--accent); color: #fff; }
-  
-  .expand-sub-btn {
-    background: rgba(100,100,100,.08); color: var(--muted); border: none;
-    font-size: 12px; padding: 3px 8px; border-radius: 6px; cursor: pointer;
-    transition: .15s;
-  }
-  .expand-sub-btn:hover { background: var(--accent); color: #fff; }
-  .expand-sub-btn.expanded { background: var(--accent); color: #fff; }
-
-  .sub-board-preview {
-    margin-top: 10px; padding: 10px; background: var(--sub-bg);
-    border-radius: 8px; border: 1px solid var(--sub-border);
-  }
-  .sub-board-preview .sub-list-title {
-    font-size: 12px; font-weight: 600; color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .sub-board-preview .sub-card-item {
-    font-size: 13px; padding: 5px 8px; background: var(--card-bg);
-    border-radius: 6px; margin-bottom: 4px; border: 1px solid var(--border);
-    cursor: pointer; transition: .15s; display: flex; justify-content: space-between;
-  }
+  .expand-sub-btn {background: rgba(100,100,100,.08); color: var(--muted); border: none; font-size: 12px; padding: 3px 8px; border-radius: 6px; cursor: pointer;}
+  .expand-sub-btn:hover, .expand-sub-btn.expanded { background: var(--accent); color: #fff; }
+  .sub-board-preview {margin-top: 10px; padding: 10px; background: var(--sub-bg); border-radius: 8px; border: 1px solid var(--sub-border);}
+  .sub-board-preview .sub-list-title {font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px;}
+  .sub-board-preview .sub-card-item {font-size: 13px; padding: 5px 8px; background: var(--card-bg); border-radius: 6px; margin-bottom: 4px; border: 1px solid var(--border); cursor: pointer;}
   .sub-board-preview .sub-card-item:hover { border-color: var(--accent); color: var(--accent); }
-  .sub-board-preview .empty-sub { font-size: 12px; color: var(--muted); font-style: italic; }
-
-  .add-card-btn{
-    margin:6px; padding:8px; border:none; background:transparent; color:var(--muted); text-align:left; border-radius:8px;
-    cursor:pointer; font-size:13px; font-family:inherit; transition:.15s;
-  }
+  .sub-board-preview .empty-sub {font-size: 12px; color: var(--muted); font-style: italic;}
+  .add-card-btn{margin:6px; padding:8px; border:none; background:transparent; color:var(--muted); text-align:left; border-radius:8px; cursor:pointer; font-size:13px;}
   .add-card-btn:hover{background:rgba(0,0,0,.06); color:var(--text);}
-
   .composer{padding-bottom:8px;}
-  .composer textarea{
-    width:100%; height:62px; resize:none; border:1px solid var(--accent); border-radius:10px;
-    padding:8px 10px; font-size:14px; font-family:inherit; outline:none;
-    background:var(--card-bg); color:var(--text); box-shadow:0 0 0 3px rgba(200,102,47,.1);
-  }
-
-  .add-list-btn {
-    flex:0 0 100px; width:100px; height:48px;
-    border:2px dashed var(--border); background:transparent;
-    border-radius:12px; color:var(--muted); cursor:pointer;
-    font-size:13px; font-family:inherit; font-weight:600;
-    display:flex; align-items:center; justify-content:center; gap:4px;
-    transition:.15s; margin-top:4px;
-  }
-  .add-list-btn:hover {
-    border-color: var(--accent); color: var(--accent);
-    background: rgba(200,102,47,.05);
-  }
+  .composer textarea{width:100%; height:62px; resize:none; border:1px solid var(--accent); border-radius:10px; padding:8px 10px; font-size:14px; font-family:inherit; outline:none; background:var(--card-bg); color:var(--text);}
+  .add-list-btn {flex:0 0 100px; width:100px; height:48px; border:2px dashed var(--border); background:transparent; border-radius:12px; color:var(--muted); cursor:pointer; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:4px; margin-top:4px;}
+  .add-list-btn:hover {border-color: var(--accent); color: var(--accent);}
 
   .overlay{position:fixed; inset:0; background:rgba(30,25,20,.45); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
   .overlay.show{display:flex;}
-  .modal{
-    background:var(--card-bg); border-radius:14px; width:100%; max-width:540px;
-    padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.25); max-height:90vh; overflow-y:auto;
-    transition: background 0.3s;
-  }
+  .modal{background:var(--card-bg); border-radius:14px; width:100%; max-width:540px; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.25); max-height:90vh; overflow-y:auto;}
   .m-title{font-size:17px; font-weight:600; margin-bottom:14px;}
   .modal textarea{width:100%; height:80px; resize:vertical; margin-bottom:14px;}
   .field{margin-bottom:14px;}
   .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px;}
-  .modal input, .modal select, .modal textarea {
-    width:100%; border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:14px;
-    font-family:inherit; color:var(--text); background:var(--input-bg); outline:none; transition:.15s;
-  }
-  .modal input:focus, .modal select:focus, .modal textarea:focus {
-    border-color:var(--accent); background:var(--card-bg); box-shadow:0 0 0 3px rgba(200,102,47,.12);
-  }
+  .modal input, .modal select, .modal textarea {width:100%; border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:14px; font-family:inherit; color:var(--text); background:var(--input-bg); outline:none;}
+  .modal input:focus, .modal select:focus, .modal textarea:focus {border-color:var(--accent); background:var(--card-bg);}
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
   .modal-actions{display:flex; gap:8px; margin-top:10px; align-items:center;}
 
-  .checklist-container {
-    border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--input-bg);
-    max-height: 150px; overflow-y: auto; margin-bottom: 5px;
-  }
-  .checklist-item {
-    display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
-  }
-  .checklist-item input[type="checkbox"] {
-    width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; accent-color: var(--accent);
-  }
-  .checklist-item input[type="text"] {
-    flex: 1; padding: 4px 6px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border);
-    background: var(--card-bg); color: var(--text); outline: none;
-  }
-  .checklist-item input[type="text"]:focus { border-color: var(--accent); }
-  .checklist-item .remove-item {
-    color: #d0453a; background: none; border: none; font-size: 16px; cursor: pointer; padding: 0 4px; flex-shrink: 0;
-  }
+  .checklist-container {border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--input-bg); max-height: 150px; overflow-y: auto; margin-bottom: 5px;}
+  .checklist-item {display: flex; align-items: center; gap: 6px; margin-bottom: 6px;}
+  .checklist-item input[type="checkbox"] {width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; accent-color: var(--accent);}
+  .checklist-item input[type="text"] {flex: 1; padding: 4px 6px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text);}
+  .checklist-item .remove-item {color: #d0453a; background: none; border: none; font-size: 16px; cursor: pointer; padding: 0 4px; flex-shrink: 0;}
 
-  /* 附件区 */
-  .attachment-actions {
-    display: flex; gap: 6px; margin-bottom: 6px;
-  }
-  .attachments-container {
-    border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--input-bg);
-    max-height: 260px; overflow-y: auto;
-  }
-  .attachment-item {
-    display: flex; align-items: center; gap: 6px; padding: 6px 8px; margin-bottom: 6px;
-    background: var(--card-bg); border-radius: 6px; border: 1px solid var(--border);
-  }
-  .attachment-item .file-icon {
-    font-size: 20px; flex-shrink: 0; width: 24px; text-align: center;
-  }
-  .attachment-item .file-info {
-    flex: 1; min-width: 0;
-  }
-  .attachment-item .file-name {
-    font-size: 12px; font-weight: 600; color: var(--text);
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-  .attachment-item .file-size {
-    font-size: 10px; color: var(--muted); margin-top: 2px;
-  }
-  .attachment-item .file-size.link-tag {
-    color: var(--accent);
-  }
-  .attachment-item .file-actions {
-    display: flex; gap: 2px; flex-shrink: 0;
-  }
-  .attachment-item .file-actions button {
-    background: rgba(100,100,100,.08); color: var(--muted); border: none;
-    font-size: 13px; padding: 3px 7px; border-radius: 5px; cursor: pointer; transition: .15s;
-  }
-  .attachment-item .file-actions button:hover { background: var(--accent); color: #fff; }
-  .attachment-item .file-actions button.remove-btn:hover { background: #d0453a; color: #fff; }
-  .attachment-item .file-thumb {
-    width: 36px; height: 36px; border-radius: 5px; object-fit: cover;
-    flex-shrink: 0; border: 1px solid var(--border); cursor: pointer;
-  }
-  .attachment-empty {
-    font-size: 12px; color: var(--muted); font-style: italic; text-align: center; padding: 8px;
-  }
-  .attachment-hint {
-    font-size: 10px; color: var(--muted); margin-top: 6px; line-height: 1.5;
-  }
+  .attachment-actions {display: flex; gap: 6px; margin-bottom: 6px;}
+  .attachments-container {border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--input-bg); max-height: 260px; overflow-y: auto;}
+  .attachment-item {display: flex; align-items: center; gap: 6px; padding: 6px 8px; margin-bottom: 6px; background: var(--card-bg); border-radius: 6px; border: 1px solid var(--border);}
+  .attachment-item .file-icon {font-size: 20px; flex-shrink: 0; width: 24px; text-align: center;}
+  .attachment-item .file-info {flex: 1; min-width: 0;}
+  .attachment-item .file-name {font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+  .attachment-item .file-size {font-size: 10px; color: var(--muted); margin-top: 2px;}
+  .attachment-item .file-size.link-tag {color: var(--accent);}
+  .attachment-item .file-actions {display: flex; gap: 2px; flex-shrink: 0;}
+  .attachment-item .file-actions button {background: rgba(100,100,100,.08); color: var(--muted); border: none; font-size: 13px; padding: 3px 7px; border-radius: 5px; cursor: pointer;}
+  .attachment-item .file-actions button:hover {background: var(--accent); color: #fff;}
+  .attachment-item .file-actions button.remove-btn:hover {background: #d0453a; color: #fff;}
+  .attachment-item .file-thumb {width: 36px; height: 36px; border-radius: 5px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border); cursor: pointer;}
+  .attachment-empty {font-size: 12px; color: var(--muted); font-style: italic; text-align: center; padding: 8px;}
+  .attachment-hint {font-size: 10px; color: var(--muted); margin-top: 6px; line-height: 1.5;}
 
-  /* 添加链接的小弹窗 */
-  #addLinkOverlay { align-items: center; padding: 20px; z-index: 150; }
-  #addLinkModal {
-    background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 420px;
-    padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
-  }
-  #addLinkModal h3 { font-size: 16px; margin-bottom: 15px; text-align: center; }
-  #addLinkModal .field { margin-bottom: 12px; }
-  #addLinkModal .field label { display:block; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
-  #addLinkModal input {
-    width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
-    font-size: 14px; font-family: inherit; color: var(--text); background: var(--input-bg);
-    outline: none;
-  }
-  #addLinkModal input:focus { border-color: var(--accent); background: var(--card-bg); }
+  #addLinkOverlay {align-items: center; padding: 20px; z-index: 150;}
+  #addLinkModal {background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 420px; padding: 20px;}
+  #addLinkModal h3 {font-size: 16px; margin-bottom: 15px; text-align: center;}
+  #addLinkModal .field {margin-bottom: 12px;}
+  #addLinkModal .field label {display:block; font-size: 11px; color: var(--muted); margin-bottom: 4px;}
+  #addLinkModal input {width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 14px; background: var(--input-bg); color: var(--text);}
 
-  #quickMoveOverlay { align-items: flex-end; padding: 0; }
-  #quickMoveMenu {
-    background: var(--card-bg); width: 100%; border-radius: 16px 16px 0 0;
-    padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,.2);
-    animation: slideUp .2s ease-out; max-height: 70vh; overflow-y: auto;
-  }
-  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-  #quickMoveMenu h3 { font-size: 16px; margin-bottom: 15px; text-align: center; color: var(--muted); }
-  .move-option {
-    display: block; width: 100%; padding: 12px; margin-bottom: 8px;
-    background: var(--input-bg); border: 1px solid var(--border);
-    border-radius: 10px; font-size: 15px; color: var(--text); cursor: pointer;
-    text-align: center; transition: .15s;
-  }
-  .move-option:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .move-option:disabled { opacity: 0.4; cursor: not-allowed; background: var(--border); }
+  #quickMoveOverlay {align-items: flex-end; padding: 0;}
+  #quickMoveMenu {background: var(--card-bg); width: 100%; border-radius: 16px 16px 0 0; padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,.2); max-height: 70vh; overflow-y: auto;}
+  #quickMoveMenu h3 {font-size: 16px; margin-bottom: 15px; text-align: center; color: var(--muted);}
+  .move-option {display: block; width: 100%; padding: 12px; margin-bottom: 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; font-size: 15px; cursor: pointer; text-align: center;}
+  .move-option:hover {background: var(--accent); color: #fff; border-color: var(--accent);}
+  .move-option:disabled {opacity: 0.4; cursor: not-allowed;}
 
-  #renameListOverlay { align-items: center; padding: 20px; }
-  #renameListModal {
-    background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 380px;
-    padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
-  }
-  #renameListModal h3 { font-size: 16px; margin-bottom: 15px; text-align: center; }
-  #renameListModal input {
-    width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
-    font-size: 15px; font-family: inherit; color: var(--text); background: var(--input-bg);
-    outline: none; margin-bottom: 15px;
-  }
-  .rename-actions { display: flex; gap: 10px; }
+  #renameListOverlay {align-items: center; padding: 20px;}
+  #renameListModal {background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 380px; padding: 20px;}
+  #renameListModal h3 {font-size: 16px; margin-bottom: 15px; text-align: center;}
+  #renameListModal input {width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 15px; background: var(--input-bg); color: var(--text); margin-bottom: 15px;}
+  .rename-actions {display: flex; gap: 10px;}
 
-  /* 通用预览弹窗：支持图片和 iframe（邮件 HTML） */
-  #previewOverlay {
-    background: rgba(0,0,0,.92); align-items: center; justify-content: center; z-index: 200;
-    padding: 0;
-  }
-  #previewOverlay .preview-toolbar {
-    position: absolute; top: 0; left: 0; right: 0;
-    padding: 10px 16px; display: flex; align-items: center; gap: 10px;
-    color: #fff; font-size: 13px; z-index: 2;
-    background: linear-gradient(to bottom, rgba(0,0,0,.7), transparent);
-  }
-  #previewOverlay .preview-title {
-    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    font-weight: 600;
-  }
-  #previewOverlay .preview-btn {
-    background: rgba(255,255,255,.15); color: #fff; border: none;
-    width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-    transition: .15s;
-  }
-  #previewOverlay .preview-btn:hover { background: rgba(255,255,255,.3); }
-  #previewContent {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    padding-top: 0;
-  }
-  #previewContent iframe {
-    width: 100%; height: 100%;
-    background: #fff; border: none;
-  }
-  #previewContent img {
-    max-width: 95%; max-height: 90vh; object-fit: contain;
-  }
-  #previewContent .preview-loading {
-    color: #fff; font-size: 14px;
-  }
+  #previewOverlay {background: rgba(0,0,0,.92); align-items: center; justify-content: center; z-index: 200; padding: 0;}
+  #previewOverlay .preview-toolbar {position: absolute; top: 0; left: 0; right: 0; padding: 10px 16px; display: flex; align-items: center; gap: 10px; color: #fff; font-size: 13px; z-index: 2; background: linear-gradient(to bottom, rgba(0,0,0,.7), transparent);}
+  #previewOverlay .preview-title {flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600;}
+  #previewOverlay .preview-btn {background: rgba(255,255,255,.15); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;}
+  #previewOverlay .preview-btn:hover {background: rgba(255,255,255,.3);}
+  #previewContent {width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;}
+  #previewContent iframe {width: 100%; height: 100%; background: #fff; border: none;}
+  #previewContent img {max-width: 95%; max-height: 90vh; object-fit: contain;}
+  #previewContent .preview-loading {color: #fff; font-size: 14px;}
 
-  #loadingOverlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,.5);
-    display: none; align-items: center; justify-content: center; z-index: 999;
-    color: #fff; font-size: 16px;
-  }
-  #loadingOverlay.show { display: flex; }
-  #loadingOverlay .spinner {
-    width: 24px; height: 24px; border: 3px solid rgba(255,255,255,.3);
-    border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite;
-    margin-right: 12px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  #loadingOverlay {position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 999; color: #fff; font-size: 16px;}
+  #loadingOverlay.show {display: flex;}
+  #loadingOverlay .spinner {width: 24px; height: 24px; border: 3px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 12px;}
+  @keyframes spin {to {transform: rotate(360deg);}}
+
+  /* 同步弹窗 */
+  .sync-status {padding: 10px 12px; border-radius: 10px; font-size: 12px; background: var(--input-bg); border: 1px solid var(--border); margin-bottom: 14px; line-height: 1.6; white-space: pre-wrap;}
+  .sync-status.ok {border-color: #22c55e; background: rgba(34,197,94,.08); color: #22c55e;}
+  .sync-status.err {border-color: #ef4444; background: rgba(239,68,68,.08); color: #ef4444;}
+  .sync-status.info {border-color: var(--accent); background: rgba(200,102,47,.06); color: var(--accent);}
+  .checkbox-row {display: flex; align-items: center; gap: 8px; padding: 8px 0;}
+  .checkbox-row input[type="checkbox"] {width: auto;}
+  .checkbox-row label {margin: 0; font-size: 13px; cursor: pointer;}
+  .help-text {font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.6;}
+  .help-text code {background: var(--input-bg); padding: 1px 5px; border-radius: 4px; font-family: ui-monospace, monospace; font-size: 10px;}
+  .help-text a {color: var(--accent);}
 
   @media (max-width: 640px) {
     header h1 { display: none; }
-    .board-selector { max-width: 110px; font-size: 12px; }
+    .board-selector { max-width: 100px; font-size: 12px; }
     .list { flex: 0 0 250px; width: 250px; }
   }
 </style>
@@ -414,6 +225,7 @@
   <button class="btn small" id="backupBtn">📥 备份</button>
   <button class="btn small" id="importBtn">📤 导入</button>
   <input type="file" id="importFileInput" accept=".json" style="display:none;">
+  <button class="btn icon" id="syncBtn" title="GitHub 同步">☁️</button>
   <button class="btn small" id="themeToggle" title="切换深色/浅色">🌙</button>
   <button class="btn danger small" id="resetBtn">重置</button>
 </header>
@@ -441,8 +253,7 @@
       </div>
       <div class="attachments-container" id="attachmentsContainer"></div>
       <div class="attachment-hint">
-        📌 本地文件会随 JSON 备份一起保存；<br>
-        🔗 外部链接（如 OneDrive 分享链接）只保存 URL，点击会跳转。
+        📌 本地文件随 JSON 备份保存；GitHub 同步时，超过 500KB 的附件不会上传（只传文件名）。
       </div>
       <input type="file" id="attachmentFileInput" multiple style="display:none;">
     </div>
@@ -478,7 +289,6 @@
   </div>
 </div>
 
-<!-- 快捷移动弹窗 -->
 <div class="overlay" id="quickMoveOverlay">
   <div id="quickMoveMenu">
     <h3>选择要移动到的列表</h3>
@@ -487,10 +297,9 @@
   </div>
 </div>
 
-<!-- 列表重命名弹窗 -->
 <div class="overlay" id="renameListOverlay">
   <div id="renameListModal">
-    <h3 id="renameListTitle">重命名列表</h3>
+    <h3>重命名列表</h3>
     <input id="renameListInput" placeholder="输入新的列表名称">
     <div class="rename-actions">
       <button class="btn" id="renameListCancel" style="flex:1;">取消</button>
@@ -499,7 +308,6 @@
   </div>
 </div>
 
-<!-- 添加链接弹窗 -->
 <div class="overlay" id="addLinkOverlay">
   <div id="addLinkModal">
     <h3>🔗 添加外部链接</h3>
@@ -518,7 +326,7 @@
   </div>
 </div>
 
-<!-- 通用预览弹窗 -->
+<!-- 预览弹窗 -->
 <div class="overlay" id="previewOverlay">
   <div class="preview-toolbar">
     <div class="preview-title" id="previewTitle"></div>
@@ -529,11 +337,57 @@
   <div id="previewContent"></div>
 </div>
 
+<!-- GitHub 同步弹窗 -->
+<div class="overlay" id="syncOverlay">
+  <div class="modal" style="max-width:480px;">
+    <div class="m-title">☁️ GitHub 同步</div>
+    <div class="sync-status" id="syncStatusBox">检查配置...</div>
+
+    <div class="field">
+      <label>GitHub Token（只存在本机）</label>
+      <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxx 或 github_pat_xxx">
+      <div class="help-text">
+        去 <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a>
+        生成 Classic token，只需勾选 <code>gist</code> 权限。
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Gist ID</label>
+      <input type="text" id="ghGistInput" placeholder="例如 a1b2c3d4e5f6...">
+      <div class="help-text">
+        去 <a href="https://gist.github.com" target="_blank">gist.github.com</a> 创建 Secret Gist，
+        文件名填 <code>kanban.json</code>，内容填 <code>{}</code>。地址栏最后一段就是 Gist ID。
+      </div>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="autoSyncCheck">
+      <label for="autoSyncCheck">自动同步（修改后 3 秒上传）</label>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="syncAttachCheck">
+      <label for="syncAttachCheck">同步附件（可能因文件过大失败）</label>
+    </div>
+
+    <div class="modal-actions" style="margin-top:10px;">
+      <button class="btn" id="testConnBtn">🔌 测试</button>
+      <button class="btn" id="syncPullBtn">⬇️ 拉取</button>
+      <button class="btn primary" id="syncPushBtn">⬆️ 推送</button>
+    </div>
+    <div class="modal-actions" style="margin-top:8px;">
+      <button class="btn" id="syncSaveConfigBtn" style="flex:1;">💾 保存配置</button>
+      <button class="btn" id="syncCloseBtn" style="flex:1;">关闭</button>
+    </div>
+  </div>
+</div>
+
 <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">处理中...</span></div>
 
 <script>
 /* =========================================================
-   IndexedDB 存储
+   IndexedDB
    ========================================================= */
 const DB_NAME = 'kanban_db_v2';
 const DB_VERSION = 1;
@@ -542,101 +396,87 @@ const STATE_KEY = 'main';
 const MAX_FILE_SIZE = 30 * 1024 * 1024;
 
 let stateDB = null;
-
 function openStateDB() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION);
     req.onupgradeneeded = (e) => {
       const d = e.target.result;
-      if (!d.objectStoreNames.contains(STATE_STORE)) {
-        d.createObjectStore(STATE_STORE);
-      }
+      if (!d.objectStoreNames.contains(STATE_STORE)) d.createObjectStore(STATE_STORE);
     };
-    req.onsuccess = (e) => { stateDB = e.target.result; resolve(stateDB); };
+    req.onsuccess = (e) => { stateDB = e.target.result; resolve(); };
     req.onerror = (e) => reject(e);
   });
 }
 function loadStateFromDB() {
   return new Promise((resolve, reject) => {
-    const tx = stateDB.transaction(STATE_STORE, 'readonly');
-    const req = tx.objectStore(STATE_STORE).get(STATE_KEY);
+    const req = stateDB.transaction(STATE_STORE, 'readonly').objectStore(STATE_STORE).get(STATE_KEY);
     req.onsuccess = () => resolve(req.result || null);
-    req.onerror = (e) => reject(e);
+    req.onerror = reject;
   });
 }
 function saveStateToDB(data) {
   return new Promise((resolve, reject) => {
     const tx = stateDB.transaction(STATE_STORE, 'readwrite');
     tx.objectStore(STATE_STORE).put(data, STATE_KEY);
-    tx.oncomplete = () => resolve();
-    tx.onerror = (e) => reject(e);
+    tx.oncomplete = resolve; tx.onerror = reject;
   });
 }
 function clearStateDB() {
   return new Promise((resolve, reject) => {
     const tx = stateDB.transaction(STATE_STORE, 'readwrite');
     tx.objectStore(STATE_STORE).clear();
-    tx.oncomplete = () => resolve();
-    tx.onerror = (e) => reject(e);
+    tx.oncomplete = resolve; tx.onerror = reject;
   });
 }
 
 /* =========================================================
    工具
    ========================================================= */
-function uid() { return Math.random().toString(36).slice(2, 10); }
-function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
+const uid = () => Math.random().toString(36).slice(2, 10);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function formatFileSize(bytes) {
   if (!bytes) return '0 B';
   if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(2) + ' MB';
 }
-
 function getFileIcon(name, type) {
   const ext = (name || '').split('.').pop().toLowerCase();
   if (type && type.startsWith('image/')) return '🖼';
   if (type && type.startsWith('video/')) return '🎬';
   if (type && type.startsWith('audio/')) return '🎵';
-  if (ext === 'html' || ext === 'htm') return '📧';
-  if (ext === 'eml' || ext === 'msg') return '📧';
+  if (ext === 'html' || ext === 'htm' || ext === 'eml' || ext === 'msg') return '📧';
   if (ext === 'pdf') return '📕';
-  if (['doc', 'docx'].includes(ext)) return '📘';
-  if (['xls', 'xlsx', 'csv'].includes(ext)) return '📗';
-  if (['ppt', 'pptx'].includes(ext)) return '📙';
-  if (['zip', 'rar', '7z'].includes(ext)) return '🗜';
-  if (['dwg', 'dxf', 'step', 'stp', 'igs', 'iges', 'sldprt', 'sldasm'].includes(ext)) return '📐';
+  if (['doc','docx'].includes(ext)) return '📘';
+  if (['xls','xlsx','csv'].includes(ext)) return '📗';
+  if (['ppt','pptx'].includes(ext)) return '📙';
+  if (['zip','rar','7z'].includes(ext)) return '🗜';
+  if (['dwg','dxf','step','stp','igs','iges','sldprt','sldasm'].includes(ext)) return '📐';
   return '📄';
 }
-
 function fileToDataURL(file) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
   });
 }
-
 function dataURLToBlob(dataURL) {
   const parts = dataURL.split(',');
   const mimeMatch = parts[0].match(/:(.*?);/);
   const mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
   const bstr = atob(parts[1]);
   let n = bstr.length;
-  const u8arr = new Uint8Array(n);
-  while (n--) u8arr[n] = bstr.charCodeAt(n);
-  return new Blob([u8arr], { type: mime });
+  const u8 = new Uint8Array(n);
+  while (n--) u8[n] = bstr.charCodeAt(n);
+  return new Blob([u8], { type: mime });
 }
-
 function showLoading(text) {
   document.getElementById('loadingText').textContent = text || '处理中...';
   document.getElementById('loadingOverlay').classList.add('show');
 }
-function hideLoading() {
-  document.getElementById('loadingOverlay').classList.remove('show');
-}
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
 
 /* =========================================================
    数据
@@ -653,13 +493,7 @@ function defaultData() {
     id: uid(), name: '我的看板',
     lists: [
       { id: uid(), title: '待办', cards: [
-        { 
-          id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片可以编辑详情，支持待办清单、本地附件和外部链接。', 
-          tags: ['入门'], priority: 'high', due: '', 
-          checklist: [{ id: uid(), text: '了解待办清单功能', done: true }, { id: uid(), text: '尝试上传附件', done: false }],
-          attachments: [],
-          subBoard: null, isExpanded: false 
-        }
+        { id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片可以编辑详情。', tags: ['入门'], priority: 'high', due: '', checklist: [], attachments: [], subBoard: null, isExpanded: false }
       ] },
       { id: uid(), title: '进行中', cards: [] },
       { id: uid(), title: '已完成', cards: [] }
@@ -672,6 +506,9 @@ let state = null;
 let boardStack = [];
 let editing = null;
 let renamingListId = null;
+let editingChecklist = [];
+let editingAttachments = [];
+let currentPreviewURL = null;
 
 function getCurrentBoard() {
   let b = state.boards.find(b => b.id === state.currentBoardId);
@@ -683,8 +520,171 @@ function syncBoardStack() {
   boardStack = [{ lists: b.lists, title: b.name }];
 }
 async function saveState() {
-  try { await saveStateToDB(state); }
-  catch (e) { console.error('保存失败：', e); alert('⚠️ 保存失败：' + e.message); }
+  try { await saveStateToDB(state); } catch (e) { console.error(e); }
+  if (autoSyncEnabled) schedulePush();
+}
+
+/* =========================================================
+   GitHub 同步
+   ========================================================= */
+const GH_TOKEN_KEY = 'chestnut-kanban-gh-token';
+const GH_GIST_KEY = 'chestnut-kanban-gh-gist';
+const AUTO_SYNC_KEY = 'chestnut-kanban-auto-sync';
+const SYNC_ATTACH_KEY = 'chestnut-kanban-sync-attach';
+const MAX_SYNC_SIZE = 900 * 1024;   // 900KB，留余量给 GitHub API 的 1MB 限制
+
+let ghToken = localStorage.getItem(GH_TOKEN_KEY) || '';
+let ghGistId = localStorage.getItem(GH_GIST_KEY) || '';
+let autoSyncEnabled = localStorage.getItem(AUTO_SYNC_KEY) === '1';
+let syncAttachmentsEnabled = localStorage.getItem(SYNC_ATTACH_KEY) === '1';
+let _isPushing = false;
+let _pushTimer = null;
+let _lastSyncTime = null;
+
+function setSyncStatus(msg, type) {
+  const box = document.getElementById('syncStatusBox');
+  if (!box) return;
+  box.textContent = msg;
+  box.className = 'sync-status ' + (type || '');
+}
+
+function schedulePush() {
+  if (_pushTimer) clearTimeout(_pushTimer);
+  _pushTimer = setTimeout(() => pushToCloud({ silent: true }), 3000);
+}
+
+// 生成用于同步的数据：如果不同步附件，则去掉附件 data 字段
+function buildSyncPayload() {
+  const copy = JSON.parse(JSON.stringify(state));
+  if (!syncAttachmentsEnabled) {
+    copy.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
+      (c.attachments || []).forEach(a => {
+        if (a.kind === 'file') {
+          // 保留元数据，去掉 data
+          a.data = '';
+          a._noData = true;  // 标记，拉取时提示
+        }
+      });
+    })));
+  }
+  return copy;
+}
+
+async function ghFetchGist() {
+  const res = await fetch(`https://api.github.com/gists/${ghGistId}`, {
+    headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github+json' }
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0, 150)}`);
+  return res.json();
+}
+async function ghUpdateGist(content) {
+  const res = await fetch(`https://api.github.com/gists/${ghGistId}`, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `token ${ghToken}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ files: { 'kanban.json': { content: content } } })
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0, 150)}`);
+  return res.json();
+}
+
+async function testConnection() {
+  if (!ghToken || !ghGistId) { setSyncStatus('❌ 请先填写 Token 和 Gist ID', 'err'); return false; }
+  try {
+    setSyncStatus('🔌 正在测试连接...', 'info');
+    const gist = await ghFetchGist();
+    const file = gist.files && gist.files['kanban.json'];
+    if (!file) { setSyncStatus('⚠️ 连接成功，但 Gist 里没有 kanban.json 文件', 'info'); return false; }
+    setSyncStatus(`✅ 连接成功！\n文件大小：${file.size} 字节\n最后更新：${new Date(gist.updated_at).toLocaleString()}`, 'ok');
+    return true;
+  } catch (e) {
+    setSyncStatus('❌ 连接失败：' + e.message, 'err');
+    return false;
+  }
+}
+
+async function pushToCloud(opts = {}) {
+  if (!ghToken || !ghGistId) {
+    if (!opts.silent) setSyncStatus('❌ 请先填写 Token 和 Gist ID', 'err');
+    return;
+  }
+  try {
+    _isPushing = true;
+    setSyncStatus('⏫ 上传中...', 'info');
+    const payload = buildSyncPayload();
+    const content = JSON.stringify(payload);
+    const sizeKB = (new Blob([content]).size / 1024).toFixed(1);
+    
+    if (new Blob([content]).size > MAX_SYNC_SIZE) {
+      setSyncStatus(`❌ 数据太大（${sizeKB} KB），超过 900KB 限制。\n请关闭「同步附件」，或将附件改为外部链接。`, 'err');
+      if (!opts.silent) alert('数据过大，无法上传。请关闭附件同步选项，或减少附件。');
+      _isPushing = false;
+      return;
+    }
+    
+    await ghUpdateGist(content);
+    _lastSyncTime = new Date();
+    setSyncStatus(`✅ 已上传（${sizeKB} KB，${_lastSyncTime.toLocaleTimeString()}）` +
+      (syncAttachmentsEnabled ? '' : '\n⚠️ 当前未同步附件数据'), 'ok');
+  } catch (e) {
+    console.error(e);
+    setSyncStatus('❌ 上传失败：' + e.message, 'err');
+    if (!opts.silent) alert('上传失败：' + e.message);
+  } finally {
+    setTimeout(() => { _isPushing = false; }, 500);
+  }
+}
+
+async function pullFromCloud(opts = {}) {
+  if (!ghToken || !ghGistId) {
+    if (!opts.silent) setSyncStatus('❌ 请先填写 Token 和 Gist ID', 'err');
+    return;
+  }
+  try {
+    setSyncStatus('⏬ 拉取中...', 'info');
+    const gist = await ghFetchGist();
+    const file = gist.files && gist.files['kanban.json'];
+    if (!file) { setSyncStatus('⚠️ Gist 里没有 kanban.json', 'err'); return; }
+    const raw = file.content || '';
+    if (!raw.trim() || raw.trim() === '{}') {
+      setSyncStatus('ℹ️ 云端为空，请先点「推送」上传。', 'info');
+      return;
+    }
+    const cloudData = JSON.parse(raw);
+    if (!cloudData.boards || !Array.isArray(cloudData.boards)) throw new Error('云端数据格式不对');
+    
+    _isPushing = true;
+    state = cloudData;
+    if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
+      state.currentBoardId = state.boards[0].id;
+    }
+    // 补字段 + 标记缺失附件
+    let missingAttCount = 0;
+    state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
+      if (!c.checklist) c.checklist = [];
+      if (!c.attachments) c.attachments = [];
+      c.attachments.forEach(a => {
+        if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file';
+        if (a._noData || (a.kind === 'file' && !a.data)) missingAttCount++;
+      });
+    })));
+    await saveStateToDB(state);
+    syncBoardStack();
+    renderBoardSelect();
+    render();
+    setTimeout(() => { _isPushing = false; }, 500);
+    _lastSyncTime = new Date();
+    let msg = `✅ 已拉取（${_lastSyncTime.toLocaleTimeString()}）`;
+    if (missingAttCount > 0) msg += `\n⚠️ ${missingAttCount} 个附件因未同步数据，无法在此设备预览/下载`;
+    setSyncStatus(msg, 'ok');
+  } catch (e) {
+    console.error(e);
+    setSyncStatus('❌ 拉取失败：' + e.message, 'err');
+    if (!opts.silent) alert('拉取失败：' + e.message);
+  }
 }
 
 /* =========================================================
@@ -692,17 +692,15 @@ async function saveState() {
    ========================================================= */
 const THEME_KEY = 'chestnut-kanban-theme';
 const themeBtn = document.getElementById('themeToggle');
-function applyTheme(theme) {
-  if (theme === 'dark') { document.body.classList.add('dark'); themeBtn.textContent = '☀️'; }
+function applyTheme(t) {
+  if (t === 'dark') { document.body.classList.add('dark'); themeBtn.textContent = '☀️'; }
   else { document.body.classList.remove('dark'); themeBtn.textContent = '🌙'; }
 }
 const savedTheme = localStorage.getItem(THEME_KEY);
-if (savedTheme) { applyTheme(savedTheme); } else {
-  applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-}
+if (savedTheme) applyTheme(savedTheme);
+else applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 themeBtn.onclick = () => {
-  const isDark = document.body.classList.contains('dark');
-  const t = isDark ? 'light' : 'dark';
+  const t = document.body.classList.contains('dark') ? 'light' : 'dark';
   applyTheme(t); localStorage.setItem(THEME_KEY, t);
 };
 
@@ -729,7 +727,7 @@ const renameListOverlay = document.getElementById('renameListOverlay');
 const renameListInput = document.getElementById('renameListInput');
 
 /* =========================================================
-   看板选择器
+   渲染
    ========================================================= */
 function renderBoardSelect() {
   boardSelect.innerHTML = state.boards.map(b =>
@@ -743,9 +741,9 @@ boardSelect.onchange = (e) => {
 document.getElementById('addBoardBtn').onclick = () => {
   const name = prompt('新看板名称', '新看板');
   if (name === null) return;
-  const newBoard = { id: uid(), name: name.trim() || '新看板', lists: [{ id: uid(), title: '待办', cards: [] }] };
-  state.boards.push(newBoard);
-  state.currentBoardId = newBoard.id;
+  const nb = { id: uid(), name: name.trim() || '新看板', lists: [{ id: uid(), title: '待办', cards: [] }] };
+  state.boards.push(nb);
+  state.currentBoardId = nb.id;
   syncBoardStack(); renderBoardSelect(); saveState(); render();
 };
 document.getElementById('renameBoardBtn').onclick = () => {
@@ -765,31 +763,24 @@ document.getElementById('delBoardBtn').onclick = () => {
   syncBoardStack(); renderBoardSelect(); saveState(); render();
 };
 
-/* =========================================================
-   渲染
-   ========================================================= */
 function render() {
-  const currentBoard = boardStack[boardStack.length - 1];
+  const cb = boardStack[boardStack.length - 1];
   if (boardStack.length > 1) {
     breadcrumb.classList.add('show');
-    breadcrumb.innerHTML = boardStack.map((b, i) => {
-      if (i === boardStack.length - 1) return `<span class="current">${esc(b.title)}</span>`;
-      return `<span onclick="goBackTo(${i})">${esc(b.title)}</span><span class="arrow">›</span>`;
-    }).join('');
+    breadcrumb.innerHTML = boardStack.map((b, i) =>
+      i === boardStack.length - 1
+        ? `<span class="current">${esc(b.title)}</span>`
+        : `<span onclick="goBackTo(${i})">${esc(b.title)}</span><span class="arrow">›</span>`
+    ).join('');
   } else {
     breadcrumb.classList.remove('show');
   }
-  const listsHtml = currentBoard.lists.map(renderList).join('');
-  const addListBtnHtml = `
-    <button class="add-list-btn" id="addListInlineBtn" title="添加新列表">
-      <span style="font-size:18px; line-height:1;">＋</span> 列表
-    </button>
+  board.innerHTML = cb.lists.map(renderList).join('') + `
+    <button class="add-list-btn" id="addListInlineBtn"><span style="font-size:18px;line-height:1;">＋</span> 列表</button>
   `;
-  board.innerHTML = listsHtml + addListBtnHtml;
   document.getElementById('addListInlineBtn').onclick = () => {
     const title = prompt('新列表名称', '新列表');
     if (title === null) return;
-    const cb = boardStack[boardStack.length - 1];
     cb.lists.push({ id: uid(), title: title.trim() || '新列表', cards: [] });
     render(); saveState();
   };
@@ -799,9 +790,9 @@ function renderList(list) {
   return `
     <div class="list" data-id="${list.id}">
       <div class="list-header">
-        <span class="list-title" data-act="rename-list" data-list-id="${list.id}" title="点击重命名">${esc(list.title)}</span>
+        <span class="list-title" data-act="rename-list" data-list-id="${list.id}">${esc(list.title)}</span>
         <span class="list-count">${list.cards.length}</span>
-        <button class="icon-btn" data-act="del-list" data-list-id="${list.id}" title="删除列表">✕</button>
+        <button class="icon-btn" data-act="del-list" data-list-id="${list.id}">✕</button>
       </div>
       <div class="cards" data-list="${list.id}">
         ${list.cards.map(renderCard).join('')}
@@ -812,79 +803,71 @@ function renderList(list) {
 }
 
 function renderCard(card) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toISOString().slice(0,10);
   const p = PRIORITY[card.priority] || PRIORITY.none;
-  const tags = (card.tags && card.tags.length) ? `<div class="card-tags">${card.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : '';
-  const due = card.due ? `<span class="due${card.due < today ? ' overdue' : ''}">📅 ${esc(card.due.slice(5))}</span>` : '';
+  const tags = (card.tags||[]).length ? `<div class="card-tags">${card.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : '';
+  const due = card.due ? `<span class="due${card.due<today?' overdue':''}">📅 ${esc(card.due.slice(5))}</span>` : '';
   const pri = p.label ? `<span class="pri ${p.cls}">${p.label}</span>` : '';
   
-  let checklistIndicator = '';
-  if (card.checklist && card.checklist.length > 0) {
-    const doneCount = card.checklist.filter(c => c.done).length;
-    const allDone = doneCount === card.checklist.length;
-    checklistIndicator = `<span class="indicator ${allDone ? 'checked' : ''}">☑ ${doneCount}/${card.checklist.length}</span>`;
+  let ci = '';
+  if ((card.checklist||[]).length > 0) {
+    const done = card.checklist.filter(c => c.done).length;
+    const allDone = done === card.checklist.length;
+    ci = `<span class="indicator ${allDone?'checked':''}">☑ ${done}/${card.checklist.length}</span>`;
   }
-  
-  let attachmentIndicator = '';
+  let ai = '';
   const atts = card.attachments || [];
   if (atts.length > 0) {
-    const linkCount = atts.filter(a => a.kind === 'link').length;
-    const fileCount = atts.length - linkCount;
+    const files = atts.filter(a => a.kind === 'file');
+    const links = atts.filter(a => a.kind === 'link');
+    const missCount = files.filter(a => !a.data).length;
     const parts = [];
-    if (fileCount > 0) parts.push(`📎 ${fileCount}`);
-    if (linkCount > 0) parts.push(`🔗 ${linkCount}`);
-    attachmentIndicator = `<span class="indicator">${parts.join(' ')}</span>`;
+    if (files.length > 0) parts.push(`📎 ${files.length}${missCount > 0 ? '⚠' : ''}`);
+    if (links.length > 0) parts.push(`🔗 ${links.length}`);
+    ai = `<span class="indicator">${parts.join(' ')}</span>`;
   }
-
+  
   const meta = (due || pri) ? `<div class="card-meta">${due}${pri}</div>` : '';
-  const indicators = (checklistIndicator || attachmentIndicator) ? `<div class="card-indicators">${checklistIndicator}${attachmentIndicator}</div>` : '';
+  const inds = (ci || ai) ? `<div class="card-indicators">${ci}${ai}</div>` : '';
   const pClass = card.priority && card.priority !== 'none' ? ` p-${card.priority}` : '';
   
-  let subBoardHtml = '';
+  let sbHtml = '';
   if (card.subBoard) {
-    const isExpanded = card.isExpanded || false;
-    const totalCards = card.subBoard.lists.reduce((sum, list) => sum + list.cards.length, 0);
-    let contentHtml = '';
-    if (isExpanded) {
-      if (totalCards === 0) {
-        contentHtml = '<div class="empty-sub">子看板为空</div>';
-      } else {
-        card.subBoard.lists.forEach(list => {
-          contentHtml += `<div class="sub-list-title">📁 ${esc(list.title)} (${list.cards.length})</div>`;
-          list.cards.forEach(c => {
-            contentHtml += `<div class="sub-card-item" data-sub-card-id="${c.id}" data-sub-list-id="${list.id}">${esc(c.title)} <span style="color:var(--muted);font-size:11px;">›</span></div>`;
-          });
+    const exp = card.isExpanded || false;
+    const total = card.subBoard.lists.reduce((s,l) => s+l.cards.length, 0);
+    let content = '';
+    if (exp) {
+      if (total === 0) content = '<div class="empty-sub">子看板为空</div>';
+      else card.subBoard.lists.forEach(l => {
+        content += `<div class="sub-list-title">📁 ${esc(l.title)} (${l.cards.length})</div>`;
+        l.cards.forEach(c => {
+          content += `<div class="sub-card-item" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}">${esc(c.title)} <span style="color:var(--muted);font-size:11px;">›</span></div>`;
         });
-      }
+      });
     }
-    subBoardHtml = `
-      <div class="sub-board-preview" style="display: ${isExpanded ? 'block' : 'none'};">
-        ${contentHtml}
-      </div>
-    `;
+    sbHtml = `<div class="sub-board-preview" style="display:${exp?'block':'none'};">${content}</div>`;
   }
-
-  const subBoardBtn = card.subBoard 
-    ? `<button class="expand-sub-btn ${card.isExpanded ? 'expanded' : ''}" data-act="toggle-sub" data-card-id="${card.id}">${card.isExpanded ? '[-] 收起' : '[+] 子看板'}</button>` 
+  const sbBtn = card.subBoard
+    ? `<button class="expand-sub-btn ${card.isExpanded?'expanded':''}" data-act="toggle-sub" data-card-id="${card.id}">${card.isExpanded?'[-] 收起':'[+] 子看板'}</button>`
     : '';
-
-  const upBtn = `<button class="action-btn" data-act="move-up" data-card-id="${card.id}" title="上移">↑</button>`;
-  const downBtn = `<button class="action-btn" data-act="move-down" data-card-id="${card.id}" title="下移">↓</button>`;
-
+  
   return `
     <div class="card${pClass}" data-id="${card.id}">
       <div class="card-main">
         ${tags}
         <div class="card-title">${esc(card.title)}</div>
         ${meta}
-        ${indicators}
+        ${inds}
       </div>
-      ${subBoardHtml}
+      ${sbHtml}
       <div class="card-footer">
-        <div class="footer-left">${upBtn}${downBtn}</div>
+        <div class="footer-left">
+          <button class="action-btn" data-act="move-up" data-card-id="${card.id}">↑</button>
+          <button class="action-btn" data-act="move-down" data-card-id="${card.id}">↓</button>
+        </div>
         <div class="footer-right">
           <button class="quick-move-btn" data-act="quick-move" data-card-id="${card.id}">⇄ 移动</button>
-          ${subBoardBtn}
+          ${sbBtn}
         </div>
       </div>
     </div>
@@ -894,10 +877,7 @@ function renderCard(card) {
 /* =========================================================
    层级 / 优先级 / 快捷移动
    ========================================================= */
-window.goBackTo = function(index) {
-  boardStack = boardStack.slice(0, index + 1);
-  render();
-};
+window.goBackTo = (i) => { boardStack = boardStack.slice(0, i+1); render(); };
 function enterSubBoard(card) {
   if (!card.subBoard) {
     card.subBoard = { lists: [{ id: uid(), title: '子任务', cards: [] }] };
@@ -906,16 +886,14 @@ function enterSubBoard(card) {
   boardStack.push({ lists: card.subBoard.lists, title: card.title });
   closeModal(); render();
 }
-function moveCardPriority(cardId, direction) {
-  const currentBoard = boardStack[boardStack.length - 1];
-  for (const list of currentBoard.lists) {
-    const index = list.cards.findIndex(c => c.id === cardId);
-    if (index !== -1) {
-      const targetIndex = index + direction;
-      if (targetIndex >= 0 && targetIndex < list.cards.length) {
-        const temp = list.cards[index];
-        list.cards[index] = list.cards[targetIndex];
-        list.cards[targetIndex] = temp;
+function moveCardPriority(cardId, dir) {
+  const cb = boardStack[boardStack.length - 1];
+  for (const l of cb.lists) {
+    const i = l.cards.findIndex(c => c.id === cardId);
+    if (i !== -1) {
+      const t = i + dir;
+      if (t >= 0 && t < l.cards.length) {
+        [l.cards[i], l.cards[t]] = [l.cards[t], l.cards[i]];
         render(); saveState();
       }
       return;
@@ -923,33 +901,30 @@ function moveCardPriority(cardId, direction) {
   }
 }
 function openQuickMoveMenu(cardId) {
-  const currentBoard = boardStack[boardStack.length - 1];
+  const cb = boardStack[boardStack.length - 1];
   quickMoveList.innerHTML = '';
-  let currentListId = '';
-  currentBoard.lists.forEach(list => {
-    if (list.cards.some(c => c.id === cardId)) currentListId = list.id;
-  });
-  currentBoard.lists.forEach(list => {
+  let curId = '';
+  cb.lists.forEach(l => { if (l.cards.some(c => c.id === cardId)) curId = l.id; });
+  cb.lists.forEach(l => {
     const btn = document.createElement('button');
     btn.className = 'move-option';
-    btn.textContent = list.title;
-    if (list.id === currentListId) { btn.textContent += ' (当前列表)'; btn.disabled = true; }
-    btn.onclick = () => { moveCard(cardId, list.id); quickMoveOverlay.classList.remove('show'); };
+    btn.textContent = l.title;
+    if (l.id === curId) { btn.textContent += ' (当前)'; btn.disabled = true; }
+    btn.onclick = () => { moveCard(cardId, l.id); quickMoveOverlay.classList.remove('show'); };
     quickMoveList.appendChild(btn);
   });
   quickMoveOverlay.classList.add('show');
 }
 function moveCard(cardId, targetListId) {
-  const currentBoard = boardStack[boardStack.length - 1];
-  let cardToMove = null, sourceList = null;
-  for (const list of currentBoard.lists) {
-    const idx = list.cards.findIndex(c => c.id === cardId);
-    if (idx !== -1) { sourceList = list; cardToMove = list.cards.splice(idx, 1)[0]; break; }
+  const cb = boardStack[boardStack.length - 1];
+  let card = null, src = null;
+  for (const l of cb.lists) {
+    const i = l.cards.findIndex(c => c.id === cardId);
+    if (i !== -1) { src = l; card = l.cards.splice(i, 1)[0]; break; }
   }
-  if (cardToMove && sourceList && sourceList.id !== targetListId) {
-    const targetList = currentBoard.lists.find(l => l.id === targetListId);
-    if (targetList) targetList.cards.push(cardToMove);
-    else sourceList.cards.push(cardToMove);
+  if (card && src && src.id !== targetListId) {
+    const tl = cb.lists.find(l => l.id === targetListId);
+    if (tl) tl.cards.push(card); else src.cards.push(card);
   }
   render(); saveState();
 }
@@ -958,231 +933,166 @@ document.getElementById('quickMoveCancel').onclick = () => quickMoveOverlay.clas
 /* =========================================================
    列表重命名
    ========================================================= */
-function openRenameListModal(listId, currentTitle) {
+function openRenameListModal(listId, title) {
   renamingListId = listId;
-  renameListInput.value = currentTitle;
+  renameListInput.value = title;
   renameListOverlay.classList.add('show');
   setTimeout(() => { renameListInput.focus(); renameListInput.select(); }, 30);
 }
-document.getElementById('renameListCancel').onclick = () => {
-  renameListOverlay.classList.remove('show'); renamingListId = null;
-};
+document.getElementById('renameListCancel').onclick = () => { renameListOverlay.classList.remove('show'); renamingListId = null; };
 document.getElementById('renameListConfirm').onclick = () => {
-  const newName = renameListInput.value.trim();
-  if (newName && renamingListId) {
-    const currentBoard = boardStack[boardStack.length - 1];
-    const list = currentBoard.lists.find(l => l.id === renamingListId);
-    if (list) { list.title = newName; saveState(); render(); }
+  const nn = renameListInput.value.trim();
+  if (nn && renamingListId) {
+    const cb = boardStack[boardStack.length - 1];
+    const l = cb.lists.find(l => l.id === renamingListId);
+    if (l) { l.title = nn; saveState(); render(); }
   }
   renameListOverlay.classList.remove('show'); renamingListId = null;
 };
-renameListInput.addEventListener('keydown', (e) => {
+renameListInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('renameListConfirm').click();
-  else if (e.key === 'Escape') document.getElementById('renameListCancel').click();
+  if (e.key === 'Escape') document.getElementById('renameListCancel').click();
 });
 
 /* =========================================================
    待办清单
    ========================================================= */
-let editingChecklist = [];
 function renderChecklistUI() {
   checklistContainer.innerHTML = '';
-  editingChecklist.forEach((item, index) => {
+  editingChecklist.forEach((item, i) => {
     const div = document.createElement('div');
     div.className = 'checklist-item';
     div.innerHTML = `
-      <input type="checkbox" class="chk-done" data-index="${index}" ${item.done ? 'checked' : ''}>
-      <input type="text" class="chk-text" data-index="${index}" value="${esc(item.text)}" placeholder="待办内容">
-      <button type="button" class="remove-item" data-index="${index}">✕</button>
+      <input type="checkbox" class="chk-done" data-index="${i}" ${item.done ? 'checked' : ''}>
+      <input type="text" class="chk-text" data-index="${i}" value="${esc(item.text)}" placeholder="待办内容">
+      <button type="button" class="remove-item" data-index="${i}">✕</button>
     `;
     checklistContainer.appendChild(div);
   });
 }
-checklistContainer.addEventListener('change', (e) => {
+checklistContainer.addEventListener('change', e => {
   if (e.target.classList.contains('chk-done')) {
-    const idx = parseInt(e.target.dataset.index);
-    editingChecklist[idx].done = e.target.checked;
+    editingChecklist[+e.target.dataset.index].done = e.target.checked;
   }
 });
-checklistContainer.addEventListener('input', (e) => {
+checklistContainer.addEventListener('input', e => {
   if (e.target.classList.contains('chk-text')) {
-    const idx = parseInt(e.target.dataset.index);
-    editingChecklist[idx].text = e.target.value;
+    editingChecklist[+e.target.dataset.index].text = e.target.value;
   }
 });
-checklistContainer.addEventListener('click', (e) => {
+checklistContainer.addEventListener('click', e => {
   if (e.target.classList.contains('remove-item')) {
-    const idx = parseInt(e.target.dataset.index);
-    editingChecklist.splice(idx, 1); renderChecklistUI();
+    editingChecklist.splice(+e.target.dataset.index, 1);
+    renderChecklistUI();
   }
 });
 document.getElementById('addChecklistBtn').onclick = () => {
   editingChecklist.push({ id: uid(), text: '', done: false });
   renderChecklistUI();
-  const inputs = checklistContainer.querySelectorAll('.chk-text');
-  if (inputs.length > 0) inputs[inputs.length - 1].focus();
+  const is = checklistContainer.querySelectorAll('.chk-text');
+  if (is.length) is[is.length - 1].focus();
 };
 
 /* =========================================================
-   附件（本地文件 + 外部链接）
-   数据结构：
-   { id, kind: 'file'|'link', name, size, type, data?, url? }
+   附件
    ========================================================= */
-let editingAttachments = [];
-
 function renderAttachmentsUI() {
   attachmentsContainer.innerHTML = '';
   if (editingAttachments.length === 0) {
     attachmentsContainer.innerHTML = '<div class="attachment-empty">暂无附件</div>';
     return;
   }
-  editingAttachments.forEach((att, index) => {
+  editingAttachments.forEach((att, i) => {
     const div = document.createElement('div');
     div.className = 'attachment-item';
     const isLink = att.kind === 'link';
     const icon = isLink ? '🔗' : getFileIcon(att.name, att.type);
-    const sizeText = isLink ? '外部链接' : formatFileSize(att.size);
-    const isImage = !isLink && att.type && att.type.startsWith('image/') && att.data;
-    let thumbHtml = '';
-    if (isImage) {
-      thumbHtml = `<img class="file-thumb" data-index="${index}" src="${att.data}" alt="">`;
-    } else {
-      thumbHtml = `<div class="file-icon">${icon}</div>`;
-    }
+    const sizeText = isLink ? '外部链接' : (att.data ? formatFileSize(att.size) : '⚠️ 附件数据缺失');
+    const isImg = !isLink && att.type && att.type.startsWith('image/') && att.data;
+    const thumb = isImg
+      ? `<img class="file-thumb" data-index="${i}" src="${att.data}">`
+      : `<div class="file-icon">${icon}</div>`;
     div.innerHTML = `
-      ${thumbHtml}
+      ${thumb}
       <div class="file-info">
         <div class="file-name">${esc(att.name)}</div>
         <div class="file-size ${isLink ? 'link-tag' : ''}">${sizeText}</div>
       </div>
       <div class="file-actions">
-        <button class="preview-btn" data-index="${index}" title="预览">👁</button>
-        ${isLink ? '' : '<button class="download-btn" data-index="' + index + '" title="下载">⬇</button>'}
-        <button class="remove-btn" data-index="${index}" title="删除">✕</button>
+        <button class="preview-btn" data-index="${i}">👁</button>
+        ${isLink ? '' : `<button class="download-btn" data-index="${i}">⬇</button>`}
+        <button class="remove-btn" data-index="${i}">✕</button>
       </div>
     `;
     attachmentsContainer.appendChild(div);
   });
 }
-
-attachmentsContainer.addEventListener('click', (e) => {
-  const previewBtn = e.target.closest('.preview-btn');
-  const downloadBtn = e.target.closest('.download-btn');
-  const removeBtn = e.target.closest('.remove-btn');
-  const thumbImg = e.target.closest('.file-thumb');
-  
-  if (previewBtn) {
-    const idx = parseInt(previewBtn.dataset.index);
-    previewAttachment(editingAttachments[idx]);
-  } else if (downloadBtn) {
-    const idx = parseInt(downloadBtn.dataset.index);
-    downloadAttachment(editingAttachments[idx]);
-  } else if (removeBtn) {
-    const idx = parseInt(removeBtn.dataset.index);
-    const att = editingAttachments[idx];
-    if (confirm(`确定删除附件「${att.name}」吗？`)) {
-      editingAttachments.splice(idx, 1);
+attachmentsContainer.addEventListener('click', e => {
+  const pv = e.target.closest('.preview-btn');
+  const dl = e.target.closest('.download-btn');
+  const rm = e.target.closest('.remove-btn');
+  const th = e.target.closest('.file-thumb');
+  if (pv) previewAttachment(editingAttachments[+pv.dataset.index]);
+  else if (dl) downloadAttachment(editingAttachments[+dl.dataset.index]);
+  else if (rm) {
+    const att = editingAttachments[+rm.dataset.index];
+    if (confirm(`确定删除「${att.name}」吗？`)) {
+      editingAttachments.splice(+rm.dataset.index, 1);
       renderAttachmentsUI();
     }
-  } else if (thumbImg) {
-    const idx = parseInt(thumbImg.dataset.index);
-    previewAttachment(editingAttachments[idx]);
-  }
+  } else if (th) previewAttachment(editingAttachments[+th.dataset.index]);
 });
-
-/* ========== 预览逻辑 ========== */
-let currentPreviewURL = null;   // 用于关闭时释放
 
 function previewAttachment(att) {
   if (!att) return;
-  
-  // 外部链接：直接新标签打开
   if (att.kind === 'link') {
-    if (!att.url) { alert('❌ 链接为空'); return; }
-    window.open(att.url, '_blank');
+    if (att.url) window.open(att.url, '_blank');
     return;
   }
-  
-  if (!att.data) { alert('❌ 附件数据缺失'); return; }
-  
+  if (!att.data) { alert('⚠️ 该附件的文件数据未同步到本设备，无法预览。\n请在原设备上查看，或重新上传。'); return; }
   const mime = att.type || '';
-  const lname = (att.name || '').toLowerCase();
-  
-  // 邮件 HTML 预览
-  if (mime.includes('html') || lname.endsWith('.html') || lname.endsWith('.htm')) {
-    showPreviewFrame(att.data, att.name, 'text/html');
-    return;
-  }
-  
-  // 图片
-  if (mime.startsWith('image/')) {
-    showPreviewImage(att.data, att.name);
-    return;
-  }
-  
-  // PDF
-  if (mime === 'application/pdf' || lname.endsWith('.pdf')) {
-    showPreviewFrame(att.data, att.name, 'application/pdf');
-    return;
-  }
-  
-  // 文本
-  if (mime.startsWith('text/') || lname.endsWith('.txt') || lname.endsWith('.csv') || lname.endsWith('.md') || lname.endsWith('.log')) {
-    showPreviewFrame(att.data, att.name, 'text/plain');
-    return;
-  }
-  
-  // 其他：下载
-  const blob = dataURLToBlob(att.data);
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = att.name; a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  const ln = (att.name || '').toLowerCase();
+  if (mime.includes('html') || ln.endsWith('.html') || ln.endsWith('.htm')) return showPreviewFrame(att.data, att.name);
+  if (mime.startsWith('image/')) return showPreviewImage(att.data, att.name);
+  if (mime === 'application/pdf' || ln.endsWith('.pdf')) return showPreviewFrame(att.data, att.name);
+  if (mime.startsWith('text/') || ln.endsWith('.txt') || ln.endsWith('.csv') || ln.endsWith('.md')) return showPreviewFrame(att.data, att.name);
+  downloadAttachment(att);
 }
-
 function showPreviewImage(dataURL, name) {
-  const content = document.getElementById('previewContent');
-  content.innerHTML = '';
+  const c = document.getElementById('previewContent');
+  c.innerHTML = '';
   const img = document.createElement('img');
   img.src = dataURL;
-  content.appendChild(img);
-  document.getElementById('previewTitle').textContent = name || '图片预览';
+  c.appendChild(img);
+  document.getElementById('previewTitle').textContent = name || '图片';
   document.getElementById('previewOverlay').classList.add('show');
-  document.getElementById('previewNewTabBtn').dataset.mode = 'image';
-  document.getElementById('previewNewTabBtn').dataset.data = dataURL;
-  document.getElementById('previewDownloadBtn').dataset.mode = 'image';
-  document.getElementById('previewDownloadBtn').dataset.data = dataURL;
-  document.getElementById('previewDownloadBtn').dataset.name = name;
+  const ntb = document.getElementById('previewNewTabBtn');
+  ntb.dataset.mode = 'image'; ntb.dataset.data = dataURL;
+  const dl = document.getElementById('previewDownloadBtn');
+  dl.dataset.data = dataURL; dl.dataset.name = name;
 }
-
-function showPreviewFrame(dataURL, name, mime) {
-  const content = document.getElementById('previewContent');
-  content.innerHTML = '<div class="preview-loading">加载中...</div>';
+function showPreviewFrame(dataURL, name) {
+  const c = document.getElementById('previewContent');
+  c.innerHTML = '<div class="preview-loading">加载中...</div>';
   const blob = dataURLToBlob(dataURL);
   const url = URL.createObjectURL(blob);
   currentPreviewURL = url;
   const iframe = document.createElement('iframe');
-  // 邮件 HTML 用 sandbox 允许脚本运行以正确渲染，但禁止顶层跳转
   iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
   iframe.src = url;
-  content.innerHTML = '';
-  content.appendChild(iframe);
+  c.innerHTML = '';
+  c.appendChild(iframe);
   document.getElementById('previewTitle').textContent = name || '预览';
   document.getElementById('previewOverlay').classList.add('show');
-  document.getElementById('previewNewTabBtn').dataset.mode = 'frame';
-  document.getElementById('previewNewTabBtn').dataset.url = url;
-  document.getElementById('previewDownloadBtn').dataset.mode = 'file';
-  document.getElementById('previewDownloadBtn').dataset.data = dataURL;
-  document.getElementById('previewDownloadBtn').dataset.name = name;
+  const ntb = document.getElementById('previewNewTabBtn');
+  ntb.dataset.mode = 'frame'; ntb.dataset.url = url;
+  const dl = document.getElementById('previewDownloadBtn');
+  dl.dataset.data = dataURL; dl.dataset.name = name;
 }
-
 function downloadAttachment(att) {
   if (!att) return;
-  if (att.kind === 'link') {
-    window.open(att.url, '_blank');
-    return;
-  }
-  if (!att.data) { alert('❌ 附件数据缺失'); return; }
+  if (att.kind === 'link') { window.open(att.url, '_blank'); return; }
+  if (!att.data) { alert('⚠️ 附件数据缺失'); return; }
   const blob = dataURLToBlob(att.data);
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1191,104 +1101,75 @@ function downloadAttachment(att) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-/* 预览弹窗的按钮 */
 document.getElementById('closePreviewBtn').onclick = () => {
   document.getElementById('previewOverlay').classList.remove('show');
   document.getElementById('previewContent').innerHTML = '';
   if (currentPreviewURL) { URL.revokeObjectURL(currentPreviewURL); currentPreviewURL = null; }
 };
-document.getElementById('previewOverlay').addEventListener('click', (e) => {
+document.getElementById('previewOverlay').addEventListener('click', e => {
   if (e.target.id === 'previewOverlay') document.getElementById('closePreviewBtn').click();
 });
-document.getElementById('previewNewTabBtn').onclick = (e) => {
-  const btn = e.currentTarget;
-  if (btn.dataset.mode === 'image') {
-    // 图片：转 Blob 新标签打开
-    const blob = dataURLToBlob(btn.dataset.data);
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
-  } else if (btn.dataset.mode === 'frame' && btn.dataset.url) {
-    window.open(btn.dataset.url, '_blank');
+document.getElementById('previewNewTabBtn').onclick = e => {
+  const b = e.currentTarget;
+  if (b.dataset.mode === 'image') {
+    const blob = dataURLToBlob(b.dataset.data);
+    const u = URL.createObjectURL(blob);
+    window.open(u, '_blank');
+    setTimeout(() => URL.revokeObjectURL(u), 60000);
+  } else if (b.dataset.mode === 'frame' && b.dataset.url) {
+    window.open(b.dataset.url, '_blank');
   }
 };
-document.getElementById('previewDownloadBtn').onclick = (e) => {
-  const btn = e.currentTarget;
-  if (!btn.dataset.data) return;
-  const blob = dataURLToBlob(btn.dataset.data);
-  const url = URL.createObjectURL(blob);
+document.getElementById('previewDownloadBtn').onclick = e => {
+  const b = e.currentTarget;
+  if (!b.dataset.data) return;
+  const blob = dataURLToBlob(b.dataset.data);
+  const u = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = btn.dataset.name || 'download';
+  a.href = u; a.download = b.dataset.name || 'download';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  setTimeout(() => URL.revokeObjectURL(u), 1000);
 };
 
-/* ========== 上传本地文件 ========== */
 document.getElementById('addAttachmentBtn').onclick = () => attachmentFileInput.click();
-
-attachmentFileInput.addEventListener('change', async (e) => {
+attachmentFileInput.addEventListener('change', async e => {
   const files = Array.from(e.target.files || []);
-  if (files.length === 0) return;
-  showLoading('正在处理附件...');
+  if (!files.length) return;
+  showLoading('处理附件...');
   try {
-    for (const file of files) {
-      if (file.size > MAX_FILE_SIZE) {
-        alert(`❌ 「${file.name}」大小 ${formatFileSize(file.size)}，超过 30MB 限制，已跳过`);
-        continue;
-      }
+    for (const f of files) {
+      if (f.size > MAX_FILE_SIZE) { alert(`❌ 「${f.name}」超过 30MB，已跳过`); continue; }
       try {
-        const dataURL = await fileToDataURL(file);
+        const dataURL = await fileToDataURL(f);
         editingAttachments.push({
-          id: uid(),
-          kind: 'file',
-          name: file.name,
-          size: file.size,
-          type: file.type || 'application/octet-stream',
-          data: dataURL
+          id: uid(), kind: 'file', name: f.name, size: f.size,
+          type: f.type || 'application/octet-stream', data: dataURL
         });
-      } catch (err) {
-        alert(`读取「${file.name}」失败：${err.message}`);
-      }
+      } catch (err) { alert(`读取「${f.name}」失败`); }
     }
     renderAttachmentsUI();
-  } finally {
-    hideLoading();
-  }
+  } finally { hideLoading(); }
   attachmentFileInput.value = '';
 });
 
-/* ========== 添加外部链接 ========== */
 const addLinkOverlay = document.getElementById('addLinkOverlay');
-const linkNameInput = document.getElementById('linkName');
-const linkUrlInput = document.getElementById('linkUrl');
-
 document.getElementById('addLinkBtn').onclick = () => {
-  linkNameInput.value = '';
-  linkUrlInput.value = '';
+  document.getElementById('linkName').value = '';
+  document.getElementById('linkUrl').value = '';
   addLinkOverlay.classList.add('show');
-  setTimeout(() => linkNameInput.focus(), 30);
+  setTimeout(() => document.getElementById('linkName').focus(), 30);
 };
-document.getElementById('addLinkCancel').onclick = () => {
-  addLinkOverlay.classList.remove('show');
-};
+document.getElementById('addLinkCancel').onclick = () => addLinkOverlay.classList.remove('show');
 document.getElementById('addLinkConfirm').onclick = () => {
-  const name = linkNameInput.value.trim() || '外部链接';
-  let url = linkUrlInput.value.trim();
-  if (!url) { alert('请输入链接地址'); return; }
-  // 自动补 https://
+  const name = document.getElementById('linkName').value.trim() || '外部链接';
+  let url = document.getElementById('linkUrl').value.trim();
+  if (!url) { alert('请输入链接'); return; }
   if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-  editingAttachments.push({
-    id: uid(),
-    kind: 'link',
-    name: name,
-    size: 0,
-    type: 'link',
-    url: url
-  });
+  editingAttachments.push({ id: uid(), kind: 'link', name, size: 0, type: 'link', url });
   renderAttachmentsUI();
   addLinkOverlay.classList.remove('show');
 };
-linkUrlInput.addEventListener('keydown', (e) => {
+document.getElementById('linkUrl').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('addLinkConfirm').click();
   if (e.key === 'Escape') document.getElementById('addLinkCancel').click();
 });
@@ -1297,44 +1178,34 @@ linkUrlInput.addEventListener('keydown', (e) => {
    卡片详情
    ========================================================= */
 function openCard(cardId) {
-  const currentBoard = boardStack[boardStack.length - 1];
-  for (const list of currentBoard.lists) {
-    const card = list.cards.find(c => c.id === cardId);
+  const cb = boardStack[boardStack.length - 1];
+  for (const l of cb.lists) {
+    const card = l.cards.find(c => c.id === cardId);
     if (!card) continue;
-    editing = { listId: list.id, cardId };
+    editing = { listId: l.id, cardId };
     mTitle.value = card.title;
     mDesc.value = card.desc || '';
     mTags.value = (card.tags || []).join(', ');
     mPriority.value = card.priority || 'none';
     mDue.value = card.due || '';
-    
     editingChecklist = (card.checklist || []).map(c => ({ ...c }));
     renderChecklistUI();
-    
     editingAttachments = (card.attachments || []).map(a => {
-      // 兼容旧数据（没有 kind 字段的当作本地文件）
-      if (!a.kind) {
-        if (a.url && !a.data) a.kind = 'link';
-        else a.kind = 'file';
-      }
+      if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file';
       return { ...a };
     });
     renderAttachmentsUI();
-
-    mList.innerHTML = currentBoard.lists.map(l =>
-      `<option value="${l.id}" ${l.id === list.id ? 'selected' : ''}>${esc(l.title)}</option>`
+    mList.innerHTML = cb.lists.map(x =>
+      `<option value="${x.id}" ${x.id === l.id ? 'selected' : ''}>${esc(x.title)}</option>`
     ).join('');
-
     mEnterSubBoard.textContent = card.subBoard ? '进入子看板' : '创建子看板';
     mEnterSubBoard.style.display = 'block';
-
     overlay.classList.add('show');
     setTimeout(() => { mTitle.focus(); mTitle.select(); }, 30);
     return;
   }
 }
 function closeModal() { overlay.classList.remove('show'); editing = null; }
-
 document.getElementById('mCancel').onclick = closeModal;
 overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal(); });
@@ -1342,130 +1213,115 @@ mTitle.addEventListener('keydown', e => { if (e.key === 'Enter') document.getEle
 
 document.getElementById('mSave').onclick = async () => {
   if (!editing) return;
-  const currentBoard = boardStack[boardStack.length - 1];
-  const list = currentBoard.lists.find(l => l.id === editing.listId);
-  const card = list && list.cards.find(c => c.id === editing.cardId);
+  const cb = boardStack[boardStack.length - 1];
+  const l = cb.lists.find(x => x.id === editing.listId);
+  const card = l && l.cards.find(c => c.id === editing.cardId);
   if (!card) return closeModal();
-
   card.title = mTitle.value.trim() || '未命名卡片';
   card.desc = mDesc.value.trim();
   card.tags = mTags.value.split(/[,，]/).map(s => s.trim()).filter(Boolean);
   card.priority = mPriority.value;
   card.due = mDue.value;
-  
-  card.checklist = editingChecklist
-    .filter(c => c.text.trim())
-    .map(c => ({ id: c.id || uid(), text: c.text.trim(), done: !!c.done }));
-
+  card.checklist = editingChecklist.filter(c => c.text.trim()).map(c => ({ id: c.id || uid(), text: c.text.trim(), done: !!c.done }));
   card.attachments = editingAttachments.map(a => {
-    if (a.kind === 'link') {
-      return { id: a.id, kind: 'link', name: a.name, size: 0, type: 'link', url: a.url };
-    } else {
-      return { id: a.id, kind: 'file', name: a.name, size: a.size || 0, type: a.type || '', data: a.data || '' };
-    }
+    if (a.kind === 'link') return { id: a.id, kind: 'link', name: a.name, size: 0, type: 'link', url: a.url };
+    return { id: a.id, kind: 'file', name: a.name, size: a.size || 0, type: a.type || '', data: a.data || '' };
   });
-
   const newListId = mList.value;
   if (newListId !== editing.listId) {
-    const oldList = currentBoard.lists.find(l => l.id === editing.listId);
-    const idx = oldList.cards.findIndex(c => c.id === editing.cardId);
-    const [moved] = oldList.cards.splice(idx, 1);
-    const newList = currentBoard.lists.find(l => l.id === newListId);
-    if (newList) newList.cards.push(moved);
+    const oldL = cb.lists.find(x => x.id === editing.listId);
+    const i = oldL.cards.findIndex(c => c.id === editing.cardId);
+    const [mv] = oldL.cards.splice(i, 1);
+    const nl = cb.lists.find(x => x.id === newListId);
+    if (nl) nl.cards.push(mv);
   }
   closeModal(); render();
   showLoading('保存中...');
-  try { await saveState(); }
+  try { await saveStateToDB(state); if (autoSyncEnabled) schedulePush(); }
   finally { hideLoading(); }
 };
 
 document.getElementById('mEnterSubBoard').onclick = () => {
   if (!editing) return;
-  const currentBoard = boardStack[boardStack.length - 1];
-  const list = currentBoard.lists.find(l => l.id === editing.listId);
-  const card = list && list.cards.find(c => c.id === editing.cardId);
+  const cb = boardStack[boardStack.length - 1];
+  const l = cb.lists.find(x => x.id === editing.listId);
+  const card = l && l.cards.find(c => c.id === editing.cardId);
   if (card) enterSubBoard(card);
 };
-
 document.getElementById('mDelete').onclick = async () => {
   if (!editing) return;
-  if (!confirm('确定删除这张卡片？子看板也会被删除。')) return;
-  const currentBoard = boardStack[boardStack.length - 1];
-  const list = currentBoard.lists.find(l => l.id === editing.listId);
-  if (list) list.cards = list.cards.filter(c => c.id !== editing.cardId);
+  if (!confirm('确定删除这张卡片？')) return;
+  const cb = boardStack[boardStack.length - 1];
+  const l = cb.lists.find(x => x.id === editing.listId);
+  if (l) l.cards = l.cards.filter(c => c.id !== editing.cardId);
   closeModal(); render(); await saveState();
 };
 
 /* =========================================================
    看板点击
    ========================================================= */
-board.addEventListener('click', (e) => {
-  const upBtn = e.target.closest('[data-act="move-up"]');
-  if (upBtn) { e.stopPropagation(); moveCardPriority(upBtn.dataset.cardId, -1); return; }
-  const downBtn = e.target.closest('[data-act="move-down"]');
-  if (downBtn) { e.stopPropagation(); moveCardPriority(downBtn.dataset.cardId, 1); return; }
-  const moveBtn = e.target.closest('[data-act="quick-move"]');
-  if (moveBtn) { e.stopPropagation(); openQuickMoveMenu(moveBtn.dataset.cardId); return; }
-  const toggleBtn = e.target.closest('[data-act="toggle-sub"]');
-  if (toggleBtn) {
+board.addEventListener('click', e => {
+  const up = e.target.closest('[data-act="move-up"]');
+  if (up) { e.stopPropagation(); moveCardPriority(up.dataset.cardId, -1); return; }
+  const dn = e.target.closest('[data-act="move-down"]');
+  if (dn) { e.stopPropagation(); moveCardPriority(dn.dataset.cardId, 1); return; }
+  const mv = e.target.closest('[data-act="quick-move"]');
+  if (mv) { e.stopPropagation(); openQuickMoveMenu(mv.dataset.cardId); return; }
+  const tg = e.target.closest('[data-act="toggle-sub"]');
+  if (tg) {
     e.stopPropagation();
-    const cardId = toggleBtn.dataset.cardId;
-    const currentBoard = boardStack[boardStack.length - 1];
-    for (const list of currentBoard.lists) {
-      const card = list.cards.find(c => c.id === cardId);
-      if (card) { card.isExpanded = !card.isExpanded; break; }
+    const cb = boardStack[boardStack.length - 1];
+    for (const l of cb.lists) {
+      const c = l.cards.find(x => x.id === tg.dataset.cardId);
+      if (c) { c.isExpanded = !c.isExpanded; break; }
     }
     render(); saveState(); return;
   }
-  const subCardItem = e.target.closest('.sub-card-item');
-  if (subCardItem) {
+  const sc = e.target.closest('.sub-card-item');
+  if (sc) {
     e.stopPropagation();
-    const cardEl = e.target.closest('.card');
-    if (cardEl) {
-      const cardId = cardEl.dataset.id;
-      const currentBoard = boardStack[boardStack.length - 1];
-      for (const list of currentBoard.lists) {
-        const card = list.cards.find(c => c.id === cardId);
-        if (card && card.subBoard) {
-          boardStack.push({ lists: card.subBoard.lists, title: card.title });
-          render(); break;
-        }
+    const ce = e.target.closest('.card');
+    if (ce) {
+      const cb = boardStack[boardStack.length - 1];
+      for (const l of cb.lists) {
+        const c = l.cards.find(x => x.id === ce.dataset.id);
+        if (c && c.subBoard) { boardStack.push({ lists: c.subBoard.lists, title: c.title }); render(); break; }
       }
     }
     return;
   }
-  const actEl = e.target.closest('[data-act]');
-  if (actEl) {
-    const act = actEl.dataset.act;
-    const listId = actEl.dataset.listId || (actEl.closest('.list') && actEl.closest('.list').dataset.id);
-    if (act === 'add-card') { startAddCard(actEl.closest('.list'), listId); return; }
+  const ae = e.target.closest('[data-act]');
+  if (ae) {
+    const act = ae.dataset.act;
+    const listId = ae.dataset.listId || (ae.closest('.list') && ae.closest('.list').dataset.id);
+    if (act === 'add-card') { startAddCard(ae.closest('.list'), listId); return; }
     if (act === 'del-list') {
-      const currentBoard = boardStack[boardStack.length - 1];
-      const list = currentBoard.lists.find(l => l.id === listId);
-      if (!list) return;
-      if (currentBoard.lists.length <= 1) { alert('至少保留一个列表'); return; }
-      if (confirm(`确定删除列表「${list.title}」及其所有卡片吗？`)) {
-        currentBoard.lists = currentBoard.lists.filter(l => l.id !== listId);
+      const cb = boardStack[boardStack.length - 1];
+      const l = cb.lists.find(x => x.id === listId);
+      if (!l) return;
+      if (cb.lists.length <= 1) { alert('至少保留一个列表'); return; }
+      if (confirm(`确定删除列表「${l.title}」？`)) {
+        cb.lists = cb.lists.filter(x => x.id !== listId);
         render(); saveState();
       }
       return;
     }
     if (act === 'rename-list') {
-      const currentBoard = boardStack[boardStack.length - 1];
-      const list = currentBoard.lists.find(l => l.id === listId);
-      if (!list) return;
-      openRenameListModal(listId, list.title);
+      const cb = boardStack[boardStack.length - 1];
+      const l = cb.lists.find(x => x.id === listId);
+      if (!l) return;
+      openRenameListModal(listId, l.title);
       return;
     }
   }
-  const cardEl = e.target.closest('.card');
-  if (cardEl) openCard(cardEl.dataset.id);
+  const ce = e.target.closest('.card');
+  if (ce) openCard(ce.dataset.id);
 });
 
 function startAddCard(listEl, listId) {
   if (!listEl) return;
-  const exist = listEl.querySelector('.composer textarea');
-  if (exist) { exist.focus(); return; }
+  const ex = listEl.querySelector('.composer textarea');
+  if (ex) { ex.focus(); return; }
   const cardsEl = listEl.querySelector('.cards');
   const composer = document.createElement('div');
   composer.className = 'composer';
@@ -1478,18 +1334,15 @@ function startAddCard(listEl, listId) {
   const commit = () => {
     const v = ta.value.trim();
     if (!v) { composer.remove(); return; }
-    const currentBoard = boardStack[boardStack.length - 1];
-    const list = currentBoard.lists.find(l => l.id === listId);
-    if (!list) return;
-    list.cards.push({ 
-      id: uid(), title: v, desc: '', tags: [], priority: 'none', due: '', 
-      checklist: [], attachments: [], subBoard: null, isExpanded: false 
-    });
+    const cb = boardStack[boardStack.length - 1];
+    const l = cb.lists.find(x => x.id === listId);
+    if (!l) return;
+    l.cards.push({ id: uid(), title: v, desc: '', tags: [], priority: 'none', due: '', checklist: [], attachments: [], subBoard: null, isExpanded: false });
     render(); saveState();
   };
-  ta.addEventListener('keydown', (ev) => {
+  ta.addEventListener('keydown', ev => {
     if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); commit(); }
-    else if (ev.key === 'Escape') { composer.remove(); }
+    else if (ev.key === 'Escape') composer.remove();
   });
   ta.addEventListener('blur', () => {
     setTimeout(() => { if (composer.isConnected && !ta.value.trim()) composer.remove(); }, 150);
@@ -1497,7 +1350,7 @@ function startAddCard(listEl, listId) {
 }
 
 /* =========================================================
-   顶栏
+   顶栏操作
    ========================================================= */
 document.getElementById('addListBtn').onclick = () => {
   const title = prompt('新列表名称', '新列表');
@@ -1508,13 +1361,9 @@ document.getElementById('addListBtn').onclick = () => {
 };
 
 document.getElementById('resetBtn').onclick = async () => {
-  const answer = prompt(
-    '⚠️ 重置会清空所有看板数据和附件，且不可恢复。\n\n' +
-    '如果确定要重置，请手动输入以下文字：\n' +
-    '我知道重置会把所有内容清空'
-  );
-  if (answer !== '我知道重置会把所有内容清空') {
-    if (answer !== null) alert('❌ 输入不正确，重置已取消。');
+  const ans = prompt('⚠️ 重置会清空所有数据，且不可恢复。\n\n请输入确认文字：\n我知道重置会把所有内容清空');
+  if (ans !== '我知道重置会把所有内容清空') {
+    if (ans !== null) alert('❌ 输入不正确，已取消');
     return;
   }
   showLoading('重置中...');
@@ -1522,101 +1371,149 @@ document.getElementById('resetBtn').onclick = async () => {
     await clearStateDB();
     state = defaultData();
     syncBoardStack(); renderBoardSelect();
-    await saveState(); render();
-    alert('✅ 已重置。');
+    await saveStateToDB(state);
+    render();
+    alert('✅ 已重置');
   } finally { hideLoading(); }
 };
 
 document.getElementById('exportBtn').onclick = () => {
   const cb = boardStack[boardStack.length - 1];
-  const boardName = boardStack[0].title;
-  let csv = `\uFEFF看板: ${boardName}\n列表,标题,描述,标签,优先级,截止日期,待办清单,本地附件,外部链接\n`;
-  cb.lists.forEach(list => {
-    list.cards.forEach(card => {
-      const tags = (card.tags || []).join(' ');
-      const checklistStr = (card.checklist || []).map(c => `${c.done ? '[x]' : '[ ]'}${c.text}`).join('; ');
-      const fileStr = (card.attachments || []).filter(a => a.kind === 'file').map(a => `${a.name}(${formatFileSize(a.size)})`).join('; ');
-      const linkStr = (card.attachments || []).filter(a => a.kind === 'link').map(a => `${a.name}: ${a.url}`).join('; ');
-      const clean = s => String(s || '').replace(/"/g, '""').replace(/\n/g, ' ');
-      csv += [
-        `"${clean(list.title)}"`, `"${clean(card.title)}"`, `"${clean(card.desc)}"`,
-        `"${clean(tags)}"`, `"${card.priority || 'none'}"`, `"${card.due || ''}"`,
-        `"${clean(checklistStr)}"`, `"${clean(fileStr)}"`, `"${clean(linkStr)}"`
-      ].join(',') + '\n';
-    });
-  });
+  const bn = boardStack[0].title;
+  let csv = `\uFEFF看板: ${bn}\n列表,标题,描述,标签,优先级,截止日期,待办清单,本地附件,外部链接\n`;
+  cb.lists.forEach(l => l.cards.forEach(c => {
+    const tags = (c.tags||[]).join(' ');
+    const cl = (c.checklist||[]).map(x => `${x.done?'[x]':'[ ]'}${x.text}`).join('; ');
+    const fl = (c.attachments||[]).filter(a => a.kind === 'file').map(a => `${a.name}(${formatFileSize(a.size)})`).join('; ');
+    const lk = (c.attachments||[]).filter(a => a.kind === 'link').map(a => `${a.name}: ${a.url}`).join('; ');
+    const clean = s => String(s||'').replace(/"/g,'""').replace(/\n/g,' ');
+    csv += [`"${clean(l.title)}"`,`"${clean(c.title)}"`,`"${clean(c.desc)}"`,`"${clean(tags)}"`,`"${c.priority||'none'}"`,`"${c.due||''}"`,`"${clean(cl)}"`,`"${clean(fl)}"`,`"${clean(lk)}"`].join(',') + '\n';
+  }));
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `栗子看板_${boardName}_${new Date().toISOString().slice(0,10)}.csv`;
-  link.click();
-  URL.revokeObjectURL(link.href);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `栗子看板_${bn}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
 };
 
 document.getElementById('backupBtn').onclick = async () => {
-  let attCount = 0;
+  let cnt = 0;
   state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
-    attCount += (c.attachments || []).filter(a => a.kind === 'file').length;
+    cnt += (c.attachments||[]).filter(a => a.kind === 'file').length;
   })));
-  const msg = attCount > 0
-    ? `📥 备份 JSON 将导出【所有卡片 + ${attCount} 个本地附件】。\n\n本地附件以 Base64 内嵌，文件会比较大。\n外部链接只保存 URL。\n\n确定继续吗？`
-    : '📥 导出 JSON 备份？';
+  const msg = cnt > 0 ? `📥 备份将导出所有卡片 + ${cnt} 个本地附件（Base64 内嵌）。文件会较大。继续吗？` : '📥 导出 JSON 备份？';
   if (!confirm(msg)) return;
-  showLoading('正在生成 JSON...');
+  showLoading('生成 JSON...');
   try {
-    const dataStr = JSON.stringify(state);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    const sizeMB = (blob.size / 1024 / 1024).toFixed(2);
-    link.download = `栗子看板备份_${new Date().toISOString().slice(0,10)}_${sizeMB}MB.json`;
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(link.href), 2000);
-    alert(`✅ 已导出，文件大小约 ${sizeMB} MB`);
+    const str = JSON.stringify(state);
+    const blob = new Blob([str], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const mb = (blob.size/1024/1024).toFixed(2);
+    a.download = `栗子看板备份_${new Date().toISOString().slice(0,10)}_${mb}MB.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    alert(`✅ 已导出，大小约 ${mb} MB`);
   } finally { hideLoading(); }
 };
 
 const importFileInput = document.getElementById('importFileInput');
 document.getElementById('importBtn').onclick = () => importFileInput.click();
-importFileInput.onchange = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  if (!confirm(`将导入「${file.name}」（${formatFileSize(file.size)}）。\n\n导入会覆盖当前所有数据，确定吗？`)) {
-    importFileInput.value = ''; return;
-  }
-  showLoading('正在导入 JSON...');
+importFileInput.onchange = async e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (!confirm(`导入「${f.name}」将覆盖当前数据，继续吗？`)) { importFileInput.value = ''; return; }
+  showLoading('导入中...');
   try {
-    const text = await file.text();
-    const importedData = JSON.parse(text);
-    if (importedData && Array.isArray(importedData.boards)) {
-      state = importedData;
-      if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
-        state.currentBoardId = state.boards[0].id;
-      }
-    } else if (importedData && Array.isArray(importedData.lists)) {
-      const upgradeBoard = { id: uid(), name: '导入的看板', lists: importedData.lists };
-      state = { boards: [upgradeBoard], currentBoardId: upgradeBoard.id };
-    } else {
-      throw new Error('文件格式不对');
+    const txt = await f.text();
+    const d = JSON.parse(txt);
+    if (d && Array.isArray(d.boards)) {
+      state = d;
+    } else if (d && Array.isArray(d.lists)) {
+      state = { boards: [{ id: uid(), name: '导入的看板', lists: d.lists }], currentBoardId: null };
+      state.currentBoardId = state.boards[0].id;
+    } else throw new Error('文件格式错误');
+    if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
+      state.currentBoardId = state.boards[0].id;
     }
     state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
       if (!c.checklist) c.checklist = [];
       if (!c.attachments) c.attachments = [];
-      // 兼容旧数据结构
-      c.attachments.forEach(a => {
-        if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file';
-      });
+      c.attachments.forEach(a => { if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file'; });
     })));
     syncBoardStack(); renderBoardSelect();
-    await saveState(); render();
+    await saveStateToDB(state);
+    render();
     alert('✅ 导入成功！');
   } catch (err) {
-    console.error(err);
     alert('❌ 导入失败：' + err.message);
-  } finally {
-    hideLoading();
-    importFileInput.value = '';
+  } finally { hideLoading(); importFileInput.value = ''; }
+};
+
+/* =========================================================
+   GitHub 同步 UI
+   ========================================================= */
+const syncOverlay = document.getElementById('syncOverlay');
+const ghTokenInput = document.getElementById('ghTokenInput');
+const ghGistInput = document.getElementById('ghGistInput');
+const autoSyncCheck = document.getElementById('autoSyncCheck');
+const syncAttachCheck = document.getElementById('syncAttachCheck');
+
+document.getElementById('syncBtn').onclick = () => {
+  ghTokenInput.value = ghToken;
+  ghGistInput.value = ghGistId;
+  autoSyncCheck.checked = autoSyncEnabled;
+  syncAttachCheck.checked = syncAttachmentsEnabled;
+  if (!ghToken || !ghGistId) {
+    setSyncStatus('ℹ️ 首次使用：\n1. 生成 GitHub Token（gist 权限）\n2. 创建 Gist，文件名 kanban.json，内容 {}\n3. 填入 Token 和 Gist ID\n4. 点「推送」上传当前数据', 'info');
+  } else if (_lastSyncTime) {
+    setSyncStatus('✅ 上次同步：' + _lastSyncTime.toLocaleString(), 'ok');
+  } else {
+    setSyncStatus('ℹ️ 已配置。可点「测试」验证，或直接「推送」。', 'info');
   }
+  syncOverlay.classList.add('show');
+};
+document.getElementById('syncCloseBtn').onclick = () => syncOverlay.classList.remove('show');
+syncOverlay.addEventListener('click', e => { if (e.target === syncOverlay) syncOverlay.classList.remove('show'); });
+
+document.getElementById('syncSaveConfigBtn').onclick = () => {
+  ghToken = ghTokenInput.value.trim();
+  ghGistId = ghGistInput.value.trim();
+  localStorage.setItem(GH_TOKEN_KEY, ghToken);
+  localStorage.setItem(GH_GIST_KEY, ghGistId);
+  setSyncStatus('✅ 配置已保存', 'ok');
+};
+document.getElementById('testConnBtn').onclick = () => {
+  ghToken = ghTokenInput.value.trim();
+  ghGistId = ghGistInput.value.trim();
+  localStorage.setItem(GH_TOKEN_KEY, ghToken);
+  localStorage.setItem(GH_GIST_KEY, ghGistId);
+  testConnection();
+};
+autoSyncCheck.onchange = () => {
+  autoSyncEnabled = autoSyncCheck.checked;
+  localStorage.setItem(AUTO_SYNC_KEY, autoSyncEnabled ? '1' : '0');
+  if (autoSyncEnabled && ghToken && ghGistId) pushToCloud({ silent: true });
+};
+syncAttachCheck.onchange = () => {
+  syncAttachmentsEnabled = syncAttachCheck.checked;
+  localStorage.setItem(SYNC_ATTACH_KEY, syncAttachmentsEnabled ? '1' : '0');
+};
+document.getElementById('syncPushBtn').onclick = () => {
+  ghToken = ghTokenInput.value.trim();
+  ghGistId = ghGistInput.value.trim();
+  localStorage.setItem(GH_TOKEN_KEY, ghToken);
+  localStorage.setItem(GH_GIST_KEY, ghGistId);
+  pushToCloud();
+};
+document.getElementById('syncPullBtn').onclick = () => {
+  ghToken = ghTokenInput.value.trim();
+  ghGistId = ghGistInput.value.trim();
+  localStorage.setItem(GH_TOKEN_KEY, ghToken);
+  localStorage.setItem(GH_GIST_KEY, ghGistId);
+  if (!confirm('拉取会用云端数据覆盖本地，确定吗？')) return;
+  pullFromCloud();
 };
 
 /* =========================================================
@@ -1630,9 +1527,7 @@ async function init() {
     if (dbState && dbState.boards && dbState.boards.length > 0) {
       state = dbState;
     } else {
-      const old = localStorage.getItem('chestnut-kanban-v5') 
-               || localStorage.getItem('chestnut-kanban-v4')
-               || localStorage.getItem('chestnut-kanban-v3');
+      const old = localStorage.getItem('chestnut-kanban-v5') || localStorage.getItem('chestnut-kanban-v4');
       if (old) {
         try {
           const d = JSON.parse(old);
@@ -1647,14 +1542,12 @@ async function init() {
       if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
         state.currentBoardId = state.boards[0].id;
       }
-      await saveState();
+      await saveStateToDB(state);
     }
     state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
       if (!c.checklist) c.checklist = [];
       if (!c.attachments) c.attachments = [];
-      c.attachments.forEach(a => {
-        if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file';
-      });
+      c.attachments.forEach(a => { if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file'; });
     })));
   } catch (e) {
     console.error(e);
