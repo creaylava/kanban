@@ -179,7 +179,8 @@
   #renameListModal input {width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 15px; background: var(--input-bg); color: var(--text); margin-bottom: 15px;}
   .rename-actions {display: flex; gap: 10px;}
 
-  #previewOverlay {background: rgba(0,0,0,.92); align-items: center; justify-content: center; z-index: 200; padding: 0;}
+  /* 附件预览弹窗 */
+  #previewOverlay {background: rgba(0,0,0,.92); align-items: center; justify-content: center; z-index: 220; padding: 0;}
   #previewOverlay .preview-toolbar {position: absolute; top: 0; left: 0; right: 0; padding: 10px 16px; display: flex; align-items: center; gap: 10px; color: #fff; font-size: 13px; z-index: 2; background: linear-gradient(to bottom, rgba(0,0,0,.7), transparent);}
   #previewOverlay .preview-title {flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600;}
   #previewOverlay .preview-btn {background: rgba(255,255,255,.15); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;}
@@ -189,6 +190,7 @@
   #previewContent img {max-width: 95%; max-height: 90vh; object-fit: contain;}
   #previewContent .preview-loading {color: #fff; font-size: 14px;}
 
+  /* 子看板预览弹窗 */
   #subPreviewOverlay {background: rgba(30,25,20,.55); align-items: center; justify-content: center; z-index: 180; padding: 20px;}
   #subPreviewModal {
     background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 640px;
@@ -257,9 +259,73 @@
     margin-top: 6px; padding-left: 12px; border-left: 2px solid var(--sub-border);
     font-size: 11px; color: var(--muted);
   }
-  .sub-preview-nested-item {
-    padding: 3px 0;
+
+  /* ★ 卡片详情预览弹窗 */
+  #cardPreviewOverlay {background: rgba(30,25,20,.6); align-items: center; justify-content: center; z-index: 195; padding: 20px;}
+  #cardPreviewModal {
+    background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 520px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.45); max-height: 85vh;
+    display: flex; flex-direction: column; overflow: hidden;
   }
+  .card-preview-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-preview-header h2 {
+    font-size: 16px; font-weight: 700; flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .card-preview-close {
+    background: none; border: none; font-size: 22px; color: var(--muted);
+    cursor: pointer; padding: 0 4px; line-height: 1;
+  }
+  .card-preview-close:hover { color: var(--text); }
+  #cardPreviewBody {flex: 1; overflow-y: auto; padding: 16px 20px 20px;}
+
+  .card-preview-tags {display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px;}
+  .card-preview-meta {display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-bottom: 12px; align-items: center;}
+  .card-preview-desc {
+    font-size: 13px; line-height: 1.6; color: var(--text);
+    padding: 10px 12px; background: var(--sub-bg); border-radius: 8px;
+    border: 1px solid var(--sub-border); margin-bottom: 14px;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .card-preview-section-title {
+    font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-preview-checklist {margin-bottom: 14px;}
+  .card-preview-check-item {
+    display: flex; align-items: center; gap: 8px; padding: 6px 0;
+    font-size: 13px;
+  }
+  .card-preview-check-item .check-icon {
+    width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;
+    color: transparent;
+  }
+  .card-preview-check-item.done .check-icon {background: var(--accent); border-color: var(--accent); color: #fff;}
+  .card-preview-check-item.done .check-text {text-decoration: line-through; color: var(--muted);}
+  .card-preview-attachments {margin-bottom: 14px;}
+  .card-preview-att-item {
+    display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+    background: var(--sub-bg); border: 1px solid var(--sub-border);
+    border-radius: 8px; margin-bottom: 6px; cursor: pointer; transition: .15s;
+  }
+  .card-preview-att-item:hover {border-color: var(--accent);}
+  .card-preview-att-item .att-icon {font-size: 18px; flex-shrink: 0; width: 24px; text-align: center;}
+  .card-preview-att-item .att-info {flex: 1; min-width: 0;}
+  .card-preview-att-item .att-name {font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+  .card-preview-att-item .att-size {font-size: 10px; color: var(--muted); margin-top: 2px;}
+  .card-preview-att-item .att-action {color: var(--muted); font-size: 12px;}
+  .card-preview-subboard-btn {
+    display: block; width: 100%; padding: 12px; margin-top: 6px;
+    background: rgba(59,130,246,.1); color: #3b82f6; border: 1px solid #3b82f6;
+    border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700;
+    font-family: inherit;
+  }
+  .card-preview-subboard-btn:hover {background: #3b82f6; color: #fff;}
+  .card-preview-empty {font-size: 12px; color: var(--muted); font-style: italic; padding: 4px 0;}
 
   #loadingOverlay {position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 999; color: #fff; font-size: 16px;}
   #loadingOverlay.show {display: flex;}
@@ -277,40 +343,18 @@
   .help-text code {background: var(--input-bg); padding: 1px 5px; border-radius: 4px; font-family: ui-monospace, monospace; font-size: 10px;}
   .help-text a {color: var(--accent);}
 
-  /* =========================================================
-     ★ 移动端竖屏优化
-     ========================================================= */
   @media (max-width: 640px) {
     header { padding: 8px 10px; gap: 5px; }
     header h1 { display: none; }
     .board-selector { max-width: 90px; font-size: 12px; }
     .btn { padding: 5px 8px; font-size: 11px; }
-
-    /* 列表宽度调整：屏幕宽度的 85%，避免横屏滑动时视野太窄 */
-    .list {
-      flex: 0 0 85vw;
-      width: 85vw;
-      max-width: 300px;
-    }
-
-    /* 卡片底部按钮换行处理 */
-    .card-footer {
-      flex-wrap: wrap;
-      row-gap: 6px;
-      justify-content: space-between;
-    }
-    .footer-right {
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 4px;
-    }
-    /* 强制按钮文字不换行 */
+    .list { flex: 0 0 85vw; width: 85vw; max-width: 300px; }
+    .card-footer { flex-wrap: wrap; row-gap: 6px; justify-content: space-between; }
+    .footer-right { flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
     .action-btn, .quick-move-btn, .expand-sub-btn, .preview-sub-btn {
-      padding: 4px 6px;
-      font-size: 11px;
-      white-space: nowrap;
+      padding: 4px 6px; font-size: 11px; white-space: nowrap;
     }
-    #subPreviewModal { max-height: 92vh; }
+    #subPreviewModal, #cardPreviewModal { max-height: 92vh; }
   }
 </style>
 </head>
@@ -336,6 +380,7 @@
 <div id="breadcrumb"></div>
 <main id="board"></main>
 
+<!-- 卡片编辑弹窗 -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <input id="mTitle" class="m-title" placeholder="卡片标题">
@@ -428,6 +473,7 @@
   </div>
 </div>
 
+<!-- 附件预览弹窗 -->
 <div class="overlay" id="previewOverlay">
   <div class="preview-toolbar">
     <div class="preview-title" id="previewTitle"></div>
@@ -438,6 +484,7 @@
   <div id="previewContent"></div>
 </div>
 
+<!-- 子看板预览弹窗 -->
 <div class="overlay" id="subPreviewOverlay">
   <div id="subPreviewModal">
     <div id="subPreviewHeader">
@@ -450,6 +497,19 @@
   </div>
 </div>
 
+<!-- ★ 卡片详情预览弹窗 -->
+<div class="overlay" id="cardPreviewOverlay">
+  <div id="cardPreviewModal">
+    <div class="card-preview-header">
+      <span style="font-size:20px;">📋</span>
+      <h2 id="cardPreviewTitle">卡片详情</h2>
+      <button class="card-preview-close" id="cardPreviewCloseBtn">✕</button>
+    </div>
+    <div id="cardPreviewBody"></div>
+  </div>
+</div>
+
+<!-- GitHub 同步弹窗 -->
 <div class="overlay" id="syncOverlay">
   <div class="modal" style="max-width:480px;">
     <div class="m-title">☁️ GitHub 同步</div>
@@ -1012,6 +1072,8 @@ const subPreviewOverlay = document.getElementById('subPreviewOverlay');
 const subPreviewBody = document.getElementById('subPreviewBody');
 const subPreviewTitle = document.getElementById('subPreviewTitle');
 
+let _subPreviewCards = [];      // 当前子看板预览中的所有卡片（按显示顺序）
+
 function findCardById(cardId) {
   const cb = boardStack[boardStack.length - 1];
   for (const l of cb.lists) {
@@ -1026,6 +1088,11 @@ function openSubPreview(cardId) {
   if (!card || !card.subBoard) return;
   previewingCardId = cardId;
   subPreviewTitle.textContent = card.title;
+  // 收集所有子卡片，便于点击定位
+  _subPreviewCards = [];
+  card.subBoard.lists.forEach(list => {
+    list.cards.forEach(c => _subPreviewCards.push(c));
+  });
   subPreviewBody.innerHTML = renderSubPreviewContent(card.subBoard.lists);
   subPreviewOverlay.classList.add('show');
 }
@@ -1098,6 +1165,141 @@ document.getElementById('subPreviewEnterBtn').onclick = () => {
     enterSubBoard(card);
   }
 };
+
+/* 点击子看板预览里的卡片 → 打开卡片详情预览 */
+subPreviewBody.addEventListener('click', e => {
+  const cardEl = e.target.closest('.sub-preview-card');
+  if (!cardEl) return;
+  e.stopPropagation();
+  const allCards = Array.from(subPreviewBody.querySelectorAll('.sub-preview-card'));
+  const idx = allCards.indexOf(cardEl);
+  if (idx >= 0 && _subPreviewCards[idx]) {
+    openCardPreview(_subPreviewCards[idx]);
+  }
+});
+
+/* =========================================================
+   ★ 卡片详情预览
+   ========================================================= */
+const cardPreviewOverlay = document.getElementById('cardPreviewOverlay');
+const cardPreviewBody = document.getElementById('cardPreviewBody');
+const cardPreviewTitle = document.getElementById('cardPreviewTitle');
+
+function openCardPreview(card) {
+  if (!card) return;
+  cardPreviewTitle.textContent = card.title;
+
+  let html = '';
+
+  // 标签
+  if (card.tags && card.tags.length > 0) {
+    html += `<div class="card-preview-tags">${card.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>`;
+  }
+
+  // 元信息
+  const metaParts = [];
+  if (card.priority && card.priority !== 'none') {
+    const pl = PRIORITY[card.priority].label;
+    const pcls = PRIORITY[card.priority].cls;
+    metaParts.push(`<span class="pri ${pcls}">${pl}优先级</span>`);
+  }
+  if (card.owner) metaParts.push(`👤 ${esc(card.owner)}`);
+  if (card.due) metaParts.push(`📅 ${esc(card.due)}`);
+  if (metaParts.length > 0) {
+    html += `<div class="card-preview-meta">${metaParts.join('')}</div>`;
+  }
+
+  // 描述
+  if (card.desc) {
+    html += `<div class="card-preview-desc">${esc(card.desc)}</div>`;
+  }
+
+  // 待办清单
+  const checklist = card.checklist || [];
+  if (checklist.length > 0) {
+    const done = checklist.filter(c => c.done).length;
+    html += `<div class="card-preview-section-title">☑ 待办清单 (${done}/${checklist.length})</div>`;
+    html += `<div class="card-preview-checklist">`;
+    checklist.forEach(c => {
+      html += `<div class="card-preview-check-item ${c.done ? 'done' : ''}">
+        <div class="check-icon">✓</div>
+        <div class="check-text">${esc(c.text)}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // 附件
+  const atts = card.attachments || [];
+  if (atts.length > 0) {
+    html += `<div class="card-preview-section-title">📎 附件 (${atts.length})</div>`;
+    html += `<div class="card-preview-attachments">`;
+    atts.forEach((a, i) => {
+      const isLink = a.kind === 'link';
+      const icon = isLink ? '🔗' : getFileIcon(a.name, a.type);
+      const sizeText = isLink ? '外部链接' : formatFileSize(a.size);
+      html += `<div class="card-preview-att-item" data-att-index="${i}">
+        <div class="att-icon">${icon}</div>
+        <div class="att-info">
+          <div class="att-name">${esc(a.name)}</div>
+          <div class="att-size">${sizeText}</div>
+        </div>
+        <div class="att-action">${isLink ? '↗' : '👁'}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // 子看板入口
+  if (card.subBoard) {
+    const subTotal = card.subBoard.lists.reduce((s, l) => s + l.cards.length, 0);
+    html += `<button class="card-preview-subboard-btn" id="cardPreviewSubBtn">📁 查看子看板（${subTotal} 个卡片）</button>`;
+  }
+
+  if (!html) {
+    html = '<div class="card-preview-empty">这个卡片还没有内容</div>';
+  }
+
+  cardPreviewBody.innerHTML = html;
+
+  // 附件点击预览
+  cardPreviewBody.querySelectorAll('.card-preview-att-item').forEach(el => {
+    el.onclick = () => {
+      const idx = parseInt(el.dataset.attIndex);
+      previewAttachment(atts[idx]);
+    };
+  });
+
+  // "查看子看板"按钮
+  const subBtn = document.getElementById('cardPreviewSubBtn');
+  if (subBtn) {
+    subBtn.onclick = () => {
+      cardPreviewOverlay.classList.remove('show');
+      setTimeout(() => {
+        // 打开这个卡片的子看板预览
+        previewingCardId = card.id;
+        subPreviewTitle.textContent = card.title;
+        _subPreviewCards = [];
+        card.subBoard.lists.forEach(list => {
+          list.cards.forEach(c => _subPreviewCards.push(c));
+        });
+        subPreviewBody.innerHTML = renderSubPreviewContent(card.subBoard.lists);
+        subPreviewOverlay.classList.add('show');
+      }, 100);
+    };
+  }
+
+  cardPreviewOverlay.classList.add('show');
+}
+
+document.getElementById('cardPreviewCloseBtn').onclick = () => {
+  cardPreviewOverlay.classList.remove('show');
+};
+cardPreviewOverlay.addEventListener('click', e => {
+  if (e.target.id === 'cardPreviewOverlay') {
+    cardPreviewOverlay.classList.remove('show');
+  }
+});
 
 /* =========================================================
    列表重命名
