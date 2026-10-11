@@ -58,9 +58,7 @@
   #breadcrumb span { cursor: pointer; }
   #breadcrumb span:hover { color: var(--accent); text-decoration: underline; }
   #breadcrumb .current { color: var(--text); font-weight: 600; cursor: default; }
-  #breadcrumb .current:hover { text-decoration: none; color: var(--text); }
   #breadcrumb .arrow { color: var(--muted); cursor: default; }
-  #breadcrumb .arrow:hover { text-decoration: none; color: var(--muted); }
 
   #board{
     flex:1; display:flex; gap:14px; padding:18px 20px 24px;
@@ -131,15 +129,13 @@
   .pri.medium{color:#d08a1e;}
   .pri.low{color:#3f9d7c;}
   
-  /* 卡片上的待办和附件标记 */
   .card-indicators {
     display: flex; gap: 8px; margin-top: 6px;
-    font-size: 11px; color: var(--muted); align-items: center;
+    font-size: 11px; color: var(--muted); align-items: center; flex-wrap: wrap;
   }
   .indicator { display: inline-flex; align-items: center; gap: 3px; }
   .indicator.checked { color: var(--accent); }
 
-  /* 底部按钮区 */
   .card-footer {
     position: absolute; bottom: 6px; left: 10px; right: 10px;
     display: flex; justify-content: space-between; align-items: center;
@@ -215,7 +211,7 @@
   .overlay{position:fixed; inset:0; background:rgba(30,25,20,.45); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
   .overlay.show{display:flex;}
   .modal{
-    background:var(--card-bg); border-radius:14px; width:100%; max-width:520px;
+    background:var(--card-bg); border-radius:14px; width:100%; max-width:540px;
     padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.25); max-height:90vh; overflow-y:auto;
     transition: background 0.3s;
   }
@@ -233,7 +229,6 @@
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
   .modal-actions{display:flex; gap:8px; margin-top:10px; align-items:center;}
 
-  /* 待办清单编辑区 */
   .checklist-container {
     border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--input-bg);
     max-height: 150px; overflow-y: auto; margin-bottom: 5px;
@@ -253,7 +248,70 @@
     color: #d0453a; background: none; border: none; font-size: 16px; cursor: pointer; padding: 0 4px; flex-shrink: 0;
   }
 
-  /* 快捷移动弹窗 */
+  /* 附件区 */
+  .attachment-actions {
+    display: flex; gap: 6px; margin-bottom: 6px;
+  }
+  .attachments-container {
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--input-bg);
+    max-height: 260px; overflow-y: auto;
+  }
+  .attachment-item {
+    display: flex; align-items: center; gap: 6px; padding: 6px 8px; margin-bottom: 6px;
+    background: var(--card-bg); border-radius: 6px; border: 1px solid var(--border);
+  }
+  .attachment-item .file-icon {
+    font-size: 20px; flex-shrink: 0; width: 24px; text-align: center;
+  }
+  .attachment-item .file-info {
+    flex: 1; min-width: 0;
+  }
+  .attachment-item .file-name {
+    font-size: 12px; font-weight: 600; color: var(--text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .attachment-item .file-size {
+    font-size: 10px; color: var(--muted); margin-top: 2px;
+  }
+  .attachment-item .file-size.link-tag {
+    color: var(--accent);
+  }
+  .attachment-item .file-actions {
+    display: flex; gap: 2px; flex-shrink: 0;
+  }
+  .attachment-item .file-actions button {
+    background: rgba(100,100,100,.08); color: var(--muted); border: none;
+    font-size: 13px; padding: 3px 7px; border-radius: 5px; cursor: pointer; transition: .15s;
+  }
+  .attachment-item .file-actions button:hover { background: var(--accent); color: #fff; }
+  .attachment-item .file-actions button.remove-btn:hover { background: #d0453a; color: #fff; }
+  .attachment-item .file-thumb {
+    width: 36px; height: 36px; border-radius: 5px; object-fit: cover;
+    flex-shrink: 0; border: 1px solid var(--border); cursor: pointer;
+  }
+  .attachment-empty {
+    font-size: 12px; color: var(--muted); font-style: italic; text-align: center; padding: 8px;
+  }
+  .attachment-hint {
+    font-size: 10px; color: var(--muted); margin-top: 6px; line-height: 1.5;
+  }
+
+  /* 添加链接的小弹窗 */
+  #addLinkOverlay { align-items: center; padding: 20px; z-index: 150; }
+  #addLinkModal {
+    background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 420px;
+    padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  }
+  #addLinkModal h3 { font-size: 16px; margin-bottom: 15px; text-align: center; }
+  #addLinkModal .field { margin-bottom: 12px; }
+  #addLinkModal .field label { display:block; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  #addLinkModal input {
+    width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
+    font-size: 14px; font-family: inherit; color: var(--text); background: var(--input-bg);
+    outline: none;
+  }
+  #addLinkModal input:focus { border-color: var(--accent); background: var(--card-bg); }
+
   #quickMoveOverlay { align-items: flex-end; padding: 0; }
   #quickMoveMenu {
     background: var(--card-bg); width: 100%; border-radius: 16px 16px 0 0;
@@ -275,16 +333,65 @@
   #renameListModal {
     background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 380px;
     padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
-    animation: pop .16s ease-out;
   }
   #renameListModal h3 { font-size: 16px; margin-bottom: 15px; text-align: center; }
   #renameListModal input {
     width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
     font-size: 15px; font-family: inherit; color: var(--text); background: var(--input-bg);
-    outline: none; transition: .15s; margin-bottom: 15px;
+    outline: none; margin-bottom: 15px;
   }
-  #renameListModal input:focus { border-color: var(--accent); background: var(--card-bg); box-shadow: 0 0 0 3px rgba(200,102,47,.15); }
   .rename-actions { display: flex; gap: 10px; }
+
+  /* 通用预览弹窗：支持图片和 iframe（邮件 HTML） */
+  #previewOverlay {
+    background: rgba(0,0,0,.92); align-items: center; justify-content: center; z-index: 200;
+    padding: 0;
+  }
+  #previewOverlay .preview-toolbar {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: 10px 16px; display: flex; align-items: center; gap: 10px;
+    color: #fff; font-size: 13px; z-index: 2;
+    background: linear-gradient(to bottom, rgba(0,0,0,.7), transparent);
+  }
+  #previewOverlay .preview-title {
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-weight: 600;
+  }
+  #previewOverlay .preview-btn {
+    background: rgba(255,255,255,.15); color: #fff; border: none;
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: .15s;
+  }
+  #previewOverlay .preview-btn:hover { background: rgba(255,255,255,.3); }
+  #previewContent {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding-top: 0;
+  }
+  #previewContent iframe {
+    width: 100%; height: 100%;
+    background: #fff; border: none;
+  }
+  #previewContent img {
+    max-width: 95%; max-height: 90vh; object-fit: contain;
+  }
+  #previewContent .preview-loading {
+    color: #fff; font-size: 14px;
+  }
+
+  #loadingOverlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.5);
+    display: none; align-items: center; justify-content: center; z-index: 999;
+    color: #fff; font-size: 16px;
+  }
+  #loadingOverlay.show { display: flex; }
+  #loadingOverlay .spinner {
+    width: 24px; height: 24px; border: 3px solid rgba(255,255,255,.3);
+    border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite;
+    margin-right: 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   @media (max-width: 640px) {
     header h1 { display: none; }
@@ -327,8 +434,17 @@
     </div>
 
     <div class="field">
-      <label>附件链接（如公司网盘、OneDrive、微信文件链接）</label>
-      <input id="mAttachment" placeholder="粘贴链接，例如 https://...">
+      <label>附件（本地文件 ≤ 30MB 或 OneDrive 等外链）</label>
+      <div class="attachment-actions">
+        <button type="button" class="btn small" id="addAttachmentBtn">📎 上传本地文件</button>
+        <button type="button" class="btn small" id="addLinkBtn">🔗 添加外部链接</button>
+      </div>
+      <div class="attachments-container" id="attachmentsContainer"></div>
+      <div class="attachment-hint">
+        📌 本地文件会随 JSON 备份一起保存；<br>
+        🔗 外部链接（如 OneDrive 分享链接）只保存 URL，点击会跳转。
+      </div>
+      <input type="file" id="attachmentFileInput" multiple style="display:none;">
     </div>
 
     <div class="field">
@@ -383,15 +499,148 @@
   </div>
 </div>
 
+<!-- 添加链接弹窗 -->
+<div class="overlay" id="addLinkOverlay">
+  <div id="addLinkModal">
+    <h3>🔗 添加外部链接</h3>
+    <div class="field">
+      <label>链接名称</label>
+      <input id="linkName" placeholder="例如：阀门图纸(OneDrive)">
+    </div>
+    <div class="field">
+      <label>链接地址（OneDrive/网盘/任意 URL）</label>
+      <input id="linkUrl" placeholder="https://..." type="url">
+    </div>
+    <div class="rename-actions">
+      <button class="btn" id="addLinkCancel" style="flex:1;">取消</button>
+      <button class="btn primary" id="addLinkConfirm" style="flex:1;">添加</button>
+    </div>
+  </div>
+</div>
+
+<!-- 通用预览弹窗 -->
+<div class="overlay" id="previewOverlay">
+  <div class="preview-toolbar">
+    <div class="preview-title" id="previewTitle"></div>
+    <button class="preview-btn" id="previewNewTabBtn" title="新标签页打开">↗</button>
+    <button class="preview-btn" id="previewDownloadBtn" title="下载">⬇</button>
+    <button class="preview-btn" id="closePreviewBtn" title="关闭">✕</button>
+  </div>
+  <div id="previewContent"></div>
+</div>
+
+<div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">处理中...</span></div>
+
 <script>
 /* =========================================================
-   数据层
+   IndexedDB 存储
    ========================================================= */
-const STORAGE_KEY = 'chestnut-kanban-v4';
-const THEME_KEY = 'chestnut-kanban-theme';
-const uid = () => Math.random().toString(36).slice(2, 10);
-const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DB_NAME = 'kanban_db_v2';
+const DB_VERSION = 1;
+const STATE_STORE = 'state';
+const STATE_KEY = 'main';
+const MAX_FILE_SIZE = 30 * 1024 * 1024;
 
+let stateDB = null;
+
+function openStateDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains(STATE_STORE)) {
+        d.createObjectStore(STATE_STORE);
+      }
+    };
+    req.onsuccess = (e) => { stateDB = e.target.result; resolve(stateDB); };
+    req.onerror = (e) => reject(e);
+  });
+}
+function loadStateFromDB() {
+  return new Promise((resolve, reject) => {
+    const tx = stateDB.transaction(STATE_STORE, 'readonly');
+    const req = tx.objectStore(STATE_STORE).get(STATE_KEY);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = (e) => reject(e);
+  });
+}
+function saveStateToDB(data) {
+  return new Promise((resolve, reject) => {
+    const tx = stateDB.transaction(STATE_STORE, 'readwrite');
+    tx.objectStore(STATE_STORE).put(data, STATE_KEY);
+    tx.oncomplete = () => resolve();
+    tx.onerror = (e) => reject(e);
+  });
+}
+function clearStateDB() {
+  return new Promise((resolve, reject) => {
+    const tx = stateDB.transaction(STATE_STORE, 'readwrite');
+    tx.objectStore(STATE_STORE).clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror = (e) => reject(e);
+  });
+}
+
+/* =========================================================
+   工具
+   ========================================================= */
+function uid() { return Math.random().toString(36).slice(2, 10); }
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function formatFileSize(bytes) {
+  if (!bytes) return '0 B';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+}
+
+function getFileIcon(name, type) {
+  const ext = (name || '').split('.').pop().toLowerCase();
+  if (type && type.startsWith('image/')) return '🖼';
+  if (type && type.startsWith('video/')) return '🎬';
+  if (type && type.startsWith('audio/')) return '🎵';
+  if (ext === 'html' || ext === 'htm') return '📧';
+  if (ext === 'eml' || ext === 'msg') return '📧';
+  if (ext === 'pdf') return '📕';
+  if (['doc', 'docx'].includes(ext)) return '📘';
+  if (['xls', 'xlsx', 'csv'].includes(ext)) return '📗';
+  if (['ppt', 'pptx'].includes(ext)) return '📙';
+  if (['zip', 'rar', '7z'].includes(ext)) return '🗜';
+  if (['dwg', 'dxf', 'step', 'stp', 'igs', 'iges', 'sldprt', 'sldasm'].includes(ext)) return '📐';
+  return '📄';
+}
+
+function fileToDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function dataURLToBlob(dataURL) {
+  const parts = dataURL.split(',');
+  const mimeMatch = parts[0].match(/:(.*?);/);
+  const mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+  const bstr = atob(parts[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) u8arr[n] = bstr.charCodeAt(n);
+  return new Blob([u8arr], { type: mime });
+}
+
+function showLoading(text) {
+  document.getElementById('loadingText').textContent = text || '处理中...';
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('show');
+}
+
+/* =========================================================
+   数据
+   ========================================================= */
 const PRIORITY = {
   high:   { label: '高', cls: 'high' },
   medium: { label: '中', cls: 'medium' },
@@ -405,10 +654,10 @@ function defaultData() {
     lists: [
       { id: uid(), title: '待办', cards: [
         { 
-          id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片可以编辑详情，支持添加待办清单和附件链接。', 
+          id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片可以编辑详情，支持待办清单、本地附件和外部链接。', 
           tags: ['入门'], priority: 'high', due: '', 
-          checklist: [{ id: uid(), text: '了解待办清单功能', done: true }, { id: uid(), text: '尝试添加附件链接', done: false }],
-          attachment: '',
+          checklist: [{ id: uid(), text: '了解待办清单功能', done: true }, { id: uid(), text: '尝试上传附件', done: false }],
+          attachments: [],
           subBoard: null, isExpanded: false 
         }
       ] },
@@ -419,43 +668,7 @@ function defaultData() {
   return { boards: [board], currentBoardId: board.id };
 }
 
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('chestnut-kanban-v3');
-    if (raw) {
-      const d = JSON.parse(raw);
-      if (d && Array.isArray(d.boards) && d.boards.length > 0) {
-        if (!d.currentBoardId || !d.boards.some(b => b.id === d.currentBoardId)) {
-          d.currentBoardId = d.boards[0].id;
-        }
-        // 兼容旧数据：给卡片补上 checklist 和 attachment
-        d.boards.forEach(b => {
-          b.lists.forEach(l => {
-            l.cards.forEach(c => {
-              if (!c.checklist) c.checklist = [];
-              if (!c.attachment) c.attachment = '';
-            });
-          });
-        });
-        return d;
-      }
-      if (d && Array.isArray(d.lists)) {
-        const upgradeBoard = { id: uid(), name: '我的看板', lists: d.lists };
-        upgradeBoard.lists.forEach(l => {
-          l.cards.forEach(c => {
-            if (!c.checklist) c.checklist = [];
-            if (!c.attachment) c.attachment = '';
-          });
-        });
-        return { boards: [upgradeBoard], currentBoardId: upgradeBoard.id };
-      }
-    }
-  } catch (e) {}
-  return defaultData();
-}
-function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { alert('存储空间不足！'); } }
-
-let state = loadState();
+let state = null;
 let boardStack = [];
 let editing = null;
 let renamingListId = null;
@@ -465,15 +678,19 @@ function getCurrentBoard() {
   if (!b) { b = state.boards[0]; if (b) state.currentBoardId = b.id; }
   return b;
 }
-
 function syncBoardStack() {
   const b = getCurrentBoard();
   boardStack = [{ lists: b.lists, title: b.name }];
 }
+async function saveState() {
+  try { await saveStateToDB(state); }
+  catch (e) { console.error('保存失败：', e); alert('⚠️ 保存失败：' + e.message); }
+}
 
 /* =========================================================
-   主题切换
+   主题
    ========================================================= */
+const THEME_KEY = 'chestnut-kanban-theme';
 const themeBtn = document.getElementById('themeToggle');
 function applyTheme(theme) {
   if (theme === 'dark') { document.body.classList.add('dark'); themeBtn.textContent = '☀️'; }
@@ -500,9 +717,10 @@ const mTags = document.getElementById('mTags');
 const mPriority = document.getElementById('mPriority');
 const mDue = document.getElementById('mDue');
 const mList = document.getElementById('mList');
-const mAttachment = document.getElementById('mAttachment');
 const mEnterSubBoard = document.getElementById('mEnterSubBoard');
 const checklistContainer = document.getElementById('checklistContainer');
+const attachmentsContainer = document.getElementById('attachmentsContainer');
+const attachmentFileInput = document.getElementById('attachmentFileInput');
 const breadcrumb = document.getElementById('breadcrumb');
 const quickMoveOverlay = document.getElementById('quickMoveOverlay');
 const quickMoveList = document.getElementById('quickMoveList');
@@ -518,51 +736,33 @@ function renderBoardSelect() {
     `<option value="${b.id}" ${b.id === state.currentBoardId ? 'selected' : ''}>${esc(b.name)}</option>`
   ).join('');
 }
-
 boardSelect.onchange = (e) => {
   state.currentBoardId = e.target.value;
-  syncBoardStack();
-  saveState();
-  render();
+  syncBoardStack(); saveState(); render();
 };
-
 document.getElementById('addBoardBtn').onclick = () => {
   const name = prompt('新看板名称', '新看板');
   if (name === null) return;
-  const newBoard = {
-    id: uid(), name: name.trim() || '新看板',
-    lists: [{ id: uid(), title: '待办', cards: [] }]
-  };
+  const newBoard = { id: uid(), name: name.trim() || '新看板', lists: [{ id: uid(), title: '待办', cards: [] }] };
   state.boards.push(newBoard);
   state.currentBoardId = newBoard.id;
-  syncBoardStack();
-  renderBoardSelect();
-  saveState();
-  render();
+  syncBoardStack(); renderBoardSelect(); saveState(); render();
 };
-
 document.getElementById('renameBoardBtn').onclick = () => {
-  const b = getCurrentBoard();
-  if (!b) return;
+  const b = getCurrentBoard(); if (!b) return;
   const name = prompt('重命名看板', b.name);
   if (name === null) return;
   b.name = name.trim() || b.name;
   boardStack[0].title = b.name;
-  renderBoardSelect();
-  saveState();
-  render();
+  renderBoardSelect(); saveState(); render();
 };
-
 document.getElementById('delBoardBtn').onclick = () => {
   if (state.boards.length <= 1) { alert('至少保留一个看板'); return; }
   const b = getCurrentBoard();
   if (!confirm(`确定删除看板「${b.name}」及其所有内容吗？`)) return;
   state.boards = state.boards.filter(x => x.id !== b.id);
   state.currentBoardId = state.boards[0].id;
-  syncBoardStack();
-  renderBoardSelect();
-  saveState();
-  render();
+  syncBoardStack(); renderBoardSelect(); saveState(); render();
 };
 
 /* =========================================================
@@ -570,7 +770,6 @@ document.getElementById('delBoardBtn').onclick = () => {
    ========================================================= */
 function render() {
   const currentBoard = boardStack[boardStack.length - 1];
-  
   if (boardStack.length > 1) {
     breadcrumb.classList.add('show');
     breadcrumb.innerHTML = boardStack.map((b, i) => {
@@ -580,7 +779,6 @@ function render() {
   } else {
     breadcrumb.classList.remove('show');
   }
-
   const listsHtml = currentBoard.lists.map(renderList).join('');
   const addListBtnHtml = `
     <button class="add-list-btn" id="addListInlineBtn" title="添加新列表">
@@ -588,17 +786,13 @@ function render() {
     </button>
   `;
   board.innerHTML = listsHtml + addListBtnHtml;
-
   document.getElementById('addListInlineBtn').onclick = () => {
     const title = prompt('新列表名称', '新列表');
     if (title === null) return;
     const cb = boardStack[boardStack.length - 1];
     cb.lists.push({ id: uid(), title: title.trim() || '新列表', cards: [] });
-    render();
-    saveState();
+    render(); saveState();
   };
-
-  saveState();
 }
 
 function renderList(list) {
@@ -624,7 +818,6 @@ function renderCard(card) {
   const due = card.due ? `<span class="due${card.due < today ? ' overdue' : ''}">📅 ${esc(card.due.slice(5))}</span>` : '';
   const pri = p.label ? `<span class="pri ${p.cls}">${p.label}</span>` : '';
   
-  // 卡片上的待办进度指示器
   let checklistIndicator = '';
   if (card.checklist && card.checklist.length > 0) {
     const doneCount = card.checklist.filter(c => c.done).length;
@@ -632,15 +825,19 @@ function renderCard(card) {
     checklistIndicator = `<span class="indicator ${allDone ? 'checked' : ''}">☑ ${doneCount}/${card.checklist.length}</span>`;
   }
   
-  // 附件指示器
   let attachmentIndicator = '';
-  if (card.attachment) {
-    attachmentIndicator = `<span class="indicator" title="有附件链接">📎</span>`;
+  const atts = card.attachments || [];
+  if (atts.length > 0) {
+    const linkCount = atts.filter(a => a.kind === 'link').length;
+    const fileCount = atts.length - linkCount;
+    const parts = [];
+    if (fileCount > 0) parts.push(`📎 ${fileCount}`);
+    if (linkCount > 0) parts.push(`🔗 ${linkCount}`);
+    attachmentIndicator = `<span class="indicator">${parts.join(' ')}</span>`;
   }
 
   const meta = (due || pri) ? `<div class="card-meta">${due}${pri}</div>` : '';
   const indicators = (checklistIndicator || attachmentIndicator) ? `<div class="card-indicators">${checklistIndicator}${attachmentIndicator}</div>` : '';
-  
   const pClass = card.priority && card.priority !== 'none' ? ` p-${card.priority}` : '';
   
   let subBoardHtml = '';
@@ -684,10 +881,7 @@ function renderCard(card) {
       </div>
       ${subBoardHtml}
       <div class="card-footer">
-        <div class="footer-left">
-          ${upBtn}
-          ${downBtn}
-        </div>
+        <div class="footer-left">${upBtn}${downBtn}</div>
         <div class="footer-right">
           <button class="quick-move-btn" data-act="quick-move" data-card-id="${card.id}">⇄ 移动</button>
           ${subBoardBtn}
@@ -698,26 +892,20 @@ function renderCard(card) {
 }
 
 /* =========================================================
-   层级切换
+   层级 / 优先级 / 快捷移动
    ========================================================= */
 window.goBackTo = function(index) {
   boardStack = boardStack.slice(0, index + 1);
   render();
 };
-
 function enterSubBoard(card) {
   if (!card.subBoard) {
     card.subBoard = { lists: [{ id: uid(), title: '子任务', cards: [] }] };
     card.isExpanded = true;
   }
   boardStack.push({ lists: card.subBoard.lists, title: card.title });
-  closeModal();
-  render();
+  closeModal(); render();
 }
-
-/* =========================================================
-   优先级移动
-   ========================================================= */
 function moveCardPriority(cardId, direction) {
   const currentBoard = boardStack[boardStack.length - 1];
   for (const list of currentBoard.lists) {
@@ -728,17 +916,12 @@ function moveCardPriority(cardId, direction) {
         const temp = list.cards[index];
         list.cards[index] = list.cards[targetIndex];
         list.cards[targetIndex] = temp;
-        render();
-        saveState();
+        render(); saveState();
       }
       return;
     }
   }
 }
-
-/* =========================================================
-   快捷移动
-   ========================================================= */
 function openQuickMoveMenu(cardId) {
   const currentBoard = boardStack[boardStack.length - 1];
   quickMoveList.innerHTML = '';
@@ -746,45 +929,30 @@ function openQuickMoveMenu(cardId) {
   currentBoard.lists.forEach(list => {
     if (list.cards.some(c => c.id === cardId)) currentListId = list.id;
   });
-
   currentBoard.lists.forEach(list => {
     const btn = document.createElement('button');
     btn.className = 'move-option';
     btn.textContent = list.title;
-    if (list.id === currentListId) {
-      btn.textContent += ' (当前列表)';
-      btn.disabled = true;
-    }
-    btn.onclick = () => {
-      moveCard(cardId, list.id);
-      quickMoveOverlay.classList.remove('show');
-    };
+    if (list.id === currentListId) { btn.textContent += ' (当前列表)'; btn.disabled = true; }
+    btn.onclick = () => { moveCard(cardId, list.id); quickMoveOverlay.classList.remove('show'); };
     quickMoveList.appendChild(btn);
   });
   quickMoveOverlay.classList.add('show');
 }
-
 function moveCard(cardId, targetListId) {
   const currentBoard = boardStack[boardStack.length - 1];
-  let cardToMove = null;
-  let sourceList = null;
+  let cardToMove = null, sourceList = null;
   for (const list of currentBoard.lists) {
     const idx = list.cards.findIndex(c => c.id === cardId);
-    if (idx !== -1) {
-      sourceList = list;
-      cardToMove = list.cards.splice(idx, 1)[0];
-      break;
-    }
+    if (idx !== -1) { sourceList = list; cardToMove = list.cards.splice(idx, 1)[0]; break; }
   }
   if (cardToMove && sourceList && sourceList.id !== targetListId) {
     const targetList = currentBoard.lists.find(l => l.id === targetListId);
     if (targetList) targetList.cards.push(cardToMove);
     else sourceList.cards.push(cardToMove);
   }
-  render();
-  saveState();
+  render(); saveState();
 }
-
 document.getElementById('quickMoveCancel').onclick = () => quickMoveOverlay.classList.remove('show');
 
 /* =========================================================
@@ -797,8 +965,7 @@ function openRenameListModal(listId, currentTitle) {
   setTimeout(() => { renameListInput.focus(); renameListInput.select(); }, 30);
 }
 document.getElementById('renameListCancel').onclick = () => {
-  renameListOverlay.classList.remove('show');
-  renamingListId = null;
+  renameListOverlay.classList.remove('show'); renamingListId = null;
 };
 document.getElementById('renameListConfirm').onclick = () => {
   const newName = renameListInput.value.trim();
@@ -807,25 +974,17 @@ document.getElementById('renameListConfirm').onclick = () => {
     const list = currentBoard.lists.find(l => l.id === renamingListId);
     if (list) { list.title = newName; saveState(); render(); }
   }
-  renameListOverlay.classList.remove('show');
-  renamingListId = null;
+  renameListOverlay.classList.remove('show'); renamingListId = null;
 };
 renameListInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') document.getElementById('renameListConfirm').click();
   else if (e.key === 'Escape') document.getElementById('renameListCancel').click();
 });
-renameListOverlay.addEventListener('click', (e) => {
-  if (e.target === renameListOverlay) {
-    renameListOverlay.classList.remove('show');
-    renamingListId = null;
-  }
-});
 
 /* =========================================================
-   待办清单编辑器
+   待办清单
    ========================================================= */
 let editingChecklist = [];
-
 function renderChecklistUI() {
   checklistContainer.innerHTML = '';
   editingChecklist.forEach((item, index) => {
@@ -839,7 +998,6 @@ function renderChecklistUI() {
     checklistContainer.appendChild(div);
   });
 }
-
 checklistContainer.addEventListener('change', (e) => {
   if (e.target.classList.contains('chk-done')) {
     const idx = parseInt(e.target.dataset.index);
@@ -855,21 +1013,288 @@ checklistContainer.addEventListener('input', (e) => {
 checklistContainer.addEventListener('click', (e) => {
   if (e.target.classList.contains('remove-item')) {
     const idx = parseInt(e.target.dataset.index);
-    editingChecklist.splice(idx, 1);
-    renderChecklistUI();
+    editingChecklist.splice(idx, 1); renderChecklistUI();
   }
 });
-
 document.getElementById('addChecklistBtn').onclick = () => {
   editingChecklist.push({ id: uid(), text: '', done: false });
   renderChecklistUI();
-  // 聚焦到最后一个输入框
   const inputs = checklistContainer.querySelectorAll('.chk-text');
   if (inputs.length > 0) inputs[inputs.length - 1].focus();
 };
 
 /* =========================================================
-   卡片详情弹窗
+   附件（本地文件 + 外部链接）
+   数据结构：
+   { id, kind: 'file'|'link', name, size, type, data?, url? }
+   ========================================================= */
+let editingAttachments = [];
+
+function renderAttachmentsUI() {
+  attachmentsContainer.innerHTML = '';
+  if (editingAttachments.length === 0) {
+    attachmentsContainer.innerHTML = '<div class="attachment-empty">暂无附件</div>';
+    return;
+  }
+  editingAttachments.forEach((att, index) => {
+    const div = document.createElement('div');
+    div.className = 'attachment-item';
+    const isLink = att.kind === 'link';
+    const icon = isLink ? '🔗' : getFileIcon(att.name, att.type);
+    const sizeText = isLink ? '外部链接' : formatFileSize(att.size);
+    const isImage = !isLink && att.type && att.type.startsWith('image/') && att.data;
+    let thumbHtml = '';
+    if (isImage) {
+      thumbHtml = `<img class="file-thumb" data-index="${index}" src="${att.data}" alt="">`;
+    } else {
+      thumbHtml = `<div class="file-icon">${icon}</div>`;
+    }
+    div.innerHTML = `
+      ${thumbHtml}
+      <div class="file-info">
+        <div class="file-name">${esc(att.name)}</div>
+        <div class="file-size ${isLink ? 'link-tag' : ''}">${sizeText}</div>
+      </div>
+      <div class="file-actions">
+        <button class="preview-btn" data-index="${index}" title="预览">👁</button>
+        ${isLink ? '' : '<button class="download-btn" data-index="' + index + '" title="下载">⬇</button>'}
+        <button class="remove-btn" data-index="${index}" title="删除">✕</button>
+      </div>
+    `;
+    attachmentsContainer.appendChild(div);
+  });
+}
+
+attachmentsContainer.addEventListener('click', (e) => {
+  const previewBtn = e.target.closest('.preview-btn');
+  const downloadBtn = e.target.closest('.download-btn');
+  const removeBtn = e.target.closest('.remove-btn');
+  const thumbImg = e.target.closest('.file-thumb');
+  
+  if (previewBtn) {
+    const idx = parseInt(previewBtn.dataset.index);
+    previewAttachment(editingAttachments[idx]);
+  } else if (downloadBtn) {
+    const idx = parseInt(downloadBtn.dataset.index);
+    downloadAttachment(editingAttachments[idx]);
+  } else if (removeBtn) {
+    const idx = parseInt(removeBtn.dataset.index);
+    const att = editingAttachments[idx];
+    if (confirm(`确定删除附件「${att.name}」吗？`)) {
+      editingAttachments.splice(idx, 1);
+      renderAttachmentsUI();
+    }
+  } else if (thumbImg) {
+    const idx = parseInt(thumbImg.dataset.index);
+    previewAttachment(editingAttachments[idx]);
+  }
+});
+
+/* ========== 预览逻辑 ========== */
+let currentPreviewURL = null;   // 用于关闭时释放
+
+function previewAttachment(att) {
+  if (!att) return;
+  
+  // 外部链接：直接新标签打开
+  if (att.kind === 'link') {
+    if (!att.url) { alert('❌ 链接为空'); return; }
+    window.open(att.url, '_blank');
+    return;
+  }
+  
+  if (!att.data) { alert('❌ 附件数据缺失'); return; }
+  
+  const mime = att.type || '';
+  const lname = (att.name || '').toLowerCase();
+  
+  // 邮件 HTML 预览
+  if (mime.includes('html') || lname.endsWith('.html') || lname.endsWith('.htm')) {
+    showPreviewFrame(att.data, att.name, 'text/html');
+    return;
+  }
+  
+  // 图片
+  if (mime.startsWith('image/')) {
+    showPreviewImage(att.data, att.name);
+    return;
+  }
+  
+  // PDF
+  if (mime === 'application/pdf' || lname.endsWith('.pdf')) {
+    showPreviewFrame(att.data, att.name, 'application/pdf');
+    return;
+  }
+  
+  // 文本
+  if (mime.startsWith('text/') || lname.endsWith('.txt') || lname.endsWith('.csv') || lname.endsWith('.md') || lname.endsWith('.log')) {
+    showPreviewFrame(att.data, att.name, 'text/plain');
+    return;
+  }
+  
+  // 其他：下载
+  const blob = dataURLToBlob(att.data);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = att.name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function showPreviewImage(dataURL, name) {
+  const content = document.getElementById('previewContent');
+  content.innerHTML = '';
+  const img = document.createElement('img');
+  img.src = dataURL;
+  content.appendChild(img);
+  document.getElementById('previewTitle').textContent = name || '图片预览';
+  document.getElementById('previewOverlay').classList.add('show');
+  document.getElementById('previewNewTabBtn').dataset.mode = 'image';
+  document.getElementById('previewNewTabBtn').dataset.data = dataURL;
+  document.getElementById('previewDownloadBtn').dataset.mode = 'image';
+  document.getElementById('previewDownloadBtn').dataset.data = dataURL;
+  document.getElementById('previewDownloadBtn').dataset.name = name;
+}
+
+function showPreviewFrame(dataURL, name, mime) {
+  const content = document.getElementById('previewContent');
+  content.innerHTML = '<div class="preview-loading">加载中...</div>';
+  const blob = dataURLToBlob(dataURL);
+  const url = URL.createObjectURL(blob);
+  currentPreviewURL = url;
+  const iframe = document.createElement('iframe');
+  // 邮件 HTML 用 sandbox 允许脚本运行以正确渲染，但禁止顶层跳转
+  iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
+  iframe.src = url;
+  content.innerHTML = '';
+  content.appendChild(iframe);
+  document.getElementById('previewTitle').textContent = name || '预览';
+  document.getElementById('previewOverlay').classList.add('show');
+  document.getElementById('previewNewTabBtn').dataset.mode = 'frame';
+  document.getElementById('previewNewTabBtn').dataset.url = url;
+  document.getElementById('previewDownloadBtn').dataset.mode = 'file';
+  document.getElementById('previewDownloadBtn').dataset.data = dataURL;
+  document.getElementById('previewDownloadBtn').dataset.name = name;
+}
+
+function downloadAttachment(att) {
+  if (!att) return;
+  if (att.kind === 'link') {
+    window.open(att.url, '_blank');
+    return;
+  }
+  if (!att.data) { alert('❌ 附件数据缺失'); return; }
+  const blob = dataURLToBlob(att.data);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = att.name || 'attachment';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* 预览弹窗的按钮 */
+document.getElementById('closePreviewBtn').onclick = () => {
+  document.getElementById('previewOverlay').classList.remove('show');
+  document.getElementById('previewContent').innerHTML = '';
+  if (currentPreviewURL) { URL.revokeObjectURL(currentPreviewURL); currentPreviewURL = null; }
+};
+document.getElementById('previewOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'previewOverlay') document.getElementById('closePreviewBtn').click();
+});
+document.getElementById('previewNewTabBtn').onclick = (e) => {
+  const btn = e.currentTarget;
+  if (btn.dataset.mode === 'image') {
+    // 图片：转 Blob 新标签打开
+    const blob = dataURLToBlob(btn.dataset.data);
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } else if (btn.dataset.mode === 'frame' && btn.dataset.url) {
+    window.open(btn.dataset.url, '_blank');
+  }
+};
+document.getElementById('previewDownloadBtn').onclick = (e) => {
+  const btn = e.currentTarget;
+  if (!btn.dataset.data) return;
+  const blob = dataURLToBlob(btn.dataset.data);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = btn.dataset.name || 'download';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+
+/* ========== 上传本地文件 ========== */
+document.getElementById('addAttachmentBtn').onclick = () => attachmentFileInput.click();
+
+attachmentFileInput.addEventListener('change', async (e) => {
+  const files = Array.from(e.target.files || []);
+  if (files.length === 0) return;
+  showLoading('正在处理附件...');
+  try {
+    for (const file of files) {
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`❌ 「${file.name}」大小 ${formatFileSize(file.size)}，超过 30MB 限制，已跳过`);
+        continue;
+      }
+      try {
+        const dataURL = await fileToDataURL(file);
+        editingAttachments.push({
+          id: uid(),
+          kind: 'file',
+          name: file.name,
+          size: file.size,
+          type: file.type || 'application/octet-stream',
+          data: dataURL
+        });
+      } catch (err) {
+        alert(`读取「${file.name}」失败：${err.message}`);
+      }
+    }
+    renderAttachmentsUI();
+  } finally {
+    hideLoading();
+  }
+  attachmentFileInput.value = '';
+});
+
+/* ========== 添加外部链接 ========== */
+const addLinkOverlay = document.getElementById('addLinkOverlay');
+const linkNameInput = document.getElementById('linkName');
+const linkUrlInput = document.getElementById('linkUrl');
+
+document.getElementById('addLinkBtn').onclick = () => {
+  linkNameInput.value = '';
+  linkUrlInput.value = '';
+  addLinkOverlay.classList.add('show');
+  setTimeout(() => linkNameInput.focus(), 30);
+};
+document.getElementById('addLinkCancel').onclick = () => {
+  addLinkOverlay.classList.remove('show');
+};
+document.getElementById('addLinkConfirm').onclick = () => {
+  const name = linkNameInput.value.trim() || '外部链接';
+  let url = linkUrlInput.value.trim();
+  if (!url) { alert('请输入链接地址'); return; }
+  // 自动补 https://
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  editingAttachments.push({
+    id: uid(),
+    kind: 'link',
+    name: name,
+    size: 0,
+    type: 'link',
+    url: url
+  });
+  renderAttachmentsUI();
+  addLinkOverlay.classList.remove('show');
+};
+linkUrlInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('addLinkConfirm').click();
+  if (e.key === 'Escape') document.getElementById('addLinkCancel').click();
+});
+
+/* =========================================================
+   卡片详情
    ========================================================= */
 function openCard(cardId) {
   const currentBoard = boardStack[boardStack.length - 1];
@@ -882,21 +1307,25 @@ function openCard(cardId) {
     mTags.value = (card.tags || []).join(', ');
     mPriority.value = card.priority || 'none';
     mDue.value = card.due || '';
-    mAttachment.value = card.attachment || '';
     
-    // 深拷贝待办清单
     editingChecklist = (card.checklist || []).map(c => ({ ...c }));
     renderChecklistUI();
+    
+    editingAttachments = (card.attachments || []).map(a => {
+      // 兼容旧数据（没有 kind 字段的当作本地文件）
+      if (!a.kind) {
+        if (a.url && !a.data) a.kind = 'link';
+        else a.kind = 'file';
+      }
+      return { ...a };
+    });
+    renderAttachmentsUI();
 
     mList.innerHTML = currentBoard.lists.map(l =>
       `<option value="${l.id}" ${l.id === list.id ? 'selected' : ''}>${esc(l.title)}</option>`
     ).join('');
 
-    if (card.subBoard) {
-      mEnterSubBoard.textContent = '进入子看板';
-    } else {
-      mEnterSubBoard.textContent = '创建子看板';
-    }
+    mEnterSubBoard.textContent = card.subBoard ? '进入子看板' : '创建子看板';
     mEnterSubBoard.style.display = 'block';
 
     overlay.classList.add('show');
@@ -904,7 +1333,6 @@ function openCard(cardId) {
     return;
   }
 }
-
 function closeModal() { overlay.classList.remove('show'); editing = null; }
 
 document.getElementById('mCancel').onclick = closeModal;
@@ -912,8 +1340,8 @@ overlay.addEventListener('click', e => { if (e.target === overlay) closeModal();
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal(); });
 mTitle.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('mSave').click(); });
 
-document.getElementById('mSave').onclick = () => {
-  if (!editing) return closeModal();
+document.getElementById('mSave').onclick = async () => {
+  if (!editing) return;
   const currentBoard = boardStack[boardStack.length - 1];
   const list = currentBoard.lists.find(l => l.id === editing.listId);
   const card = list && list.cards.find(c => c.id === editing.cardId);
@@ -924,12 +1352,18 @@ document.getElementById('mSave').onclick = () => {
   card.tags = mTags.value.split(/[,，]/).map(s => s.trim()).filter(Boolean);
   card.priority = mPriority.value;
   card.due = mDue.value;
-  card.attachment = mAttachment.value.trim();
   
-  // 收集待办清单：过滤掉空内容的
   card.checklist = editingChecklist
     .filter(c => c.text.trim())
     .map(c => ({ id: c.id || uid(), text: c.text.trim(), done: !!c.done }));
+
+  card.attachments = editingAttachments.map(a => {
+    if (a.kind === 'link') {
+      return { id: a.id, kind: 'link', name: a.name, size: 0, type: 'link', url: a.url };
+    } else {
+      return { id: a.id, kind: 'file', name: a.name, size: a.size || 0, type: a.type || '', data: a.data || '' };
+    }
+  });
 
   const newListId = mList.value;
   if (newListId !== editing.listId) {
@@ -940,6 +1374,9 @@ document.getElementById('mSave').onclick = () => {
     if (newList) newList.cards.push(moved);
   }
   closeModal(); render();
+  showLoading('保存中...');
+  try { await saveState(); }
+  finally { hideLoading(); }
 };
 
 document.getElementById('mEnterSubBoard').onclick = () => {
@@ -950,27 +1387,25 @@ document.getElementById('mEnterSubBoard').onclick = () => {
   if (card) enterSubBoard(card);
 };
 
-document.getElementById('mDelete').onclick = () => {
+document.getElementById('mDelete').onclick = async () => {
   if (!editing) return;
   if (!confirm('确定删除这张卡片？子看板也会被删除。')) return;
   const currentBoard = boardStack[boardStack.length - 1];
   const list = currentBoard.lists.find(l => l.id === editing.listId);
   if (list) list.cards = list.cards.filter(c => c.id !== editing.cardId);
-  closeModal(); render();
+  closeModal(); render(); await saveState();
 };
 
 /* =========================================================
-   看板点击事件
+   看板点击
    ========================================================= */
 board.addEventListener('click', (e) => {
   const upBtn = e.target.closest('[data-act="move-up"]');
   if (upBtn) { e.stopPropagation(); moveCardPriority(upBtn.dataset.cardId, -1); return; }
   const downBtn = e.target.closest('[data-act="move-down"]');
   if (downBtn) { e.stopPropagation(); moveCardPriority(downBtn.dataset.cardId, 1); return; }
-
   const moveBtn = e.target.closest('[data-act="quick-move"]');
   if (moveBtn) { e.stopPropagation(); openQuickMoveMenu(moveBtn.dataset.cardId); return; }
-
   const toggleBtn = e.target.closest('[data-act="toggle-sub"]');
   if (toggleBtn) {
     e.stopPropagation();
@@ -982,7 +1417,6 @@ board.addEventListener('click', (e) => {
     }
     render(); saveState(); return;
   }
-
   const subCardItem = e.target.closest('.sub-card-item');
   if (subCardItem) {
     e.stopPropagation();
@@ -1000,17 +1434,11 @@ board.addEventListener('click', (e) => {
     }
     return;
   }
-
   const actEl = e.target.closest('[data-act]');
   if (actEl) {
     const act = actEl.dataset.act;
     const listId = actEl.dataset.listId || (actEl.closest('.list') && actEl.closest('.list').dataset.id);
-
-    if (act === 'add-card') {
-      const listEl = actEl.closest('.list');
-      startAddCard(listEl, listId);
-      return;
-    }
+    if (act === 'add-card') { startAddCard(actEl.closest('.list'), listId); return; }
     if (act === 'del-list') {
       const currentBoard = boardStack[boardStack.length - 1];
       const list = currentBoard.lists.find(l => l.id === listId);
@@ -1018,7 +1446,7 @@ board.addEventListener('click', (e) => {
       if (currentBoard.lists.length <= 1) { alert('至少保留一个列表'); return; }
       if (confirm(`确定删除列表「${list.title}」及其所有卡片吗？`)) {
         currentBoard.lists = currentBoard.lists.filter(l => l.id !== listId);
-        render();
+        render(); saveState();
       }
       return;
     }
@@ -1030,17 +1458,14 @@ board.addEventListener('click', (e) => {
       return;
     }
   }
-
   const cardEl = e.target.closest('.card');
   if (cardEl) openCard(cardEl.dataset.id);
 });
 
-/* ---------- 快速添加卡片 ---------- */
 function startAddCard(listEl, listId) {
   if (!listEl) return;
   const exist = listEl.querySelector('.composer textarea');
   if (exist) { exist.focus(); return; }
-
   const cardsEl = listEl.querySelector('.cards');
   const composer = document.createElement('div');
   composer.className = 'composer';
@@ -1050,7 +1475,6 @@ function startAddCard(listEl, listId) {
   cardsEl.appendChild(composer);
   ta.focus();
   cardsEl.scrollTop = cardsEl.scrollHeight;
-
   const commit = () => {
     const v = ta.value.trim();
     if (!v) { composer.remove(); return; }
@@ -1059,11 +1483,10 @@ function startAddCard(listEl, listId) {
     if (!list) return;
     list.cards.push({ 
       id: uid(), title: v, desc: '', tags: [], priority: 'none', due: '', 
-      checklist: [], attachment: '', subBoard: null, isExpanded: false 
+      checklist: [], attachments: [], subBoard: null, isExpanded: false 
     });
-    render();
+    render(); saveState();
   };
-
   ta.addEventListener('keydown', (ev) => {
     if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); commit(); }
     else if (ev.key === 'Escape') { composer.remove(); }
@@ -1074,20 +1497,19 @@ function startAddCard(listEl, listId) {
 }
 
 /* =========================================================
-   顶栏操作
+   顶栏
    ========================================================= */
 document.getElementById('addListBtn').onclick = () => {
   const title = prompt('新列表名称', '新列表');
   if (title === null) return;
   const cb = boardStack[boardStack.length - 1];
   cb.lists.push({ id: uid(), title: title.trim() || '新列表', cards: [] });
-  render();
-  saveState();
+  render(); saveState();
 };
 
-document.getElementById('resetBtn').onclick = () => {
+document.getElementById('resetBtn').onclick = async () => {
   const answer = prompt(
-    '⚠️ 重置会清空所有看板数据，且不可恢复。\n\n' +
+    '⚠️ 重置会清空所有看板数据和附件，且不可恢复。\n\n' +
     '如果确定要重置，请手动输入以下文字：\n' +
     '我知道重置会把所有内容清空'
   );
@@ -1095,32 +1517,31 @@ document.getElementById('resetBtn').onclick = () => {
     if (answer !== null) alert('❌ 输入不正确，重置已取消。');
     return;
   }
-  state = defaultData();
-  syncBoardStack();
-  renderBoardSelect();
-  saveState();
-  render();
-  alert('✅ 已重置。');
+  showLoading('重置中...');
+  try {
+    await clearStateDB();
+    state = defaultData();
+    syncBoardStack(); renderBoardSelect();
+    await saveState(); render();
+    alert('✅ 已重置。');
+  } finally { hideLoading(); }
 };
 
 document.getElementById('exportBtn').onclick = () => {
   const cb = boardStack[boardStack.length - 1];
   const boardName = boardStack[0].title;
-  let csv = `\uFEFF看板: ${boardName}\n列表,标题,描述,标签,优先级,截止日期,待办清单,附件链接\n`;
+  let csv = `\uFEFF看板: ${boardName}\n列表,标题,描述,标签,优先级,截止日期,待办清单,本地附件,外部链接\n`;
   cb.lists.forEach(list => {
     list.cards.forEach(card => {
       const tags = (card.tags || []).join(' ');
       const checklistStr = (card.checklist || []).map(c => `${c.done ? '[x]' : '[ ]'}${c.text}`).join('; ');
+      const fileStr = (card.attachments || []).filter(a => a.kind === 'file').map(a => `${a.name}(${formatFileSize(a.size)})`).join('; ');
+      const linkStr = (card.attachments || []).filter(a => a.kind === 'link').map(a => `${a.name}: ${a.url}`).join('; ');
       const clean = s => String(s || '').replace(/"/g, '""').replace(/\n/g, ' ');
       csv += [
-        `"${clean(list.title)}"`,
-        `"${clean(card.title)}"`,
-        `"${clean(card.desc)}"`,
-        `"${clean(tags)}"`,
-        `"${card.priority || 'none'}"`,
-        `"${card.due || ''}"`,
-        `"${clean(checklistStr)}"`,
-        `"${clean(card.attachment)}"`
+        `"${clean(list.title)}"`, `"${clean(card.title)}"`, `"${clean(card.desc)}"`,
+        `"${clean(tags)}"`, `"${card.priority || 'none'}"`, `"${card.due || ''}"`,
+        `"${clean(checklistStr)}"`, `"${clean(fileStr)}"`, `"${clean(linkStr)}"`
       ].join(',') + '\n';
     });
   });
@@ -1132,67 +1553,120 @@ document.getElementById('exportBtn').onclick = () => {
   URL.revokeObjectURL(link.href);
 };
 
-document.getElementById('backupBtn').onclick = () => {
-  const dataStr = JSON.stringify(state, null, 2);
-  const blob = new Blob([dataStr], { type: 'application/json' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `栗子看板备份_${new Date().toISOString().slice(0,10)}.json`;
-  link.click();
-  URL.revokeObjectURL(link.href);
+document.getElementById('backupBtn').onclick = async () => {
+  let attCount = 0;
+  state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
+    attCount += (c.attachments || []).filter(a => a.kind === 'file').length;
+  })));
+  const msg = attCount > 0
+    ? `📥 备份 JSON 将导出【所有卡片 + ${attCount} 个本地附件】。\n\n本地附件以 Base64 内嵌，文件会比较大。\n外部链接只保存 URL。\n\n确定继续吗？`
+    : '📥 导出 JSON 备份？';
+  if (!confirm(msg)) return;
+  showLoading('正在生成 JSON...');
+  try {
+    const dataStr = JSON.stringify(state);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    const sizeMB = (blob.size / 1024 / 1024).toFixed(2);
+    link.download = `栗子看板备份_${new Date().toISOString().slice(0,10)}_${sizeMB}MB.json`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 2000);
+    alert(`✅ 已导出，文件大小约 ${sizeMB} MB`);
+  } finally { hideLoading(); }
 };
 
 const importFileInput = document.getElementById('importFileInput');
 document.getElementById('importBtn').onclick = () => importFileInput.click();
-importFileInput.onchange = (e) => {
+importFileInput.onchange = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    try {
-      const importedData = JSON.parse(ev.target.result);
-      if (importedData && Array.isArray(importedData.boards)) {
-        if (confirm('导入会覆盖当前所有数据，确定吗？')) {
-          state = importedData;
-          if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
-            state.currentBoardId = state.boards[0].id;
-          }
-          // 兼容：给卡片补字段
-          state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
-            if (!c.checklist) c.checklist = [];
-            if (!c.attachment) c.attachment = '';
-          })));
-          syncBoardStack(); renderBoardSelect(); saveState(); render();
-          alert('✅ 数据导入成功！');
-        }
-        return;
+  if (!confirm(`将导入「${file.name}」（${formatFileSize(file.size)}）。\n\n导入会覆盖当前所有数据，确定吗？`)) {
+    importFileInput.value = ''; return;
+  }
+  showLoading('正在导入 JSON...');
+  try {
+    const text = await file.text();
+    const importedData = JSON.parse(text);
+    if (importedData && Array.isArray(importedData.boards)) {
+      state = importedData;
+      if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
+        state.currentBoardId = state.boards[0].id;
       }
-      if (importedData && Array.isArray(importedData.lists)) {
-        if (confirm('导入会覆盖当前所有数据，确定吗？')) {
-          const upgradeBoard = { id: uid(), name: '导入的看板', lists: importedData.lists };
-          upgradeBoard.lists.forEach(l => l.cards.forEach(c => {
-            if (!c.checklist) c.checklist = [];
-            if (!c.attachment) c.attachment = '';
-          }));
-          state = { boards: [upgradeBoard], currentBoardId: upgradeBoard.id };
-          syncBoardStack(); renderBoardSelect(); saveState(); render();
-          alert('✅ 数据导入成功！');
-        }
-        return;
-      }
-      alert('❌ 文件格式错误');
-    } catch (err) { alert('❌ 读取失败'); }
-  };
-  reader.readAsText(file);
-  importFileInput.value = '';
+    } else if (importedData && Array.isArray(importedData.lists)) {
+      const upgradeBoard = { id: uid(), name: '导入的看板', lists: importedData.lists };
+      state = { boards: [upgradeBoard], currentBoardId: upgradeBoard.id };
+    } else {
+      throw new Error('文件格式不对');
+    }
+    state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
+      if (!c.checklist) c.checklist = [];
+      if (!c.attachments) c.attachments = [];
+      // 兼容旧数据结构
+      c.attachments.forEach(a => {
+        if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file';
+      });
+    })));
+    syncBoardStack(); renderBoardSelect();
+    await saveState(); render();
+    alert('✅ 导入成功！');
+  } catch (err) {
+    console.error(err);
+    alert('❌ 导入失败：' + err.message);
+  } finally {
+    hideLoading();
+    importFileInput.value = '';
+  }
 };
 
 /* =========================================================
    初始化
    ========================================================= */
-syncBoardStack();
-renderBoardSelect();
-render();
+async function init() {
+  showLoading('加载数据...');
+  try {
+    await openStateDB();
+    const dbState = await loadStateFromDB();
+    if (dbState && dbState.boards && dbState.boards.length > 0) {
+      state = dbState;
+    } else {
+      const old = localStorage.getItem('chestnut-kanban-v5') 
+               || localStorage.getItem('chestnut-kanban-v4')
+               || localStorage.getItem('chestnut-kanban-v3');
+      if (old) {
+        try {
+          const d = JSON.parse(old);
+          if (d && Array.isArray(d.boards) && d.boards.length > 0) state = d;
+          else if (d && Array.isArray(d.lists)) {
+            state = { boards: [{ id: uid(), name: '我的看板', lists: d.lists }], currentBoardId: null };
+            state.currentBoardId = state.boards[0].id;
+          }
+        } catch (e) {}
+      }
+      if (!state) state = defaultData();
+      if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
+        state.currentBoardId = state.boards[0].id;
+      }
+      await saveState();
+    }
+    state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
+      if (!c.checklist) c.checklist = [];
+      if (!c.attachments) c.attachments = [];
+      c.attachments.forEach(a => {
+        if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file';
+      });
+    })));
+  } catch (e) {
+    console.error(e);
+    state = defaultData();
+    state.currentBoardId = state.boards[0].id;
+  }
+  syncBoardStack();
+  renderBoardSelect();
+  render();
+  hideLoading();
+}
+init();
 </script>
 </body>
 </html>
