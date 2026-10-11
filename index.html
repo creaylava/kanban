@@ -113,10 +113,25 @@
   .expand-sub-btn:hover, .expand-sub-btn.expanded { background: var(--accent); color: #fff; }
   .preview-sub-btn {background: rgba(59,130,246,.1); color: #3b82f6; border: none; font-size: 12px; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-weight: bold;}
   .preview-sub-btn:hover { background: #3b82f6; color: #fff; }
+  
+  /* ★ 修改：子卡片样式支持删除按钮 */
   .sub-board-preview {margin-top: 10px; padding: 10px; background: var(--sub-bg); border-radius: 8px; border: 1px solid var(--sub-border);}
   .sub-board-preview .sub-list-title {font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px;}
-  .sub-board-preview .sub-card-item {font-size: 13px; padding: 5px 8px; background: var(--card-bg); border-radius: 6px; margin-bottom: 4px; border: 1px solid var(--border); cursor: pointer;}
-  .sub-board-preview .sub-card-item:hover { border-color: var(--accent); color: var(--accent); }
+  .sub-board-preview .sub-card-item {
+    font-size: 13px; padding: 5px 8px; background: var(--card-bg);
+    border-radius: 6px; margin-bottom: 4px; border: 1px solid var(--border);
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  }
+  .sub-board-preview .sub-card-item:hover { border-color: var(--accent); }
+  .sub-card-title {
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .del-sub-card-btn {
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    font-size: 14px; padding: 2px 6px; line-height: 1; flex-shrink: 0;
+    border-radius: 4px; transition: .15s;
+  }
+  .del-sub-card-btn:hover { background: #d0453a; color: #fff; }
   .sub-board-preview .empty-sub {font-size: 12px; color: var(--muted); font-style: italic;}
 
   /* ★ 列表底部的按钮组 */
@@ -1060,8 +1075,12 @@ function renderCard(card) {
       if (total === 0) content = '<div class="empty-sub">子看板为空</div>';
       else card.subBoard.lists.forEach(l => {
         content += `<div class="sub-list-title">📁 ${esc(l.title)} (${l.cards.length})</div>`;
+        // ★ 修改：子卡片增加删除按钮
         l.cards.forEach(c => {
-          content += `<div class="sub-card-item" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}">${esc(c.title)} <span style="color:var(--muted);font-size:11px;">›</span></div>`;
+          content += `<div class="sub-card-item" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}">
+            <span class="sub-card-title">${esc(c.title)}</span>
+            <button class="del-sub-card-btn" data-act="del-sub-card" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}" title="删除子卡片">✕</button>
+          </div>`;
         });
       });
     }
@@ -1844,6 +1863,40 @@ board.addEventListener('click', e => {
     }
     render(); saveState(); return;
   }
+
+  // ★ 删除子卡片 (必须放在进入子看板逻辑之前，且阻止事件冒泡)
+  const delSubBtn = e.target.closest('[data-act="del-sub-card"]');
+  if (delSubBtn) {
+    e.stopPropagation();
+    const parentCardId = delSubBtn.dataset.parentCardId;
+    const subListId = delSubBtn.dataset.subListId;
+    const subCardId = delSubBtn.dataset.subCardId;
+    
+    if (confirm('确定删除这张子卡片吗？')) {
+      const cb = boardStack[boardStack.length - 1];
+      let found = false;
+      for (const l of cb.lists) {
+        const pCard = l.cards.find(c => c.id === parentCardId);
+        if (pCard && pCard.subBoard) {
+          const sList = pCard.subBoard.lists.find(sl => sl.id === subListId);
+          if (sList) {
+            const initLen = sList.cards.length;
+            sList.cards = sList.cards.filter(sc => sc.id !== subCardId);
+            if (sList.cards.length < initLen) found = true;
+            break;
+          }
+        }
+      }
+      if (found) {
+        render(); 
+        saveState();
+      } else {
+        alert('未找到该子卡片，可能已被删除');
+      }
+    }
+    return;
+  }
+
   const sc = e.target.closest('.sub-card-item');
   if (sc) {
     e.stopPropagation();
