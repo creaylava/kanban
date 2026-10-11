@@ -111,6 +111,9 @@
   .quick-move-btn:hover { background: var(--accent); color: #fff; }
   .expand-sub-btn {background: rgba(100,100,100,.08); color: var(--muted); border: none; font-size: 12px; padding: 3px 8px; border-radius: 6px; cursor: pointer;}
   .expand-sub-btn:hover, .expand-sub-btn.expanded { background: var(--accent); color: #fff; }
+  /* 新的预览按钮 */
+  .preview-sub-btn {background: rgba(59,130,246,.1); color: #3b82f6; border: none; font-size: 12px; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-weight: bold;}
+  .preview-sub-btn:hover { background: #3b82f6; color: #fff; }
   .sub-board-preview {margin-top: 10px; padding: 10px; background: var(--sub-bg); border-radius: 8px; border: 1px solid var(--sub-border);}
   .sub-board-preview .sub-list-title {font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px;}
   .sub-board-preview .sub-card-item {font-size: 13px; padding: 5px 8px; background: var(--card-bg); border-radius: 6px; margin-bottom: 4px; border: 1px solid var(--border); cursor: pointer;}
@@ -187,12 +190,84 @@
   #previewContent img {max-width: 95%; max-height: 90vh; object-fit: contain;}
   #previewContent .preview-loading {color: #fff; font-size: 14px;}
 
+  /* 子看板预览弹窗 */
+  #subPreviewOverlay {background: rgba(30,25,20,.55); align-items: center; justify-content: center; z-index: 180; padding: 20px;}
+  #subPreviewModal {
+    background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 640px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.4); max-height: 85vh;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  #subPreviewHeader {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  #subPreviewHeader h2 {
+    font-size: 16px; font-weight: 700; flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  #subPreviewHeader .sub-preview-close {
+    background: none; border: none; font-size: 22px; color: var(--muted);
+    cursor: pointer; padding: 0 4px; line-height: 1;
+  }
+  #subPreviewHeader .sub-preview-close:hover { color: var(--text); }
+  #subPreviewBody {
+    flex: 1; overflow-y: auto; padding: 12px 16px 20px;
+  }
+  .sub-preview-list {
+    margin-bottom: 16px;
+  }
+  .sub-preview-list-title {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    padding: 6px 0; display: flex; align-items: center; gap: 6px;
+  }
+  .sub-preview-list-count {
+    font-size: 11px; color: var(--muted); background: rgba(0,0,0,.06);
+    padding: 1px 7px; border-radius: 10px; font-weight: 600;
+  }
+  body.dark .sub-preview-list-count { background: rgba(255,255,255,.1); }
+  .sub-preview-card {
+    padding: 10px 12px; margin-bottom: 8px;
+    background: var(--sub-bg); border: 1px solid var(--sub-border);
+    border-radius: 8px; cursor: pointer; transition: .15s;
+  }
+  .sub-preview-card:hover {
+    border-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .sub-preview-card-title {
+    font-size: 13px; font-weight: 600; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .sub-preview-card-title .priority-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .priority-dot.high { background: #e2574c; }
+  .priority-dot.medium { background: #e8a33d; }
+  .priority-dot.low { background: #3f9d7c; }
+  .sub-preview-card-desc {
+    font-size: 11px; color: var(--muted); margin-top: 2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .sub-preview-card-meta {
+    display: flex; gap: 10px; margin-top: 6px;
+    font-size: 10px; color: var(--muted); flex-wrap: wrap;
+  }
+  .sub-preview-empty {
+    font-size: 12px; color: var(--muted); font-style: italic;
+    text-align: center; padding: 30px 10px;
+  }
+  .sub-preview-nested {
+    margin-top: 6px; padding-left: 12px; border-left: 2px solid var(--sub-border);
+    font-size: 11px; color: var(--muted);
+  }
+  .sub-preview-nested-item {
+    padding: 3px 0;
+  }
+
   #loadingOverlay {position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 999; color: #fff; font-size: 16px;}
   #loadingOverlay.show {display: flex;}
   #loadingOverlay .spinner {width: 24px; height: 24px; border: 3px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 12px;}
   @keyframes spin {to {transform: rotate(360deg);}}
 
-  /* 同步弹窗 */
   .sync-status {padding: 10px 12px; border-radius: 10px; font-size: 12px; background: var(--input-bg); border: 1px solid var(--border); margin-bottom: 14px; line-height: 1.6; white-space: pre-wrap;}
   .sync-status.ok {border-color: #22c55e; background: rgba(34,197,94,.08); color: #22c55e;}
   .sync-status.err {border-color: #ef4444; background: rgba(239,68,68,.08); color: #ef4444;}
@@ -208,6 +283,7 @@
     header h1 { display: none; }
     .board-selector { max-width: 100px; font-size: 12px; }
     .list { flex: 0 0 250px; width: 250px; }
+    #subPreviewModal { max-height: 92vh; }
   }
 </style>
 </head>
@@ -233,7 +309,6 @@
 <div id="breadcrumb"></div>
 <main id="board"></main>
 
-<!-- 卡片编辑弹窗 -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <input id="mTitle" class="m-title" placeholder="卡片标题">
@@ -246,14 +321,14 @@
     </div>
 
     <div class="field">
-      <label>附件（本地文件 ≤ 30MB 或 OneDrive 等外链）</label>
+      <label>附件（本地文件 ≤ 500KB 或 OneDrive 等外链）</label>
       <div class="attachment-actions">
         <button type="button" class="btn small" id="addAttachmentBtn">📎 上传本地文件</button>
         <button type="button" class="btn small" id="addLinkBtn">🔗 添加外部链接</button>
       </div>
       <div class="attachments-container" id="attachmentsContainer"></div>
       <div class="attachment-hint">
-        📌 本地文件随 JSON 备份保存；GitHub 同步时，超过 500KB 的附件不会上传（只传文件名）。
+        📌 本地文件会随 JSON 备份和 GitHub 同步一起保存（≤500KB/个）。
       </div>
       <input type="file" id="attachmentFileInput" multiple style="display:none;">
     </div>
@@ -326,7 +401,6 @@
   </div>
 </div>
 
-<!-- 预览弹窗 -->
 <div class="overlay" id="previewOverlay">
   <div class="preview-toolbar">
     <div class="preview-title" id="previewTitle"></div>
@@ -337,7 +411,19 @@
   <div id="previewContent"></div>
 </div>
 
-<!-- GitHub 同步弹窗 -->
+<!-- ★ 新增：子看板预览弹窗 -->
+<div class="overlay" id="subPreviewOverlay">
+  <div id="subPreviewModal">
+    <div id="subPreviewHeader">
+      <span style="font-size:20px;">📁</span>
+      <h2 id="subPreviewTitle">子看板预览</h2>
+      <button class="btn small" id="subPreviewEnterBtn">进入子看板</button>
+      <button class="sub-preview-close" id="subPreviewCloseBtn">✕</button>
+    </div>
+    <div id="subPreviewBody"></div>
+  </div>
+</div>
+
 <div class="overlay" id="syncOverlay">
   <div class="modal" style="max-width:480px;">
     <div class="m-title">☁️ GitHub 同步</div>
@@ -366,11 +452,6 @@
       <label for="autoSyncCheck">自动同步（修改后 3 秒上传）</label>
     </div>
 
-    <div class="checkbox-row">
-      <input type="checkbox" id="syncAttachCheck">
-      <label for="syncAttachCheck">同步附件（可能因文件过大失败）</label>
-    </div>
-
     <div class="modal-actions" style="margin-top:10px;">
       <button class="btn" id="testConnBtn">🔌 测试</button>
       <button class="btn" id="syncPullBtn">⬇️ 拉取</button>
@@ -393,7 +474,7 @@ const DB_NAME = 'kanban_db_v2';
 const DB_VERSION = 1;
 const STATE_STORE = 'state';
 const STATE_KEY = 'main';
-const MAX_FILE_SIZE = 30 * 1024 * 1024;
+const MAX_FILE_SIZE = 500 * 1024;
 
 let stateDB = null;
 function openStateDB() {
@@ -404,7 +485,7 @@ function openStateDB() {
       if (!d.objectStoreNames.contains(STATE_STORE)) d.createObjectStore(STATE_STORE);
     };
     req.onsuccess = (e) => { stateDB = e.target.result; resolve(); };
-    req.onerror = (e) => reject(e);
+    req.onerror = reject;
   });
 }
 function loadStateFromDB() {
@@ -509,6 +590,7 @@ let renamingListId = null;
 let editingChecklist = [];
 let editingAttachments = [];
 let currentPreviewURL = null;
+let previewingCardId = null;   // 当前预览的子看板所属卡片
 
 function getCurrentBoard() {
   let b = state.boards.find(b => b.id === state.currentBoardId);
@@ -530,13 +612,11 @@ async function saveState() {
 const GH_TOKEN_KEY = 'chestnut-kanban-gh-token';
 const GH_GIST_KEY = 'chestnut-kanban-gh-gist';
 const AUTO_SYNC_KEY = 'chestnut-kanban-auto-sync';
-const SYNC_ATTACH_KEY = 'chestnut-kanban-sync-attach';
-const MAX_SYNC_SIZE = 900 * 1024;   // 900KB，留余量给 GitHub API 的 1MB 限制
+const MAX_SYNC_SIZE = 900 * 1024;
 
 let ghToken = localStorage.getItem(GH_TOKEN_KEY) || '';
 let ghGistId = localStorage.getItem(GH_GIST_KEY) || '';
 let autoSyncEnabled = localStorage.getItem(AUTO_SYNC_KEY) === '1';
-let syncAttachmentsEnabled = localStorage.getItem(SYNC_ATTACH_KEY) === '1';
 let _isPushing = false;
 let _pushTimer = null;
 let _lastSyncTime = null;
@@ -547,29 +627,10 @@ function setSyncStatus(msg, type) {
   box.textContent = msg;
   box.className = 'sync-status ' + (type || '');
 }
-
 function schedulePush() {
   if (_pushTimer) clearTimeout(_pushTimer);
   _pushTimer = setTimeout(() => pushToCloud({ silent: true }), 3000);
 }
-
-// 生成用于同步的数据：如果不同步附件，则去掉附件 data 字段
-function buildSyncPayload() {
-  const copy = JSON.parse(JSON.stringify(state));
-  if (!syncAttachmentsEnabled) {
-    copy.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
-      (c.attachments || []).forEach(a => {
-        if (a.kind === 'file') {
-          // 保留元数据，去掉 data
-          a.data = '';
-          a._noData = true;  // 标记，拉取时提示
-        }
-      });
-    })));
-  }
-  return copy;
-}
-
 async function ghFetchGist() {
   const res = await fetch(`https://api.github.com/gists/${ghGistId}`, {
     headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github+json' }
@@ -585,12 +646,11 @@ async function ghUpdateGist(content) {
       'Accept': 'application/vnd.github+json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ files: { 'kanban.json': { content: content } } })
+    body: JSON.stringify({ files: { 'kanban.json': { content } } })
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0, 150)}`);
   return res.json();
 }
-
 async function testConnection() {
   if (!ghToken || !ghGistId) { setSyncStatus('❌ 请先填写 Token 和 Gist ID', 'err'); return false; }
   try {
@@ -605,7 +665,6 @@ async function testConnection() {
     return false;
   }
 }
-
 async function pushToCloud(opts = {}) {
   if (!ghToken || !ghGistId) {
     if (!opts.silent) setSyncStatus('❌ 请先填写 Token 和 Gist ID', 'err');
@@ -614,21 +673,17 @@ async function pushToCloud(opts = {}) {
   try {
     _isPushing = true;
     setSyncStatus('⏫ 上传中...', 'info');
-    const payload = buildSyncPayload();
-    const content = JSON.stringify(payload);
+    const content = JSON.stringify(state);
     const sizeKB = (new Blob([content]).size / 1024).toFixed(1);
-    
     if (new Blob([content]).size > MAX_SYNC_SIZE) {
-      setSyncStatus(`❌ 数据太大（${sizeKB} KB），超过 900KB 限制。\n请关闭「同步附件」，或将附件改为外部链接。`, 'err');
-      if (!opts.silent) alert('数据过大，无法上传。请关闭附件同步选项，或减少附件。');
+      setSyncStatus(`❌ 数据太大（${sizeKB} KB），超过 900KB 限制。`, 'err');
+      if (!opts.silent) alert('数据过大，无法上传。');
       _isPushing = false;
       return;
     }
-    
     await ghUpdateGist(content);
     _lastSyncTime = new Date();
-    setSyncStatus(`✅ 已上传（${sizeKB} KB，${_lastSyncTime.toLocaleTimeString()}）` +
-      (syncAttachmentsEnabled ? '' : '\n⚠️ 当前未同步附件数据'), 'ok');
+    setSyncStatus(`✅ 已上传（${sizeKB} KB，${_lastSyncTime.toLocaleTimeString()}）`, 'ok');
   } catch (e) {
     console.error(e);
     setSyncStatus('❌ 上传失败：' + e.message, 'err');
@@ -637,7 +692,6 @@ async function pushToCloud(opts = {}) {
     setTimeout(() => { _isPushing = false; }, 500);
   }
 }
-
 async function pullFromCloud(opts = {}) {
   if (!ghToken || !ghGistId) {
     if (!opts.silent) setSyncStatus('❌ 请先填写 Token 和 Gist ID', 'err');
@@ -655,21 +709,15 @@ async function pullFromCloud(opts = {}) {
     }
     const cloudData = JSON.parse(raw);
     if (!cloudData.boards || !Array.isArray(cloudData.boards)) throw new Error('云端数据格式不对');
-    
     _isPushing = true;
     state = cloudData;
     if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
       state.currentBoardId = state.boards[0].id;
     }
-    // 补字段 + 标记缺失附件
-    let missingAttCount = 0;
     state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
       if (!c.checklist) c.checklist = [];
       if (!c.attachments) c.attachments = [];
-      c.attachments.forEach(a => {
-        if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file';
-        if (a._noData || (a.kind === 'file' && !a.data)) missingAttCount++;
-      });
+      c.attachments.forEach(a => { if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file'; });
     })));
     await saveStateToDB(state);
     syncBoardStack();
@@ -677,9 +725,7 @@ async function pullFromCloud(opts = {}) {
     render();
     setTimeout(() => { _isPushing = false; }, 500);
     _lastSyncTime = new Date();
-    let msg = `✅ 已拉取（${_lastSyncTime.toLocaleTimeString()}）`;
-    if (missingAttCount > 0) msg += `\n⚠️ ${missingAttCount} 个附件因未同步数据，无法在此设备预览/下载`;
-    setSyncStatus(msg, 'ok');
+    setSyncStatus(`✅ 已拉取（${_lastSyncTime.toLocaleTimeString()}）`, 'ok');
   } catch (e) {
     console.error(e);
     setSyncStatus('❌ 拉取失败：' + e.message, 'err');
@@ -820,9 +866,8 @@ function renderCard(card) {
   if (atts.length > 0) {
     const files = atts.filter(a => a.kind === 'file');
     const links = atts.filter(a => a.kind === 'link');
-    const missCount = files.filter(a => !a.data).length;
     const parts = [];
-    if (files.length > 0) parts.push(`📎 ${files.length}${missCount > 0 ? '⚠' : ''}`);
+    if (files.length > 0) parts.push(`📎 ${files.length}`);
     if (links.length > 0) parts.push(`🔗 ${links.length}`);
     ai = `<span class="indicator">${parts.join(' ')}</span>`;
   }
@@ -850,6 +895,10 @@ function renderCard(card) {
   const sbBtn = card.subBoard
     ? `<button class="expand-sub-btn ${card.isExpanded?'expanded':''}" data-act="toggle-sub" data-card-id="${card.id}">${card.isExpanded?'[-] 收起':'[+] 子看板'}</button>`
     : '';
+  // ★ 新增：预览按钮
+  const previewBtn = card.subBoard
+    ? `<button class="preview-sub-btn" data-act="preview-sub" data-card-id="${card.id}" title="预览子看板内容">👁</button>`
+    : '';
   
   return `
     <div class="card${pClass}" data-id="${card.id}">
@@ -867,6 +916,7 @@ function renderCard(card) {
         </div>
         <div class="footer-right">
           <button class="quick-move-btn" data-act="quick-move" data-card-id="${card.id}">⇄ 移动</button>
+          ${previewBtn}
           ${sbBtn}
         </div>
       </div>
@@ -929,6 +979,101 @@ function moveCard(cardId, targetListId) {
   render(); saveState();
 }
 document.getElementById('quickMoveCancel').onclick = () => quickMoveOverlay.classList.remove('show');
+
+/* =========================================================
+   ★ 子看板预览
+   ========================================================= */
+const subPreviewOverlay = document.getElementById('subPreviewOverlay');
+const subPreviewBody = document.getElementById('subPreviewBody');
+const subPreviewTitle = document.getElementById('subPreviewTitle');
+
+function findCardById(cardId) {
+  const cb = boardStack[boardStack.length - 1];
+  for (const l of cb.lists) {
+    const c = l.cards.find(x => x.id === cardId);
+    if (c) return c;
+  }
+  return null;
+}
+
+function openSubPreview(cardId) {
+  const card = findCardById(cardId);
+  if (!card || !card.subBoard) return;
+  previewingCardId = cardId;
+  subPreviewTitle.textContent = card.title;
+  subPreviewBody.innerHTML = renderSubPreviewContent(card.subBoard.lists);
+  subPreviewOverlay.classList.add('show');
+}
+
+function renderSubPreviewContent(lists) {
+  if (!lists || lists.length === 0) {
+    return '<div class="sub-preview-empty">子看板为空</div>';
+  }
+  let totalCards = lists.reduce((s, l) => s + l.cards.length, 0);
+  if (totalCards === 0) {
+    return '<div class="sub-preview-empty">子看板里还没有卡片</div>';
+  }
+  let html = '';
+  lists.forEach(list => {
+    html += `<div class="sub-preview-list">`;
+    html += `<div class="sub-preview-list-title">📁 ${esc(list.title)} <span class="sub-preview-list-count">${list.cards.length}</span></div>`;
+    if (list.cards.length === 0) {
+      html += `<div style="font-size:11px;color:var(--muted);padding:4px 0;">（空）</div>`;
+    } else {
+      list.cards.forEach(card => {
+        const pClass = card.priority && card.priority !== 'none' ? card.priority : '';
+        const done = (card.checklist || []).filter(c => c.done).length;
+        const total = (card.checklist || []).length;
+        const atts = card.attachments || [];
+        const files = atts.filter(a => a.kind === 'file').length;
+        const links = atts.filter(a => a.kind === 'link').length;
+        
+        const metaParts = [];
+        if (card.owner) metaParts.push(`👤 ${esc(card.owner)}`);
+        if (total > 0) metaParts.push(`☑ ${done}/${total}`);
+        if (files > 0) metaParts.push(`📎 ${files}`);
+        if (links > 0) metaParts.push(`🔗 ${links}`);
+        if (card.due) metaParts.push(`📅 ${card.due}`);
+        
+        html += `<div class="sub-preview-card">
+          <div class="sub-preview-card-title">`;
+        if (pClass) html += `<span class="priority-dot ${pClass}"></span>`;
+        html += `${esc(card.title)}</div>`;
+        if (card.desc) html += `<div class="sub-preview-card-desc">${esc(card.desc)}</div>`;
+        if (metaParts.length > 0) html += `<div class="sub-preview-card-meta">${metaParts.join(' · ')}</div>`;
+        
+        // 如果卡片还有更深的子看板，用缩进文字提示
+        if (card.subBoard) {
+          const nestedTotal = card.subBoard.lists.reduce((s, l) => s + l.cards.length, 0);
+          html += `<div class="sub-preview-nested">📁 下级子看板（${nestedTotal} 个卡片）</div>`;
+        }
+        html += `</div>`;
+      });
+    }
+    html += `</div>`;
+  });
+  return html;
+}
+
+document.getElementById('subPreviewCloseBtn').onclick = () => {
+  subPreviewOverlay.classList.remove('show');
+  previewingCardId = null;
+};
+subPreviewOverlay.addEventListener('click', e => {
+  if (e.target === subPreviewOverlay) {
+    subPreviewOverlay.classList.remove('show');
+    previewingCardId = null;
+  }
+});
+document.getElementById('subPreviewEnterBtn').onclick = () => {
+  if (!previewingCardId) return;
+  const card = findCardById(previewingCardId);
+  if (card) {
+    subPreviewOverlay.classList.remove('show');
+    previewingCardId = null;
+    enterSubBoard(card);
+  }
+};
 
 /* =========================================================
    列表重命名
@@ -1007,7 +1152,7 @@ function renderAttachmentsUI() {
     div.className = 'attachment-item';
     const isLink = att.kind === 'link';
     const icon = isLink ? '🔗' : getFileIcon(att.name, att.type);
-    const sizeText = isLink ? '外部链接' : (att.data ? formatFileSize(att.size) : '⚠️ 附件数据缺失');
+    const sizeText = isLink ? '外部链接' : formatFileSize(att.size);
     const isImg = !isLink && att.type && att.type.startsWith('image/') && att.data;
     const thumb = isImg
       ? `<img class="file-thumb" data-index="${i}" src="${att.data}">`
@@ -1049,7 +1194,7 @@ function previewAttachment(att) {
     if (att.url) window.open(att.url, '_blank');
     return;
   }
-  if (!att.data) { alert('⚠️ 该附件的文件数据未同步到本设备，无法预览。\n请在原设备上查看，或重新上传。'); return; }
+  if (!att.data) { alert('⚠️ 附件数据缺失'); return; }
   const mime = att.type || '';
   const ln = (att.name || '').toLowerCase();
   if (mime.includes('html') || ln.endsWith('.html') || ln.endsWith('.htm')) return showPreviewFrame(att.data, att.name);
@@ -1138,7 +1283,10 @@ attachmentFileInput.addEventListener('change', async e => {
   showLoading('处理附件...');
   try {
     for (const f of files) {
-      if (f.size > MAX_FILE_SIZE) { alert(`❌ 「${f.name}」超过 30MB，已跳过`); continue; }
+      if (f.size > MAX_FILE_SIZE) {
+        alert(`❌ 「${f.name}」大小 ${formatFileSize(f.size)}，超过 500KB 限制，已跳过。\n\n建议：大文件放到 OneDrive，用「🔗 添加外部链接」贴进来。`);
+        continue;
+      }
       try {
         const dataURL = await fileToDataURL(f);
         editingAttachments.push({
@@ -1267,6 +1415,10 @@ board.addEventListener('click', e => {
   if (dn) { e.stopPropagation(); moveCardPriority(dn.dataset.cardId, 1); return; }
   const mv = e.target.closest('[data-act="quick-move"]');
   if (mv) { e.stopPropagation(); openQuickMoveMenu(mv.dataset.cardId); return; }
+  // ★ 预览子看板
+  const pv = e.target.closest('[data-act="preview-sub"]');
+  if (pv) { e.stopPropagation(); openSubPreview(pv.dataset.cardId); return; }
+  
   const tg = e.target.closest('[data-act="toggle-sub"]');
   if (tg) {
     e.stopPropagation();
@@ -1402,7 +1554,7 @@ document.getElementById('backupBtn').onclick = async () => {
   state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
     cnt += (c.attachments||[]).filter(a => a.kind === 'file').length;
   })));
-  const msg = cnt > 0 ? `📥 备份将导出所有卡片 + ${cnt} 个本地附件（Base64 内嵌）。文件会较大。继续吗？` : '📥 导出 JSON 备份？';
+  const msg = cnt > 0 ? `📥 备份将导出所有卡片 + ${cnt} 个本地附件（Base64 内嵌）。继续吗？` : '📥 导出 JSON 备份？';
   if (!confirm(msg)) return;
   showLoading('生成 JSON...');
   try {
@@ -1458,13 +1610,11 @@ const syncOverlay = document.getElementById('syncOverlay');
 const ghTokenInput = document.getElementById('ghTokenInput');
 const ghGistInput = document.getElementById('ghGistInput');
 const autoSyncCheck = document.getElementById('autoSyncCheck');
-const syncAttachCheck = document.getElementById('syncAttachCheck');
 
 document.getElementById('syncBtn').onclick = () => {
   ghTokenInput.value = ghToken;
   ghGistInput.value = ghGistId;
   autoSyncCheck.checked = autoSyncEnabled;
-  syncAttachCheck.checked = syncAttachmentsEnabled;
   if (!ghToken || !ghGistId) {
     setSyncStatus('ℹ️ 首次使用：\n1. 生成 GitHub Token（gist 权限）\n2. 创建 Gist，文件名 kanban.json，内容 {}\n3. 填入 Token 和 Gist ID\n4. 点「推送」上传当前数据', 'info');
   } else if (_lastSyncTime) {
@@ -1495,10 +1645,6 @@ autoSyncCheck.onchange = () => {
   autoSyncEnabled = autoSyncCheck.checked;
   localStorage.setItem(AUTO_SYNC_KEY, autoSyncEnabled ? '1' : '0');
   if (autoSyncEnabled && ghToken && ghGistId) pushToCloud({ silent: true });
-};
-syncAttachCheck.onchange = () => {
-  syncAttachmentsEnabled = syncAttachCheck.checked;
-  localStorage.setItem(SYNC_ATTACH_KEY, syncAttachmentsEnabled ? '1' : '0');
 };
 document.getElementById('syncPushBtn').onclick = () => {
   ghToken = ghTokenInput.value.trim();
