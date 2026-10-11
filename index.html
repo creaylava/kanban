@@ -111,7 +111,6 @@
   .quick-move-btn:hover { background: var(--accent); color: #fff; }
   .expand-sub-btn {background: rgba(100,100,100,.08); color: var(--muted); border: none; font-size: 12px; padding: 3px 8px; border-radius: 6px; cursor: pointer;}
   .expand-sub-btn:hover, .expand-sub-btn.expanded { background: var(--accent); color: #fff; }
-  /* 新的预览按钮 */
   .preview-sub-btn {background: rgba(59,130,246,.1); color: #3b82f6; border: none; font-size: 12px; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-weight: bold;}
   .preview-sub-btn:hover { background: #3b82f6; color: #fff; }
   .sub-board-preview {margin-top: 10px; padding: 10px; background: var(--sub-bg); border-radius: 8px; border: 1px solid var(--sub-border);}
@@ -190,7 +189,6 @@
   #previewContent img {max-width: 95%; max-height: 90vh; object-fit: contain;}
   #previewContent .preview-loading {color: #fff; font-size: 14px;}
 
-  /* 子看板预览弹窗 */
   #subPreviewOverlay {background: rgba(30,25,20,.55); align-items: center; justify-content: center; z-index: 180; padding: 20px;}
   #subPreviewModal {
     background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 640px;
@@ -279,10 +277,39 @@
   .help-text code {background: var(--input-bg); padding: 1px 5px; border-radius: 4px; font-family: ui-monospace, monospace; font-size: 10px;}
   .help-text a {color: var(--accent);}
 
+  /* =========================================================
+     ★ 移动端竖屏优化
+     ========================================================= */
   @media (max-width: 640px) {
+    header { padding: 8px 10px; gap: 5px; }
     header h1 { display: none; }
-    .board-selector { max-width: 100px; font-size: 12px; }
-    .list { flex: 0 0 250px; width: 250px; }
+    .board-selector { max-width: 90px; font-size: 12px; }
+    .btn { padding: 5px 8px; font-size: 11px; }
+
+    /* 列表宽度调整：屏幕宽度的 85%，避免横屏滑动时视野太窄 */
+    .list {
+      flex: 0 0 85vw;
+      width: 85vw;
+      max-width: 300px;
+    }
+
+    /* 卡片底部按钮换行处理 */
+    .card-footer {
+      flex-wrap: wrap;
+      row-gap: 6px;
+      justify-content: space-between;
+    }
+    .footer-right {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 4px;
+    }
+    /* 强制按钮文字不换行 */
+    .action-btn, .quick-move-btn, .expand-sub-btn, .preview-sub-btn {
+      padding: 4px 6px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
     #subPreviewModal { max-height: 92vh; }
   }
 </style>
@@ -411,7 +438,6 @@
   <div id="previewContent"></div>
 </div>
 
-<!-- ★ 新增：子看板预览弹窗 -->
 <div class="overlay" id="subPreviewOverlay">
   <div id="subPreviewModal">
     <div id="subPreviewHeader">
@@ -590,7 +616,7 @@ let renamingListId = null;
 let editingChecklist = [];
 let editingAttachments = [];
 let currentPreviewURL = null;
-let previewingCardId = null;   // 当前预览的子看板所属卡片
+let previewingCardId = null;
 
 function getCurrentBoard() {
   let b = state.boards.find(b => b.id === state.currentBoardId);
@@ -895,7 +921,6 @@ function renderCard(card) {
   const sbBtn = card.subBoard
     ? `<button class="expand-sub-btn ${card.isExpanded?'expanded':''}" data-act="toggle-sub" data-card-id="${card.id}">${card.isExpanded?'[-] 收起':'[+] 子看板'}</button>`
     : '';
-  // ★ 新增：预览按钮
   const previewBtn = card.subBoard
     ? `<button class="preview-sub-btn" data-act="preview-sub" data-card-id="${card.id}" title="预览子看板内容">👁</button>`
     : '';
@@ -981,7 +1006,7 @@ function moveCard(cardId, targetListId) {
 document.getElementById('quickMoveCancel').onclick = () => quickMoveOverlay.classList.remove('show');
 
 /* =========================================================
-   ★ 子看板预览
+   子看板预览
    ========================================================= */
 const subPreviewOverlay = document.getElementById('subPreviewOverlay');
 const subPreviewBody = document.getElementById('subPreviewBody');
@@ -1042,7 +1067,6 @@ function renderSubPreviewContent(lists) {
         if (card.desc) html += `<div class="sub-preview-card-desc">${esc(card.desc)}</div>`;
         if (metaParts.length > 0) html += `<div class="sub-preview-card-meta">${metaParts.join(' · ')}</div>`;
         
-        // 如果卡片还有更深的子看板，用缩进文字提示
         if (card.subBoard) {
           const nestedTotal = card.subBoard.lists.reduce((s, l) => s + l.cards.length, 0);
           html += `<div class="sub-preview-nested">📁 下级子看板（${nestedTotal} 个卡片）</div>`;
@@ -1415,7 +1439,6 @@ board.addEventListener('click', e => {
   if (dn) { e.stopPropagation(); moveCardPriority(dn.dataset.cardId, 1); return; }
   const mv = e.target.closest('[data-act="quick-move"]');
   if (mv) { e.stopPropagation(); openQuickMoveMenu(mv.dataset.cardId); return; }
-  // ★ 预览子看板
   const pv = e.target.closest('[data-act="preview-sub"]');
   if (pv) { e.stopPropagation(); openSubPreview(pv.dataset.cardId); return; }
   
