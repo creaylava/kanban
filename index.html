@@ -118,8 +118,23 @@
   .sub-board-preview .sub-card-item {font-size: 13px; padding: 5px 8px; background: var(--card-bg); border-radius: 6px; margin-bottom: 4px; border: 1px solid var(--border); cursor: pointer;}
   .sub-board-preview .sub-card-item:hover { border-color: var(--accent); color: var(--accent); }
   .sub-board-preview .empty-sub {font-size: 12px; color: var(--muted); font-style: italic;}
-  .add-card-btn{margin:6px; padding:8px; border:none; background:transparent; color:var(--muted); text-align:left; border-radius:8px; cursor:pointer; font-size:13px;}
+
+  /* ★ 列表底部的按钮组 */
+  .list-bottom-actions {
+    display: flex; gap: 4px; margin: 6px; align-items: center;
+  }
+  .add-card-btn{
+    flex: 1; padding:8px; border:none; background:transparent; color:var(--muted); text-align:left; border-radius:8px;
+    cursor:pointer; font-size:13px; font-family: inherit;
+  }
   .add-card-btn:hover{background:rgba(0,0,0,.06); color:var(--text);}
+  .add-template-btn {
+    padding: 6px 10px; border: none; background: rgba(59,130,246,.1); color: #3b82f6;
+    border-radius: 8px; cursor: pointer; font-size: 13px; font-family: inherit;
+    white-space: nowrap;
+  }
+  .add-template-btn:hover { background: #3b82f6; color: #fff; }
+
   .composer{padding-bottom:8px;}
   .composer textarea{width:100%; height:62px; resize:none; border:1px solid var(--accent); border-radius:10px; padding:8px 10px; font-size:14px; font-family:inherit; outline:none; background:var(--card-bg); color:var(--text);}
   .add-list-btn {flex:0 0 100px; width:100px; height:48px; border:2px dashed var(--border); background:transparent; border-radius:12px; color:var(--muted); cursor:pointer; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:4px; margin-top:4px;}
@@ -178,6 +193,41 @@
   #renameListModal h3 {font-size: 16px; margin-bottom: 15px; text-align: center;}
   #renameListModal input {width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 15px; background: var(--input-bg); color: var(--text); margin-bottom: 15px;}
   .rename-actions {display: flex; gap: 10px;}
+
+  /* ★ 模板选择弹窗 */
+  #templateOverlay {background: rgba(30,25,20,.55); align-items: center; justify-content: center; z-index: 190; padding: 20px;}
+  #templateModal {
+    background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 480px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.4); max-height: 85vh;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  #templateHeader {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  #templateHeader h2 {font-size: 16px; font-weight: 700; flex: 1;}
+  #templateHeader .template-close {background: none; border: none; font-size: 22px; color: var(--muted); cursor: pointer; padding: 0 4px; line-height: 1;}
+  #templateBody {flex: 1; overflow-y: auto; padding: 12px 16px 16px;}
+  .template-item {
+    padding: 10px 12px; margin-bottom: 8px;
+    background: var(--sub-bg); border: 1px solid var(--sub-border);
+    border-radius: 8px; cursor: pointer; transition: .15s;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .template-item:hover {border-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,.08);}
+  .template-item .tpl-icon {font-size: 22px; flex-shrink: 0;}
+  .template-item .tpl-info {flex: 1; min-width: 0;}
+  .template-item .tpl-name {font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+  .template-item .tpl-meta {font-size: 11px; color: var(--muted); margin-top: 2px;}
+  .template-item .tpl-del {
+    background: rgba(208,69,58,.1); color: #d0453a; border: none;
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px;
+    flex-shrink: 0;
+  }
+  .template-item .tpl-del:hover {background: #d0453a; color: #fff;}
+  .template-empty {
+    text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; line-height: 2;
+  }
 
   /* 附件预览弹窗 */
   #previewOverlay {background: rgba(0,0,0,.92); align-items: center; justify-content: center; z-index: 220; padding: 0;}
@@ -260,7 +310,7 @@
     font-size: 11px; color: var(--muted);
   }
 
-  /* ★ 卡片详情预览弹窗 */
+  /* 卡片详情预览弹窗 */
   #cardPreviewOverlay {background: rgba(30,25,20,.6); align-items: center; justify-content: center; z-index: 195; padding: 20px;}
   #cardPreviewModal {
     background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 520px;
@@ -354,7 +404,7 @@
     .action-btn, .quick-move-btn, .expand-sub-btn, .preview-sub-btn {
       padding: 4px 6px; font-size: 11px; white-space: nowrap;
     }
-    #subPreviewModal, #cardPreviewModal { max-height: 92vh; }
+    #subPreviewModal, #cardPreviewModal, #templateModal { max-height: 92vh; }
   }
 </style>
 </head>
@@ -428,6 +478,7 @@
     </div>
     <div class="modal-actions">
       <button class="btn danger" id="mDelete">删除</button>
+      <button class="btn" id="mSaveAsTemplate" title="把当前卡片（含子看板）保存为模板">📋 存为模板</button>
       <div class="spacer"></div>
       <button class="btn primary" id="mEnterSubBoard" style="display:none;">进入子看板</button>
       <button class="btn" id="mCancel">取消</button>
@@ -473,6 +524,18 @@
   </div>
 </div>
 
+<!-- ★ 模板选择弹窗 -->
+<div class="overlay" id="templateOverlay">
+  <div id="templateModal">
+    <div id="templateHeader">
+      <span style="font-size:20px;">📋</span>
+      <h2>从模板创建卡片</h2>
+      <button class="template-close" id="templateCloseBtn">✕</button>
+    </div>
+    <div id="templateBody"></div>
+  </div>
+</div>
+
 <!-- 附件预览弹窗 -->
 <div class="overlay" id="previewOverlay">
   <div class="preview-toolbar">
@@ -497,7 +560,7 @@
   </div>
 </div>
 
-<!-- ★ 卡片详情预览弹窗 -->
+<!-- 卡片详情预览弹窗 -->
 <div class="overlay" id="cardPreviewOverlay">
   <div id="cardPreviewModal">
     <div class="card-preview-header">
@@ -646,6 +709,27 @@ function showLoading(text) {
 function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
 
 /* =========================================================
+   ★ 深度克隆卡片（重新生成所有 ID）
+   ========================================================= */
+function cloneCard(card) {
+  const copy = JSON.parse(JSON.stringify(card));
+  regenerateIds(copy);
+  return copy;
+}
+function regenerateIds(item) {
+  if (!item) return;
+  item.id = uid();
+  if (item.checklist) item.checklist.forEach(c => c.id = uid());
+  if (item.attachments) item.attachments.forEach(a => a.id = uid());
+  if (item.subBoard && item.subBoard.lists) {
+    item.subBoard.lists.forEach(list => {
+      list.id = uid();
+      if (list.cards) list.cards.forEach(c => regenerateIds(c));
+    });
+  }
+}
+
+/* =========================================================
    数据
    ========================================================= */
 const PRIORITY = {
@@ -666,7 +750,7 @@ function defaultData() {
       { id: uid(), title: '已完成', cards: [] }
     ]
   };
-  return { boards: [board], currentBoardId: board.id };
+  return { boards: [board], currentBoardId: board.id, templates: [] };
 }
 
 let state = null;
@@ -677,6 +761,7 @@ let editingChecklist = [];
 let editingAttachments = [];
 let currentPreviewURL = null;
 let previewingCardId = null;
+let templateTargetListId = null;  // 从哪个列表打开的模板选择
 
 function getCurrentBoard() {
   let b = state.boards.find(b => b.id === state.currentBoardId);
@@ -797,6 +882,7 @@ async function pullFromCloud(opts = {}) {
     if (!cloudData.boards || !Array.isArray(cloudData.boards)) throw new Error('云端数据格式不对');
     _isPushing = true;
     state = cloudData;
+    if (!state.templates) state.templates = [];
     if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
       state.currentBoardId = state.boards[0].id;
     }
@@ -929,7 +1015,10 @@ function renderList(list) {
       <div class="cards" data-list="${list.id}">
         ${list.cards.map(renderCard).join('')}
       </div>
-      <button class="add-card-btn" data-act="add-card" data-list-id="${list.id}">＋ 添加卡片</button>
+      <div class="list-bottom-actions">
+        <button class="add-card-btn" data-act="add-card" data-list-id="${list.id}">＋ 添加卡片</button>
+        <button class="add-template-btn" data-act="add-from-template" data-list-id="${list.id}" title="从模板创建卡片">📋 从模板</button>
+      </div>
     </div>
   `;
 }
@@ -1066,13 +1155,121 @@ function moveCard(cardId, targetListId) {
 document.getElementById('quickMoveCancel').onclick = () => quickMoveOverlay.classList.remove('show');
 
 /* =========================================================
+   ★ 模板功能
+   ========================================================= */
+const templateOverlay = document.getElementById('templateOverlay');
+const templateBody = document.getElementById('templateBody');
+
+function openTemplatePicker(listId) {
+  templateTargetListId = listId;
+  renderTemplateList();
+  templateOverlay.classList.add('show');
+}
+
+function renderTemplateList() {
+  const templates = state.templates || [];
+  if (templates.length === 0) {
+    templateBody.innerHTML = '<div class="template-empty">还没有模板<br>打开任意卡片，点「📋 存为模板」即可创建</div>';
+    return;
+  }
+  let html = '';
+  templates.forEach(tpl => {
+    const cardCount = tpl.card ? 1 : 0;
+    const subListCount = tpl.card && tpl.card.subBoard ? tpl.card.subBoard.lists.length : 0;
+    const subCardTotal = tpl.card && tpl.card.subBoard 
+      ? tpl.card.subBoard.lists.reduce((s, l) => s + l.cards.length, 0)
+      : 0;
+    let metaText = '';
+    if (subCardTotal > 0) metaText = `含子看板 · ${subListCount} 个列表 · ${subCardTotal} 张卡片`;
+    else metaText = '无子看板';
+    html += `
+      <div class="template-item" data-template-id="${tpl.id}">
+        <div class="tpl-icon">📋</div>
+        <div class="tpl-info">
+          <div class="tpl-name">${esc(tpl.name)}</div>
+          <div class="tpl-meta">${esc(metaText)}</div>
+        </div>
+        <button class="tpl-del" data-delete-template="${tpl.id}" title="删除模板">🗑</button>
+      </div>
+    `;
+  });
+  templateBody.innerHTML = html;
+}
+
+templateBody.addEventListener('click', async e => {
+  const delBtn = e.target.closest('[data-delete-template]');
+  if (delBtn) {
+    e.stopPropagation();
+    const tplId = delBtn.dataset.deleteTemplate;
+    if (!confirm('确定删除这个模板吗？')) return;
+    state.templates = state.templates.filter(t => t.id !== tplId);
+    await saveState();
+    renderTemplateList();
+    return;
+  }
+  const item = e.target.closest('.template-item');
+  if (!item) return;
+  const tplId = item.dataset.templateId;
+  const tpl = state.templates.find(t => t.id === tplId);
+  if (!tpl) return;
+  // 使用模板创建一张新卡片
+  const newCard = cloneCard(tpl.card);
+  const cb = boardStack[boardStack.length - 1];
+  const list = cb.lists.find(l => l.id === templateTargetListId);
+  if (!list) {
+    alert('目标列表不存在');
+    templateOverlay.classList.remove('show');
+    return;
+  }
+  list.cards.push(newCard);
+  templateOverlay.classList.remove('show');
+  render(); saveState();
+});
+
+document.getElementById('templateCloseBtn').onclick = () => templateOverlay.classList.remove('show');
+templateOverlay.addEventListener('click', e => {
+  if (e.target === templateOverlay) templateOverlay.classList.remove('show');
+});
+
+/* 存为模板 */
+document.getElementById('mSaveAsTemplate').onclick = async () => {
+  if (!editing) return;
+  const cb = boardStack[boardStack.length - 1];
+  const l = cb.lists.find(x => x.id === editing.listId);
+  const card = l && l.cards.find(c => c.id === editing.cardId);
+  if (!card) return;
+  // 先把当前编辑框里的内容写回卡片（防止用户改了没保存就存模板）
+  card.title = mTitle.value.trim() || card.title;
+  card.desc = mDesc.value.trim();
+  card.tags = mTags.value.split(/[,，]/).map(s => s.trim()).filter(Boolean);
+  card.priority = mPriority.value;
+  card.due = mDue.value;
+  card.checklist = editingChecklist.filter(c => c.text.trim()).map(c => ({ id: c.id || uid(), text: c.text.trim(), done: !!c.done }));
+  card.attachments = editingAttachments.map(a => {
+    if (a.kind === 'link') return { id: a.id, kind: 'link', name: a.name, size: 0, type: 'link', url: a.url };
+    return { id: a.id, kind: 'file', name: a.name, size: a.size || 0, type: a.type || '', data: a.data || '' };
+  });
+  
+  const tplName = prompt('模板名称', card.title);
+  if (tplName === null) return;
+  if (!state.templates) state.templates = [];
+  state.templates.push({
+    id: uid(),
+    name: (tplName.trim() || card.title),
+    card: cloneCard(card)
+  });
+  await saveState();
+  alert('✅ 已保存为模板');
+};
+
+/* =========================================================
    子看板预览
    ========================================================= */
 const subPreviewOverlay = document.getElementById('subPreviewOverlay');
 const subPreviewBody = document.getElementById('subPreviewBody');
 const subPreviewTitle = document.getElementById('subPreviewTitle');
 
-let _subPreviewCards = [];      // 当前子看板预览中的所有卡片（按显示顺序）
+let _subPreviewCards = [];
 
 function findCardById(cardId) {
   const cb = boardStack[boardStack.length - 1];
@@ -1088,7 +1285,6 @@ function openSubPreview(cardId) {
   if (!card || !card.subBoard) return;
   previewingCardId = cardId;
   subPreviewTitle.textContent = card.title;
-  // 收集所有子卡片，便于点击定位
   _subPreviewCards = [];
   card.subBoard.lists.forEach(list => {
     list.cards.forEach(c => _subPreviewCards.push(c));
@@ -1166,7 +1362,6 @@ document.getElementById('subPreviewEnterBtn').onclick = () => {
   }
 };
 
-/* 点击子看板预览里的卡片 → 打开卡片详情预览 */
 subPreviewBody.addEventListener('click', e => {
   const cardEl = e.target.closest('.sub-preview-card');
   if (!cardEl) return;
@@ -1179,7 +1374,7 @@ subPreviewBody.addEventListener('click', e => {
 });
 
 /* =========================================================
-   ★ 卡片详情预览
+   卡片详情预览
    ========================================================= */
 const cardPreviewOverlay = document.getElementById('cardPreviewOverlay');
 const cardPreviewBody = document.getElementById('cardPreviewBody');
@@ -1191,12 +1386,10 @@ function openCardPreview(card) {
 
   let html = '';
 
-  // 标签
   if (card.tags && card.tags.length > 0) {
     html += `<div class="card-preview-tags">${card.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>`;
   }
 
-  // 元信息
   const metaParts = [];
   if (card.priority && card.priority !== 'none') {
     const pl = PRIORITY[card.priority].label;
@@ -1209,12 +1402,10 @@ function openCardPreview(card) {
     html += `<div class="card-preview-meta">${metaParts.join('')}</div>`;
   }
 
-  // 描述
   if (card.desc) {
     html += `<div class="card-preview-desc">${esc(card.desc)}</div>`;
   }
 
-  // 待办清单
   const checklist = card.checklist || [];
   if (checklist.length > 0) {
     const done = checklist.filter(c => c.done).length;
@@ -1229,7 +1420,6 @@ function openCardPreview(card) {
     html += `</div>`;
   }
 
-  // 附件
   const atts = card.attachments || [];
   if (atts.length > 0) {
     html += `<div class="card-preview-section-title">📎 附件 (${atts.length})</div>`;
@@ -1250,7 +1440,6 @@ function openCardPreview(card) {
     html += `</div>`;
   }
 
-  // 子看板入口
   if (card.subBoard) {
     const subTotal = card.subBoard.lists.reduce((s, l) => s + l.cards.length, 0);
     html += `<button class="card-preview-subboard-btn" id="cardPreviewSubBtn">📁 查看子看板（${subTotal} 个卡片）</button>`;
@@ -1262,7 +1451,6 @@ function openCardPreview(card) {
 
   cardPreviewBody.innerHTML = html;
 
-  // 附件点击预览
   cardPreviewBody.querySelectorAll('.card-preview-att-item').forEach(el => {
     el.onclick = () => {
       const idx = parseInt(el.dataset.attIndex);
@@ -1270,13 +1458,11 @@ function openCardPreview(card) {
     };
   });
 
-  // "查看子看板"按钮
   const subBtn = document.getElementById('cardPreviewSubBtn');
   if (subBtn) {
     subBtn.onclick = () => {
       cardPreviewOverlay.classList.remove('show');
       setTimeout(() => {
-        // 打开这个卡片的子看板预览
         previewingCardId = card.id;
         subPreviewTitle.textContent = card.title;
         _subPreviewCards = [];
@@ -1644,6 +1830,10 @@ board.addEventListener('click', e => {
   const pv = e.target.closest('[data-act="preview-sub"]');
   if (pv) { e.stopPropagation(); openSubPreview(pv.dataset.cardId); return; }
   
+  // ★ 从模板添加
+  const tplBtn = e.target.closest('[data-act="add-from-template"]');
+  if (tplBtn) { e.stopPropagation(); openTemplatePicker(tplBtn.dataset.listId); return; }
+  
   const tg = e.target.closest('[data-act="toggle-sub"]');
   if (tg) {
     e.stopPropagation();
@@ -1779,7 +1969,8 @@ document.getElementById('backupBtn').onclick = async () => {
   state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
     cnt += (c.attachments||[]).filter(a => a.kind === 'file').length;
   })));
-  const msg = cnt > 0 ? `📥 备份将导出所有卡片 + ${cnt} 个本地附件（Base64 内嵌）。继续吗？` : '📥 导出 JSON 备份？';
+  const tplCnt = (state.templates || []).length;
+  const msg = `📥 备份将导出：\n· 所有看板卡片\n· ${cnt} 个本地附件（Base64 内嵌）\n· ${tplCnt} 个模板\n\n继续吗？`;
   if (!confirm(msg)) return;
   showLoading('生成 JSON...');
   try {
@@ -1808,9 +1999,10 @@ importFileInput.onchange = async e => {
     if (d && Array.isArray(d.boards)) {
       state = d;
     } else if (d && Array.isArray(d.lists)) {
-      state = { boards: [{ id: uid(), name: '导入的看板', lists: d.lists }], currentBoardId: null };
+      state = { boards: [{ id: uid(), name: '导入的看板', lists: d.lists }], currentBoardId: null, templates: [] };
       state.currentBoardId = state.boards[0].id;
     } else throw new Error('文件格式错误');
+    if (!state.templates) state.templates = [];
     if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
       state.currentBoardId = state.boards[0].id;
     }
@@ -1904,17 +2096,19 @@ async function init() {
           const d = JSON.parse(old);
           if (d && Array.isArray(d.boards) && d.boards.length > 0) state = d;
           else if (d && Array.isArray(d.lists)) {
-            state = { boards: [{ id: uid(), name: '我的看板', lists: d.lists }], currentBoardId: null };
+            state = { boards: [{ id: uid(), name: '我的看板', lists: d.lists }], currentBoardId: null, templates: [] };
             state.currentBoardId = state.boards[0].id;
           }
         } catch (e) {}
       }
       if (!state) state = defaultData();
+      if (!state.templates) state.templates = [];
       if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
         state.currentBoardId = state.boards[0].id;
       }
       await saveStateToDB(state);
     }
+    if (!state.templates) state.templates = [];
     state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
       if (!c.checklist) c.checklist = [];
       if (!c.attachments) c.attachments = [];
