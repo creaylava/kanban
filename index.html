@@ -2,94 +2,101 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🌰 栗子看板 · 本地版</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#c8662f">
+<title>🌰 栗子看板 · 手机版</title>
 <style>
   :root{
     --bg:#f5f2ed; --list-bg:#e9e4db; --card-bg:#fff; --text:#2e2a26;
     --muted:#8c8377; --accent:#c8662f; --border:#e2dbd1; --input-bg:#fdfcfa;
     --sub-bg:#f9f6f2; --sub-border:#e8e0d5;
   }
+  /* 跟随系统深色（当用户未手动指定时，由 JS 决定是否加 body.dark） */
+  @media (prefers-color-scheme: dark){
+    :root{
+      --sys-dark:1;
+    }
+  }
   body.dark {
     --bg:#121212; --list-bg:#1e1e1e; --card-bg:#2d2d2d; --text:#e0e0e0;
     --muted:#9e9e9e; --accent:#e07b39; --border:#444444; --input-bg:#1e1e1e;
     --sub-bg:#222; --sub-border:#3a3a3a;
   }
-  *{box-sizing:border-box; margin:0; padding:0;}
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
     background:var(--bg); color:var(--text); display:flex; flex-direction:column;
-    overflow:hidden; transition: background 0.3s, color 0.3s;
+    overflow:hidden; transition: background 0.25s, color 0.25s;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
   header{
-    display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--card-bg);
+    display:flex; align-items:center; gap:6px; padding:8px 10px; background:var(--card-bg);
     border-bottom:1px solid var(--border); flex:0 0 auto; z-index:10; flex-wrap: wrap;
     box-shadow:0 2px 5px rgba(0,0,0,.05);
   }
   header h1{font-size:15px; margin:0; font-weight:700;}
-  .logo{font-size:20px;}
+  .logo{font-size:18px;}
   .spacer{flex:1;}
   .btn{
     border:1px solid var(--border); background:var(--card-bg); color:var(--text);
-    padding:6px 11px; border-radius:8px; font-size:12px; cursor:pointer;
-    font-family:inherit; transition:.15s; white-space:nowrap;
+    padding:7px 11px; border-radius:8px; font-size:12.5px; cursor:pointer;
+    font-family:inherit; transition:.15s; white-space:nowrap; min-height:34px;
   }
   .btn:hover{background:var(--list-bg);}
+  .btn:active{transform:scale(.96);}
   .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff;}
-  .btn.primary:hover{background:#b35726;}
   .btn.danger{color:#d0453a; border-color:#f0cfcc;}
-  .btn.danger:hover{background:#fdf1f0;}
-  .btn.small{padding:5px 10px; font-size:12px;}
+  .btn.small{padding:6px 10px; font-size:12px;}
   .btn.icon{padding:6px 9px; font-size:15px;}
 
   .board-selector {
-    padding:6px 10px; border:1px solid var(--border); border-radius:8px;
+    padding:7px 10px; border:1px solid var(--border); border-radius:8px;
     background:var(--input-bg); color:var(--text); font-size:13px; outline:none;
-    font-family:inherit; font-weight:600; max-width:140px;
+    font-family:inherit; font-weight:600; max-width:150px;
   }
   #breadcrumb {
-    display: flex; align-items: center; gap: 8px; padding: 8px 20px;
+    display: flex; align-items: center; gap: 6px; padding: 8px 14px;
     background: var(--bg); font-size: 13px; color: var(--muted);
-    border-bottom: 1px solid var(--border); display: none;
+    border-bottom: 1px solid var(--border); display: none; flex-wrap:wrap;
   }
   #breadcrumb.show { display: flex; }
   #breadcrumb span { cursor: pointer; }
-  #breadcrumb span:hover { color: var(--accent); text-decoration: underline; }
   #breadcrumb .current { color: var(--text); font-weight: 600; cursor: default; }
   #breadcrumb .arrow { color: var(--muted); cursor: default; }
 
   #board{
-    flex:1; display:flex; gap:14px; padding:18px 20px 24px;
+    flex:1; display:flex; gap:12px; padding:12px;
     overflow:auto; align-items:flex-start;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
   }
   .empty{margin:auto; color:var(--muted); font-size:14px;}
   .list{
-    flex:0 0 280px; width:280px; background:var(--list-bg);
+    flex:0 0 300px; width:300px; background:var(--list-bg);
     border-radius:12px; display:flex; flex-direction:column; padding:4px;
+    scroll-snap-align: start;
   }
-  .list-header{display:flex; align-items:center; gap:6px; padding:8px 10px;}
+  .list-header{display:flex; align-items:center; gap:4px; padding:8px 8px;}
   .list-title{
     font-weight:600; font-size:14px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    border-radius:6px; padding:4px 6px; margin:-2px -4px; cursor: pointer; transition: background 0.15s;
+    border-radius:6px; padding:6px 6px; margin:-2px -4px; cursor: pointer; transition: background 0.15s;
   }
-  .list-title:hover{background:rgba(0,0,0,.08);}
   .list-title::after {content: '✎'; font-size: 11px; color: var(--muted); margin-left: 6px; opacity: 0.4;}
-  .list-title:hover::after { opacity: 0.9; }
   .list-count{font-size:12px; color:var(--muted); background:rgba(0,0,0,.06); border-radius:10px; padding:1px 7px; flex-shrink: 0;}
-  .icon-btn{border:none; background:transparent; color:var(--muted); font-size:15px; cursor:pointer; padding:4px 6px; border-radius:6px; line-height:1; flex-shrink: 0; transition:.15s;}
+  .icon-btn{border:none; background:transparent; color:var(--muted); font-size:15px; cursor:pointer; padding:6px 8px; border-radius:6px; line-height:1; flex-shrink: 0; transition:.15s; min-height:32px;}
   .icon-btn:hover{background:rgba(208,69,58,.15); color:#d0453a;}
-  .list-move-btn{border:none; background:transparent; color:var(--muted); font-size:13px; cursor:pointer; padding:2px 5px; border-radius:5px; line-height:1; flex-shrink:0; transition:.15s; opacity:.5;}
-  .list-move-btn:hover{background:rgba(0,0,0,.1); opacity:1;}
+  .list-move-btn{border:none; background:transparent; color:var(--muted); font-size:13px; cursor:pointer; padding:4px 6px; border-radius:5px; line-height:1; flex-shrink:0; transition:.15s; opacity:.55; min-height:32px;}
   .list-move-btn.disabled{opacity:.15; cursor:default; pointer-events:none;}
   .cards{padding:2px 6px 0; min-height:12px;}
   .card{
     position:relative; overflow:hidden; background:var(--card-bg); border-radius:10px;
-    padding:10px 12px 32px 12px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.07);
+    padding:10px 12px 36px 12px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.07);
     cursor:pointer; -webkit-touch-callout: none; user-select: none;
     display: flex; flex-direction: column;
   }
-  .card:hover{box-shadow:0 3px 10px rgba(0,0,0,.12);}
+  .card:active{transform:scale(.99);}
   .card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:transparent;}
   .card.p-high::before{background:#e2574c;}
   .card.p-medium::before{background:#e8a33d;}
@@ -104,375 +111,225 @@
   .card-indicators {display: flex; gap: 8px; margin-top: 6px; font-size: 11px; color: var(--muted); align-items: center; flex-wrap: wrap;}
   .indicator { display: inline-flex; align-items: center; gap: 3px; }
   .indicator.checked { color: var(--accent); }
-  .card-footer {position: absolute; bottom: 6px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: center;}
+  .card-footer {position: absolute; bottom: 6px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: center; gap:6px;}
   .footer-left, .footer-right { display: flex; gap: 5px; }
-  .action-btn {background: rgba(100,100,100,.08); color: var(--muted); border: none; font-size: 13px; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: .15s;}
-  .action-btn:hover { background: var(--accent); color: #fff; }
-  .quick-move-btn {background: rgba(200,102,47,.1); color: var(--accent); border: none; font-size: 13px; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-weight: bold;}
-  .quick-move-btn:hover { background: var(--accent); color: #fff; }
-  .expand-sub-btn {background: rgba(100,100,100,.08); color: var(--muted); border: none; font-size: 12px; padding: 3px 8px; border-radius: 6px; cursor: pointer;}
-  .expand-sub-btn:hover, .expand-sub-btn.expanded { background: var(--accent); color: #fff; }
-  .preview-sub-btn {background: rgba(59,130,246,.1); color: #3b82f6; border: none; font-size: 12px; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-weight: bold;}
-  .preview-sub-btn:hover { background: #3b82f6; color: #fff; }
-  
-  /* ★ 修改：子卡片样式支持删除按钮 */
-  .sub-board-preview {margin-top: 10px; padding: 10px; background: var(--sub-bg); border-radius: 8px; border: 1px solid var(--sub-border);}
+  .action-btn {background: rgba(100,100,100,.08); color: var(--muted); border: none; font-size: 13px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: .15s; min-height:32px;}
+  .action-btn:active { background: var(--accent); color: #fff; }
+  .quick-move-btn {background: rgba(200,102,47,.1); color: var(--accent); border: none; font-size: 13px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; min-height:32px;}
+  .quick-move-btn:active { background: var(--accent); color: #fff; }
+  .expand-sub-btn {background: rgba(100,100,100,.08); color: var(--muted); border: none; font-size: 12px; padding: 4px 8px; border-radius: 6px; cursor: pointer; min-height:32px;}
+  .expand-sub-btn.expanded { background: var(--accent); color: #fff; }
+  .preview-sub-btn {background: rgba(59,130,246,.1); color: #3b82f6; border: none; font-size: 12px; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-weight: bold; min-height:32px;}
+  .preview-sub-btn:active { background: #3b82f6; color: #fff; }
+
+  /* 子卡片 */
+  .sub-board-preview {margin-top: 10px; padding: 8px; background: var(--sub-bg); border-radius: 8px; border: 1px solid var(--sub-border);}
   .sub-board-preview .sub-list-title {font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px;}
   .sub-board-preview .sub-card-item {
-    font-size: 13px; padding: 5px 8px; background: var(--card-bg);
-    border-radius: 6px; margin-bottom: 4px; border: 1px solid var(--border);
-    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; padding: 8px 8px; background: var(--card-bg);
+    border-radius: 6px; margin-bottom: 5px; border: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center; gap:6px;
   }
-  .sub-board-preview .sub-card-item:hover { border-color: var(--accent); }
-  .sub-card-title {
-    flex: 1; overflow: hidden; word-break: break-word;
-  }
+  .sub-card-title { flex: 1; overflow: hidden; word-break: break-word; cursor:pointer; }
   .del-sub-card-btn {
     background: none; border: none; color: var(--muted); cursor: pointer;
-    font-size: 14px; padding: 2px 6px; line-height: 1; flex-shrink: 0;
-    border-radius: 4px; transition: .15s;
+    font-size: 15px; padding: 4px 8px; line-height: 1; flex-shrink: 0;
+    border-radius: 4px; transition: .15s; min-height:32px; min-width:32px;
   }
-  .del-sub-card-btn:hover { background: #d0453a; color: #fff; }
-  /* ★ 子卡片星标 */
-  .star-btn { background:none; border:none; cursor:pointer; font-size:14px; padding:0 3px; flex-shrink:0; line-height:1; filter:grayscale(1) opacity(.35); transition:.15s; }
-  .star-btn:hover { filter:none; }
+  .del-sub-card-btn:active { background: #d0453a; color: #fff; }
+  .star-btn { background:none; border:none; cursor:pointer; font-size:15px; padding:0 4px; flex-shrink:0; line-height:1; filter:grayscale(1) opacity(.35); transition:.15s; min-height:32px; min-width:32px;}
   .star-btn.starred { filter:none; opacity:1; }
   .card-star { color:#e53e3e; margin-right:3px; }
   .sub-board-preview .empty-sub {font-size: 12px; color: var(--muted); font-style: italic;}
 
-  /* ★ 子卡片悬停预览 tooltip */
+  /* 悬停预览仅在桌面显示 */
+  @media (hover:none){
+    #subCardTooltip { display:none !important; }
+  }
   #subCardTooltip {
     position: fixed; z-index: 300; pointer-events: none;
     background: var(--card-bg); border: 1px solid var(--accent);
     border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,.18);
-    padding: 14px 16px; max-width: 340px; min-width: 180px;
+    padding: 12px 14px; max-width: 320px; min-width: 180px;
     font-size: 13px; line-height: 1.5; display: none;
     transition: opacity .15s; opacity: 0;
   }
   #subCardTooltip.show { display: block; opacity: 1; }
-  .sct-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: var(--fg); }
+  .sct-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
   .sct-meta { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
-  .sct-desc { font-size: 12px; color: var(--fg); margin-bottom: 6px; white-space: pre-line; word-break: break-word; max-height: 60px; overflow: hidden; }
+  .sct-desc { font-size: 12px; margin-bottom: 6px; white-space: pre-line; word-break: break-word; max-height: 60px; overflow: hidden; }
   .sct-tags { margin-bottom: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
-  .sct-tags .tag { font-size: 10px; padding: 1px 6px; }
   .sct-section { font-size: 11px; font-weight: 600; color: var(--muted); margin: 6px 0 3px; }
-  .sct-check { font-size: 11px; color: var(--fg); padding: 1px 0; }
+  .sct-check { font-size: 11px; padding: 1px 0; }
   .sct-check.done { text-decoration: line-through; color: var(--muted); }
-  .sct-att { font-size: 11px; color: var(--fg); padding: 1px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sct-att { font-size: 11px; padding: 1px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sct-note { font-size: 11px; color: var(--muted); padding: 1px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sct-sub { font-size: 11px; color: var(--accent); margin-top: 4px; }
   .sct-empty { font-size: 11px; color: var(--muted); font-style: italic; }
 
-  /* ★ 列表底部的按钮组 */
-  .list-bottom-actions {
-    display: flex; gap: 4px; margin: 6px; align-items: center;
-  }
+  /* 列表底部按钮 */
+  .list-bottom-actions { display: flex; gap: 4px; margin: 6px; align-items: center; }
   .add-card-btn{
-    flex: 1; padding:8px; border:none; background:transparent; color:var(--muted); text-align:left; border-radius:8px;
-    cursor:pointer; font-size:13px; font-family: inherit;
+    flex: 1; padding:10px 8px; border:none; background:transparent; color:var(--muted); text-align:left; border-radius:8px;
+    cursor:pointer; font-size:13px; font-family: inherit; min-height:38px;
   }
-  .add-card-btn:hover{background:rgba(0,0,0,.06); color:var(--text);}
+  .add-card-btn:active{background:rgba(0,0,0,.06); color:var(--text);}
   .add-template-btn {
-    padding: 6px 10px; border: none; background: rgba(59,130,246,.1); color: #3b82f6;
+    padding: 8px 10px; border: none; background: rgba(59,130,246,.1); color: #3b82f6;
     border-radius: 8px; cursor: pointer; font-size: 13px; font-family: inherit;
-    white-space: nowrap;
+    white-space: nowrap; min-height:38px;
   }
-  .add-template-btn:hover { background: #3b82f6; color: #fff; }
+  .add-template-btn:active { background: #3b82f6; color: #fff; }
 
   .composer{padding-bottom:8px;}
-  .composer textarea{width:100%; height:62px; resize:none; border:1px solid var(--accent); border-radius:10px; padding:8px 10px; font-size:14px; font-family:inherit; outline:none; background:var(--card-bg); color:var(--text);}
-  .add-list-btn {flex:0 0 100px; width:100px; height:48px; border:2px dashed var(--border); background:transparent; border-radius:12px; color:var(--muted); cursor:pointer; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:4px; margin-top:4px;}
-  .add-list-btn:hover {border-color: var(--accent); color: var(--accent);}
+  .composer textarea{width:100%; height:62px; resize:none; border:1px solid var(--accent); border-radius:10px; padding:8px 10px; font-size:15px; font-family:inherit; outline:none; background:var(--card-bg); color:var(--text);}
+  .add-list-btn {flex:0 0 80px; width:80px; height:48px; border:2px dashed var(--border); background:transparent; border-radius:12px; color:var(--muted); cursor:pointer; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:4px; margin-top:4px;}
+  .add-list-btn:active {border-color: var(--accent); color: var(--accent);}
 
-  .overlay{position:fixed; inset:0; background:rgba(30,25,20,.45); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
+  /* 弹窗（手机端底部弹起） */
+  .overlay{position:fixed; inset:0; background:rgba(30,25,20,.55); display:none; align-items:center; justify-content:center; z-index:100; padding:16px;}
   .overlay.show{display:flex;}
-  .modal{background:var(--card-bg); border-radius:14px; width:100%; max-width:540px; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.25); max-height:90vh; overflow-y:auto;}
-  .m-title{font-size:17px; font-weight:600; margin-bottom:14px; resize:none; overflow:hidden; min-height:28px; line-height:1.4; border:1px solid var(--border); border-radius:6px; background:var(--input-bg); color:var(--text); padding:4px 8px; font-family:inherit; outline:none; }
+  .modal{background:var(--card-bg); border-radius:14px; width:100%; max-width:560px; padding:18px; box-shadow:0 20px 60px rgba(0,0,0,.3); max-height:90vh; overflow-y:auto; -webkit-overflow-scrolling:touch;}
+  .m-title{font-size:16px; font-weight:600; margin-bottom:12px; resize:none; overflow:hidden; min-height:28px; line-height:1.4; border:1px solid var(--border); border-radius:6px; background:var(--input-bg); color:var(--text); padding:8px 10px; font-family:inherit; outline:none; }
   .m-title:focus{border-color:var(--accent);}
-  .modal textarea{width:100%; height:80px; resize:vertical; margin-bottom:14px;}
+  .modal textarea{width:100%; height:80px; resize:vertical; margin-bottom:12px;}
   .field{margin-bottom:14px;}
-  .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px;}
-  .modal input, .modal select, .modal textarea {width:100%; border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:14px; font-family:inherit; color:var(--text); background:var(--input-bg); outline:none;}
+  .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px; font-weight:600;}
+  .modal input, .modal select, .modal textarea {width:100%; border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-size:15px; font-family:inherit; color:var(--text); background:var(--input-bg); outline:none;}
   .modal input:focus, .modal select:focus, .modal textarea:focus {border-color:var(--accent); background:var(--card-bg);}
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
-  .modal-actions{display:flex; gap:8px; margin-top:10px; align-items:center;}
+  .modal-actions{display:flex; gap:8px; margin-top:12px; align-items:center; flex-wrap:wrap;}
+  .modal-actions .btn {min-height:40px; font-size:13px;}
 
-  .checklist-container {border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--input-bg); max-height: 150px; overflow-y: auto; margin-bottom: 5px;}
+  .checklist-container {border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--input-bg); max-height: 180px; overflow-y: auto; margin-bottom: 8px;}
   .checklist-item {display: flex; align-items: center; gap: 6px; margin-bottom: 6px;}
-  .checklist-item input[type="checkbox"] {width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; accent-color: var(--accent);}
-  .checklist-item input[type="text"] {flex: 1; padding: 4px 6px; font-size: 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text);}
-  .checklist-item .remove-item {color: #d0453a; background: none; border: none; font-size: 16px; cursor: pointer; padding: 0 4px; flex-shrink: 0;}
+  .checklist-item input[type="checkbox"] {width: 20px; height: 20px; flex-shrink: 0; cursor: pointer; accent-color: var(--accent);}
+  .checklist-item input[type="text"] {flex: 1; padding: 8px 8px; font-size: 14px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text);}
+  .checklist-item .remove-item {color: #d0453a; background: none; border: none; font-size: 18px; cursor: pointer; padding: 0 6px; flex-shrink: 0; min-height:32px;}
 
-  .attachment-actions {display: flex; gap: 6px; margin-bottom: 6px;}
-  .attachments-container {border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--input-bg); max-height: 260px; overflow-y: auto;}
-  .attachment-item {display: flex; align-items: center; gap: 6px; padding: 6px 8px; margin-bottom: 6px; background: var(--card-bg); border-radius: 6px; border: 1px solid var(--border);}
+  .attachment-actions {display: flex; gap: 8px; margin-bottom: 8px;}
+  .attachment-actions .btn {flex:1; padding:12px; font-size:14px; min-height:44px;}
+  .attachments-container {border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--input-bg); max-height: 300px; overflow-y: auto;}
+  .attachment-item {display: flex; align-items: center; gap: 8px; padding: 8px; margin-bottom: 6px; background: var(--card-bg); border-radius: 6px; border: 1px solid var(--border); flex-wrap:wrap;}
   .attachment-item .file-icon {font-size: 20px; flex-shrink: 0; width: 24px; text-align: center;}
   .attachment-item .file-info {flex: 1; min-width: 0;}
-  .attachment-item .file-name {font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
-  .attachment-item .file-size {font-size: 10px; color: var(--muted); margin-top: 2px;}
+  .attachment-item .file-name {font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+  .attachment-item .file-size {font-size: 11px; color: var(--muted); margin-top: 2px;}
   .attachment-item .file-size.link-tag {color: var(--accent);}
-  .attachment-item .file-actions {display: flex; gap: 2px; flex-shrink: 0;}
-  .attachment-item .file-actions button {background: rgba(100,100,100,.08); color: var(--muted); border: none; font-size: 13px; padding: 3px 7px; border-radius: 5px; cursor: pointer;}
-  .attachment-item .file-actions button:hover {background: var(--accent); color: #fff;}
-  .attachment-item .file-actions button.remove-btn:hover {background: #d0453a; color: #fff;}
-  .attachment-item .file-thumb {width: 36px; height: 36px; border-radius: 5px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border); cursor: pointer;}
-  .attachment-item { flex-wrap:wrap; }
+  .attachment-item .file-actions {display: flex; gap: 4px; flex-shrink: 0;}
+  .attachment-item .file-actions button {background: rgba(100,100,100,.08); color: var(--muted); border: none; font-size: 14px; padding: 6px 10px; border-radius: 6px; cursor: pointer; min-height:36px;}
+  .attachment-item .file-actions button:active {background: var(--accent); color: #fff;}
+  .attachment-item .file-actions button.remove-btn:active {background: #d0453a; color: #fff;}
+  .attachment-item .file-thumb {width: 44px; height: 44px; border-radius: 6px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border); cursor: pointer;}
   .att-note-row { width:100%; margin-top:4px; }
-  .att-note-row input { width:100%; border:1px solid var(--border); border-radius:5px; background:var(--input-bg); color:var(--text); padding:3px 7px; font-size:11px; font-family:inherit; outline:none; }
-  .att-note-row input:focus { border-color:var(--accent); }
-  .att-note-row input::placeholder { color:var(--muted); }
-  .attachment-empty {font-size: 12px; color: var(--muted); font-style: italic; text-align: center; padding: 8px;}
-  .attachment-hint {font-size: 10px; color: var(--muted); margin-top: 6px; line-height: 1.5;}
+  .att-note-row input { width:100%; border:1px solid var(--border); border-radius:5px; background:var(--input-bg); color:var(--text); padding:8px 10px; font-size:13px; font-family:inherit; outline:none; }
+  .attachment-empty {font-size: 13px; color: var(--muted); font-style: italic; text-align: center; padding: 10px;}
+  .attachment-hint {font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.5;}
 
-  /* ★ 笔记区块 */
-  .notes-section {margin-bottom: 5px;}
-  .note-block {
-    border: 1px solid var(--border); border-radius: 10px; padding: 10px;
-    background: var(--sub-bg); margin-bottom: 10px; position: relative;
-  }
-  .note-block-header {display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;}
-  .note-block-header .note-label {font-size: 11px; color: var(--muted); font-weight: 600;}
-  .note-block-header .note-remove {background: none; border: none; color: #d0453a; font-size: 15px; cursor: pointer; padding: 2px 6px; border-radius: 4px;}
-  .note-block-header .note-remove:hover {background: rgba(208,69,58,.12);}
-  .note-block textarea {
-    width: 100%; min-height: 60px; resize: vertical; border: 1px solid var(--border);
-    border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit;
-    background: var(--card-bg); color: var(--text); outline: none; line-height: 1.5;
-  }
-  .note-block textarea:focus {border-color: var(--accent);}
-  .note-atts {margin-top: 6px;}
-  .note-atts .attachment-item {margin-bottom: 4px;}
-  .note-att-actions {display: flex; gap: 6px; margin-top: 6px;}
-  .note-att-actions .btn {font-size: 11px; padding: 3px 8px;}
+  /* 笔记 */
+  .note-block {border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: var(--sub-bg); margin-bottom: 10px;}
+  .note-block-header {display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;}
+  .note-block-header .note-label {font-size: 12px; color: var(--muted); font-weight: 600;}
+  .note-block-header .note-remove {background: none; border: none; color: #d0453a; font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 4px; min-height:36px;}
+  .note-block textarea {width: 100%; min-height: 70px; resize: vertical; border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-size: 14px; font-family: inherit; background: var(--card-bg); color: var(--text); outline: none; line-height: 1.5;}
+  .note-att-actions {display: flex; gap: 8px; margin-top: 8px;}
+  .note-att-actions .btn {flex:1; min-height:40px; font-size:13px;}
 
-  /* ★ 拖拽视觉反馈 */
-  .drag-over {
-    outline: 2px dashed var(--accent) !important;
-    outline-offset: -2px;
-    background: rgba(200, 102, 47, 0.05) !important;
-  }
+  /* 拖拽高亮（桌面） */
+  .drag-over { outline: 2px dashed var(--accent) !important; outline-offset: -2px; background: rgba(200,102,47,.06) !important; }
 
   /* 预览中的笔记 */
-  .card-preview-note {
-    border: 1px solid var(--sub-border); border-radius: 8px; padding: 10px;
-    background: var(--sub-bg); margin-bottom: 8px;
-  }
+  .card-preview-note {border: 1px solid var(--sub-border); border-radius: 8px; padding: 10px; background: var(--sub-bg); margin-bottom: 8px;}
   .card-preview-note-text {font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; margin-bottom: 6px;}
-  .card-preview-note-att {
-    display: flex; align-items: center; gap: 6px; padding: 5px 8px;
-    background: var(--card-bg); border-radius: 6px; border: 1px solid var(--border);
-    margin-bottom: 4px; cursor: pointer; font-size: 12px;
-  }
-  .card-preview-note-att:hover {border-color: var(--accent);}
-  .card-preview-note-att .att-icon {font-size: 16px; flex-shrink: 0;}
+  .card-preview-note-att {display: flex; align-items: center; gap: 6px; padding: 8px 10px; background: var(--card-bg); border-radius: 6px; border: 1px solid var(--border); margin-bottom: 4px; cursor: pointer; font-size: 12px;}
   .card-preview-note-att .att-name {flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
   .card-preview-note-att .att-size {font-size: 10px; color: var(--muted); flex-shrink: 0;}
-  /* 子看板预览中的笔记 */
-  .sub-preview-card-notes {margin-top: 4px;}
-  .sub-preview-note {font-size: 11px; color: var(--muted); padding: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
-  #addLinkOverlay {align-items: center; padding: 20px; z-index: 150;}
-  #addLinkModal {background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 420px; padding: 20px;}
+  #addLinkOverlay {align-items: center; padding: 16px; z-index: 150;}
+  #addLinkModal {background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 440px; padding: 20px;}
   #addLinkModal h3 {font-size: 16px; margin-bottom: 15px; text-align: center;}
-  #addLinkModal .field {margin-bottom: 12px;}
-  #addLinkModal .field label {display:block; font-size: 11px; color: var(--muted); margin-bottom: 4px;}
-  #addLinkModal input {width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 14px; background: var(--input-bg); color: var(--text);}
 
   #quickMoveOverlay {align-items: flex-end; padding: 0;}
-  #quickMoveMenu {background: var(--card-bg); width: 100%; border-radius: 16px 16px 0 0; padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,.2); max-height: 70vh; overflow-y: auto;}
+  #quickMoveMenu {background: var(--card-bg); width: 100%; border-radius: 16px 16px 0 0; padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,.2); max-height: 80vh; overflow-y: auto;}
   #quickMoveMenu h3 {font-size: 16px; margin-bottom: 15px; text-align: center; color: var(--muted);}
-  .move-option {display: block; width: 100%; padding: 12px; margin-bottom: 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; font-size: 15px; cursor: pointer; text-align: center;}
-  .move-option:hover {background: var(--accent); color: #fff; border-color: var(--accent);}
-  .move-option:disabled {opacity: 0.4; cursor: not-allowed;}
+  .move-option {display: block; width: 100%; padding: 14px; margin-bottom: 8px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; font-size: 15px; cursor: pointer; text-align: center; min-height:48px;}
+  .move-option:active {background: var(--accent); color: #fff; border-color: var(--accent);}
 
-  #renameListOverlay {align-items: center; padding: 20px;}
-  #renameListModal {background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 380px; padding: 20px;}
-  #renameListModal h3 {font-size: 16px; margin-bottom: 15px; text-align: center;}
-  #renameListModal input {width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 15px; background: var(--input-bg); color: var(--text); margin-bottom: 15px;}
+  #renameListOverlay {align-items: center; padding: 16px;}
+  #renameListModal {background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 400px; padding: 20px;}
   .rename-actions {display: flex; gap: 10px;}
+  .rename-actions .btn {flex:1; min-height:44px;}
 
-  /* ★ 模板选择弹窗 */
-  #templateOverlay {background: rgba(30,25,20,.55); align-items: center; justify-content: center; z-index: 190; padding: 20px;}
-  #templateModal {
-    background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 480px;
-    box-shadow: 0 30px 80px rgba(0,0,0,.4); max-height: 85vh;
-    display: flex; flex-direction: column; overflow: hidden;
-  }
-  #templateHeader {
-    padding: 16px 20px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 10px;
-  }
+  /* 模板弹窗 */
+  #templateOverlay {align-items: center; justify-content: center; padding: 16px;}
+  #templateModal {background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 500px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;}
+  #templateHeader {padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;}
   #templateHeader h2 {font-size: 16px; font-weight: 700; flex: 1;}
-  #templateHeader .template-close {background: none; border: none; font-size: 22px; color: var(--muted); cursor: pointer; padding: 0 4px; line-height: 1;}
+  #templateHeader .template-close {background: none; border: none; font-size: 24px; color: var(--muted); cursor: pointer; padding: 4px 8px; line-height: 1; min-height:36px;}
   #templateBody {flex: 1; overflow-y: auto; padding: 12px 16px 16px;}
-  .template-item {
-    padding: 10px 12px; margin-bottom: 8px;
-    background: var(--sub-bg); border: 1px solid var(--sub-border);
-    border-radius: 8px; cursor: pointer; transition: .15s;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .template-item:hover {border-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,.08);}
+  .template-item {padding: 12px; margin-bottom: 8px; background: var(--sub-bg); border: 1px solid var(--sub-border); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;}
+  .template-item:active {border-color: var(--accent);}
   .template-item .tpl-icon {font-size: 22px; flex-shrink: 0;}
   .template-item .tpl-info {flex: 1; min-width: 0;}
   .template-item .tpl-name {font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
   .template-item .tpl-meta {font-size: 11px; color: var(--muted); margin-top: 2px;}
-  .template-item .tpl-del {
-    background: rgba(208,69,58,.1); color: #d0453a; border: none;
-    width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px;
-    flex-shrink: 0;
-  }
-  .template-item .tpl-del:hover {background: #d0453a; color: #fff;}
-  .template-empty {
-    text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; line-height: 2;
-  }
+  .template-item .tpl-del {background: rgba(208,69,58,.1); color: #d0453a; border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 14px; flex-shrink: 0;}
+  .template-empty {text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; line-height: 2;}
 
-  /* 附件预览弹窗 */
-  #previewOverlay {background: rgba(0,0,0,.92); align-items: center; justify-content: center; z-index: 220; padding: 0;}
-  #previewOverlay .preview-toolbar {position: absolute; top: 0; left: 0; right: 0; padding: 10px 16px; display: flex; align-items: center; gap: 10px; color: #fff; font-size: 13px; z-index: 2; background: linear-gradient(to bottom, rgba(0,0,0,.7), transparent);}
+  /* 附件预览 */
+  #previewOverlay {background: rgba(0,0,0,.94); align-items: center; justify-content: center; z-index: 220; padding: 0;}
+  #previewOverlay .preview-toolbar {position: absolute; top: 0; left: 0; right: 0; padding: 12px 14px; display: flex; align-items: center; gap: 10px; color: #fff; font-size: 13px; z-index: 2; background: linear-gradient(to bottom, rgba(0,0,0,.75), transparent); padding-top: calc(12px + env(safe-area-inset-top));}
   #previewOverlay .preview-title {flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600;}
-  #previewOverlay .preview-btn {background: rgba(255,255,255,.15); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;}
-  #previewOverlay .preview-btn:hover {background: rgba(255,255,255,.3);}
+  #previewOverlay .preview-btn {background: rgba(255,255,255,.15); color: #fff; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;}
+  #previewOverlay .preview-btn:active {background: rgba(255,255,255,.35);}
   #previewContent {width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;}
   #previewContent iframe {width: 100%; height: 100%; background: #fff; border: none;}
-  #previewContent img {max-width: 95%; max-height: 90vh; object-fit: contain;}
-  #previewContent .preview-loading {color: #fff; font-size: 14px;}
+  #previewContent img {max-width: 95%; max-height: 88vh; object-fit: contain;}
 
-  /* 子看板预览弹窗 */
-  #subPreviewOverlay {background: rgba(30,25,20,.55); align-items: center; justify-content: center; z-index: 180; padding: 20px;}
-  #subPreviewModal {
-    background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 640px;
-    box-shadow: 0 30px 80px rgba(0,0,0,.4); max-height: 85vh;
-    display: flex; flex-direction: column; overflow: hidden;
-  }
-  #subPreviewHeader {
-    padding: 16px 20px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 10px;
-  }
-  #subPreviewHeader h2 {
-    font-size: 16px; font-weight: 700; flex: 1;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-  #subPreviewHeader .sub-preview-close {
-    background: none; border: none; font-size: 22px; color: var(--muted);
-    cursor: pointer; padding: 0 4px; line-height: 1;
-  }
-  #subPreviewHeader .sub-preview-close:hover { color: var(--text); }
-  #subPreviewBody {
-    flex: 1; overflow-y: auto; padding: 12px 16px 20px;
-  }
-  .sub-preview-list {
-    margin-bottom: 16px;
-  }
-  .sub-preview-list-title {
-    font-size: 13px; font-weight: 700; color: var(--text);
-    padding: 6px 0; display: flex; align-items: center; gap: 6px;
-  }
-  .sub-preview-list-count {
-    font-size: 11px; color: var(--muted); background: rgba(0,0,0,.06);
-    padding: 1px 7px; border-radius: 10px; font-weight: 600;
-  }
-  body.dark .sub-preview-list-count { background: rgba(255,255,255,.1); }
-  .sub-preview-card {
-    padding: 10px 12px; margin-bottom: 8px;
-    background: var(--sub-bg); border: 1px solid var(--sub-border);
-    border-radius: 8px; cursor: pointer; transition: .15s;
-  }
-  .sub-preview-card:hover {
-    border-color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,.08);
-  }
-  .sub-preview-card-title {
-    font-size: 13px; font-weight: 600; margin-bottom: 4px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .sub-preview-card-title .priority-dot {
-    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-  }
+  /* 子看板预览 */
+  #subPreviewOverlay {align-items: center; justify-content: center; padding: 16px;}
+  #subPreviewModal {background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 640px; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden;}
+  #subPreviewHeader {padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; flex-wrap:wrap;}
+  #subPreviewHeader h2 {font-size: 15px; font-weight: 700; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width:120px;}
+  #subPreviewHeader .sub-preview-close {background: none; border: none; font-size: 24px; color: var(--muted); cursor: pointer; padding: 4px 8px; line-height: 1; min-height:36px;}
+  #subPreviewBody {flex: 1; overflow-y: auto; padding: 12px 16px 20px; -webkit-overflow-scrolling: touch;}
+  .sub-preview-list {margin-bottom: 16px;}
+  .sub-preview-list-title {font-size: 13px; font-weight: 700; padding: 6px 0; display: flex; align-items: center; gap: 6px;}
+  .sub-preview-list-count {font-size: 11px; color: var(--muted); background: rgba(0,0,0,.06); padding: 1px 7px; border-radius: 10px; font-weight: 600;}
+  .sub-preview-card {padding: 12px; margin-bottom: 8px; background: var(--sub-bg); border: 1px solid var(--sub-border); border-radius: 8px; cursor: pointer;}
+  .sub-preview-card:active {border-color: var(--accent);}
+  .sub-preview-card-title {font-size: 13px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;}
+  .priority-dot {width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;}
   .priority-dot.high { background: #e2574c; }
   .priority-dot.medium { background: #e8a33d; }
   .priority-dot.low { background: #3f9d7c; }
-  .sub-preview-card-desc {
-    font-size: 11px; color: var(--muted); margin-top: 2px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-  .sub-preview-card-meta {
-    display: flex; gap: 10px; margin-top: 6px;
-    font-size: 10px; color: var(--muted); flex-wrap: wrap;
-  }
-  .sub-preview-empty {
-    font-size: 12px; color: var(--muted); font-style: italic;
-    text-align: center; padding: 30px 10px;
-  }
-  .sub-preview-nested {
-    margin-top: 6px; padding-left: 12px; border-left: 2px solid var(--sub-border);
-    font-size: 11px; color: var(--muted);
-  }
+  .sub-preview-card-desc {font-size: 11px; color: var(--muted); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+  .sub-preview-card-meta {display: flex; gap: 10px; margin-top: 6px; font-size: 10px; color: var(--muted); flex-wrap: wrap;}
+  .sub-preview-empty {font-size: 12px; color: var(--muted); font-style: italic; text-align: center; padding: 30px 10px;}
 
-  /* 卡片详情预览弹窗 */
-  #cardPreviewOverlay {background: rgba(30,25,20,.6); align-items: center; justify-content: center; z-index: 195; padding: 20px;}
-  #cardPreviewModal {
-    background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 520px;
-    box-shadow: 0 30px 80px rgba(0,0,0,.45); max-height: 85vh;
-    display: flex; flex-direction: column; overflow: hidden;
-  }
-  .card-preview-header {
-    padding: 16px 20px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .card-preview-header h2 {
-    font-size: 16px; font-weight: 700; flex: 1;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-  .card-preview-close {
-    background: none; border: none; font-size: 22px; color: var(--muted);
-    cursor: pointer; padding: 0 4px; line-height: 1;
-  }
-  .card-preview-close:hover { color: var(--text); }
-  #cardPreviewBody {flex: 1; overflow-y: auto; padding: 16px 20px 20px;}
-
+  /* 卡片详情预览 */
+  #cardPreviewOverlay {align-items: center; justify-content: center; padding: 16px;}
+  #cardPreviewModal {background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 560px; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden;}
+  .card-preview-header {padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;}
+  .card-preview-header h2 {font-size: 15px; font-weight: 700; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+  .card-preview-close {background: none; border: none; font-size: 24px; color: var(--muted); cursor: pointer; padding: 4px 8px; line-height: 1; min-height:36px;}
+  #cardPreviewBody {flex: 1; overflow-y: auto; padding: 16px 18px 20px; -webkit-overflow-scrolling: touch;}
   .card-preview-tags {display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px;}
   .card-preview-meta {display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-bottom: 12px; align-items: center;}
-  .card-preview-desc {
-    font-size: 13px; line-height: 1.6; color: var(--text);
-    padding: 10px 12px; background: var(--sub-bg); border-radius: 8px;
-    border: 1px solid var(--sub-border); margin-bottom: 14px;
-    white-space: pre-wrap; word-break: break-word;
-  }
-  .card-preview-section-title {
-    font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .card-preview-checklist {margin-bottom: 14px;}
-  .card-preview-check-item {
-    display: flex; align-items: center; gap: 8px; padding: 6px 0;
-    font-size: 13px;
-  }
-  .card-preview-check-item .check-icon {
-    width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--border);
-    display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;
-    color: transparent;
-  }
+  .card-preview-desc {font-size: 13px; line-height: 1.6; padding: 10px 12px; background: var(--sub-bg); border-radius: 8px; border: 1px solid var(--sub-border); margin-bottom: 14px; white-space: pre-wrap; word-break: break-word;}
+  .card-preview-section-title {font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;}
+  .card-preview-check-item {display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 13px;}
+  .card-preview-check-item .check-icon {width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; color: transparent;}
   .card-preview-check-item.done .check-icon {background: var(--accent); border-color: var(--accent); color: #fff;}
   .card-preview-check-item.done .check-text {text-decoration: line-through; color: var(--muted);}
-  .card-preview-attachments {margin-bottom: 14px;}
-  .card-preview-att-item {
-    display: flex; align-items: center; gap: 8px; padding: 8px 10px;
-    background: var(--sub-bg); border: 1px solid var(--sub-border);
-    border-radius: 8px; margin-bottom: 6px; cursor: pointer; transition: .15s;
-  }
-  .card-preview-att-item:hover {border-color: var(--accent);}
+  .card-preview-att-item {display: flex; align-items: center; gap: 8px; padding: 10px; background: var(--sub-bg); border: 1px solid var(--sub-border); border-radius: 8px; margin-bottom: 6px; cursor: pointer; flex-wrap:wrap;}
   .card-preview-att-item .att-icon {font-size: 18px; flex-shrink: 0; width: 24px; text-align: center;}
   .card-preview-att-item .att-info {flex: 1; min-width: 0;}
   .card-preview-att-item .att-name {font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
   .card-preview-att-item .att-size {font-size: 10px; color: var(--muted); margin-top: 2px;}
   .card-preview-att-item .att-action {color: var(--muted); font-size: 12px;}
   .card-preview-att-item .att-note {width:100%; font-size:11px; color:var(--muted); margin-top:3px; font-style:italic; word-break:break-word;}
-  .card-preview-subboard-btn {
-    display: block; width: 100%; padding: 12px; margin-top: 6px;
-    background: rgba(59,130,246,.1); color: #3b82f6; border: 1px solid #3b82f6;
-    border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700;
-    font-family: inherit;
-  }
-  .card-preview-subboard-btn:hover {background: #3b82f6; color: #fff;}
+  .card-preview-subboard-btn {display: block; width: 100%; padding: 14px; margin-top: 6px; background: rgba(59,130,246,.1); color: #3b82f6; border: 1px solid #3b82f6; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; min-height:48px;}
   .card-preview-empty {font-size: 12px; color: var(--muted); font-style: italic; padding: 4px 0;}
 
   #loadingOverlay {position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 999; color: #fff; font-size: 16px;}
@@ -480,161 +337,152 @@
   #loadingOverlay .spinner {width: 24px; height: 24px; border: 3px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 12px;}
   @keyframes spin {to {transform: rotate(360deg);}}
 
-  .sync-status {padding: 10px 12px; border-radius: 10px; font-size: 12px; background: var(--input-bg); border: 1px solid var(--border); margin-bottom: 14px; line-height: 1.6; white-space: pre-wrap;}
-  .sync-status.ok {border-color: #22c55e; background: rgba(34,197,94,.08); color: #22c55e;}
-  .sync-status.err {border-color: #ef4444; background: rgba(239,68,68,.08); color: #ef4444;}
-  .sync-status.info {border-color: var(--accent); background: rgba(200,102,47,.06); color: var(--accent);}
-  .checkbox-row {display: flex; align-items: center; gap: 8px; padding: 8px 0;}
-  .checkbox-row input[type="checkbox"] {width: auto;}
-  .checkbox-row label {margin: 0; font-size: 13px; cursor: pointer;}
-  .help-text {font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.6;}
-  .help-text code {background: var(--input-bg); padding: 1px 5px; border-radius: 4px; font-family: ui-monospace, monospace; font-size: 10px;}
-  .help-text a {color: var(--accent);}
-
-  @media (max-width: 640px) {
-    header { padding: 8px 10px; gap: 5px; }
-    header h1 { display: none; }
-    .board-selector { max-width: 90px; font-size: 12px; }
-    .btn { padding: 5px 8px; font-size: 11px; }
-    .list { flex: 0 0 85vw; width: 85vw; max-width: 300px; }
-    .card-footer { flex-wrap: wrap; row-gap: 6px; justify-content: space-between; }
-    .footer-right { flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
-    .action-btn, .quick-move-btn, .expand-sub-btn, .preview-sub-btn {
-      padding: 4px 6px; font-size: 11px; white-space: nowrap;
-    }
-    #subPreviewModal, #cardPreviewModal, #templateModal { max-height: 92vh; }
-    #pinboard { max-width:100%; }
-  }
-
-  /* 图片剪贴板 */
-  #pinboard { padding:0 20px; flex-shrink:0; max-width:320px; box-sizing:border-box; }
-  .pin-header { display:flex; align-items:center; gap:8px; cursor:pointer; padding:6px 0; user-select:none; }
+  /* 剪贴板 */
+  #pinboard { padding:0 12px; flex-shrink:0; max-width:100%; box-sizing:border-box; }
+  .pin-header { display:flex; align-items:center; gap:8px; cursor:pointer; padding:8px 0; user-select:none; }
   .pin-toggle { font-size:13px; font-weight:600; color:var(--muted); }
-  .pin-collapse { font-size:11px; color:var(--muted); transition:transform .2s; }
+  .pin-collapse { font-size:12px; color:var(--muted); transition:transform .2s; }
   .pin-body.collapsed { display:none; }
   .pin-hint { font-size:11px; color:var(--muted); margin-bottom:6px; }
   .pin-list { display:flex; flex-direction:column; gap:10px; }
-  .pin-item { display:flex; gap:8px; background:var(--list-bg); border-radius:10px; padding:8px; width:100%; position:relative; }
+  .pin-item { display:flex; gap:10px; background:var(--list-bg); border-radius:10px; padding:10px; width:100%; position:relative; }
   .pin-thumb { flex-shrink:0; width:72px; height:72px; border-radius:8px; overflow:hidden; cursor:pointer; border:1px solid var(--border); }
   .pin-thumb img { width:100%; height:100%; object-fit:cover; }
   .pin-note { flex:1; min-width:0; display:flex; flex-direction:column; }
-  .pin-note textarea { width:100%; flex:1; border:1px solid var(--border); border-radius:6px; background:var(--input-bg); color:var(--text); padding:6px 8px; font-size:12px; font-family:inherit; resize:vertical; outline:none; min-height:40px; }
-  .pin-note textarea:focus { border-color:var(--accent); }
-  .pin-del { position:absolute; top:4px; right:4px; background:rgba(0,0,0,.55); color:#fff; border:none; border-radius:50%; width:20px; height:20px; font-size:12px; cursor:pointer; display:none; align-items:center; justify-content:center; line-height:1; }
-  .pin-item:hover .pin-del { display:flex; }
-  /* ★ pin 单项折叠 */
-  .pin-item.collapsed { max-width:none; padding:4px 8px; align-items:center; }
+  .pin-note textarea { width:100%; flex:1; border:1px solid var(--border); border-radius:6px; background:var(--input-bg); color:var(--text); padding:8px 10px; font-size:13px; font-family:inherit; resize:vertical; outline:none; min-height:44px; }
+  .pin-del { position:absolute; top:6px; right:6px; background:rgba(0,0,0,.55); color:#fff; border:none; border-radius:50%; width:28px; height:28px; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1; }
+  .pin-item.collapsed { padding:6px 10px; align-items:center; }
   .pin-item.collapsed .pin-thumb,
   .pin-item.collapsed .pin-note { display:none; }
-  .pin-item.collapsed .pin-del { top:50%; transform:translateY(-50%); right:4px; }
-  .pin-fold-btn { background:none; border:none; color:var(--muted); cursor:pointer; font-size:11px; padding:2px 4px; flex-shrink:0; border-radius:4px; }
-  .pin-fold-btn:hover { color:var(--accent); }
-  .pin-summary { display:none; font-size:12px; color:var(--fg); cursor:pointer; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pin-item.collapsed .pin-del { top:50%; transform:translateY(-50%); right:6px; }
+  .pin-fold-btn { background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px; padding:4px 6px; flex-shrink:0; border-radius:4px; min-height:36px;}
+  .pin-summary { display:none; font-size:13px; cursor:pointer; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .pin-item.collapsed .pin-summary { display:block; }
-  .pin-summary-icon { margin-right:4px; }
-  .pin-drop-zone { border:2px dashed var(--border); border-radius:10px; padding:10px; text-align:center; color:var(--muted); font-size:11px; cursor:pointer; transition:border-color .2s, background .2s; min-height:40px; display:flex; align-items:center; justify-content:center; gap:4px; }
-  .pin-drop-zone:hover, .pin-drop-zone.drag-over { border-color:var(--accent); background:rgba(200,102,47,.06); }
-  /* ★ 看板链接区 */
-  .board-links { margin-top:8px; }
+  .pin-drop-zone { border:2px dashed var(--border); border-radius:10px; padding:14px; text-align:center; color:var(--muted); font-size:12px; cursor:pointer; min-height:48px; display:flex; align-items:center; justify-content:center; gap:4px; }
+  .pin-drop-zone:active { border-color:var(--accent); background:rgba(200,102,47,.06); }
+
+  /* 看板链接 */
+  .board-links { margin-top:10px; }
   .board-links-title { font-size:12px; font-weight:600; color:var(--muted); margin-bottom:4px; }
-  .board-link-add { display:flex; gap:6px; margin-bottom:6px; }
-  .board-link-add input { flex:1; border:1px solid var(--border); border-radius:6px; background:var(--input-bg); color:var(--text); padding:4px 8px; font-size:12px; font-family:inherit; outline:none; }
+  .board-link-add { display:flex; gap:6px; margin-bottom:6px; flex-wrap:wrap; }
+  .board-link-add input { flex:1; min-width:80px; border:1px solid var(--border); border-radius:6px; background:var(--input-bg); color:var(--text); padding:8px 10px; font-size:13px; font-family:inherit; outline:none; }
   .board-link-add input:focus { border-color:var(--accent); }
-  .board-link-add button { flex-shrink:0; }
+  .board-link-add button { flex-shrink:0; min-height:38px; padding:8px 14px; }
   .board-link-list { display:flex; flex-direction:column; gap:4px; }
-  .board-link-item { display:flex; align-items:flex-start; gap:6px; padding:4px 8px; background:var(--list-bg); border-radius:8px; font-size:12px; position:relative; }
-  .board-link-item:hover { background:var(--border); }
+  .board-link-item { display:flex; align-items:flex-start; gap:6px; padding:8px 10px; background:var(--list-bg); border-radius:8px; font-size:13px; position:relative; }
   .board-link-item a { color:var(--accent); text-decoration:none; word-break:break-all; flex:1; min-width:0; }
-  .board-link-item a:hover { text-decoration:underline; }
-  .board-link-item a.link-label { color:var(--fg); font-weight:500; }
-  .board-link-del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px; padding:0 4px; flex-shrink:0; border-radius:4px; }
-  .board-link-del:hover { color:#d0453a; }
-  /* ★ 星标提醒 */
-  .star-reminder { position:relative; }
-  .star-reminder-btn { position:relative; color:#e53e3e; }
-  .star-badge {
-    position:absolute; top:-4px; right:-6px; background:#e53e3e; color:#fff;
+  .board-link-del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:15px; padding:2px 6px; flex-shrink:0; border-radius:4px; min-height:32px;}
+
+  /* 星标/到期提醒面板 */
+  .star-reminder, .due-reminder { position:relative; }
+  .star-reminder-btn { color:#e53e3e; }
+  .due-reminder-btn { color:#e8a33d; }
+  .star-badge, .due-badge {
+    position:absolute; top:-4px; right:-6px; color:#fff;
     font-size:10px; font-weight:700; min-width:16px; height:16px; line-height:16px;
     border-radius:8px; text-align:center; padding:0 4px; pointer-events:none;
   }
-  .star-panel {
-    display:none; position:absolute; top:100%; right:0; z-index:200;
+  .star-badge { background:#e53e3e; }
+  .due-badge { background:#e8a33d; }
+  .star-panel, .due-panel {
+    display:none; position:fixed; top:60px; right:12px; left:12px; z-index:200;
     background:var(--card-bg); border:1px solid var(--border); border-radius:12px;
-    box-shadow:0 8px 32px rgba(0,0,0,.18); min-width:300px; max-width:420px;
-    max-height:70vh; overflow-y:auto; margin-top:6px;
+    box-shadow:0 8px 32px rgba(0,0,0,.2); max-height:70vh; overflow-y:auto;
   }
-  .star-panel.show { display:block; }
-  .star-panel-title { font-size:13px; font-weight:700; padding:12px 14px 8px; color:var(--fg); border-bottom:1px solid var(--border); }
-  .star-panel-empty { font-size:12px; color:var(--muted); padding:16px; text-align:center; font-style:italic; }
+  .star-panel.show, .due-panel.show { display:block; }
+  .star-panel-title, .due-panel-title { font-size:13px; font-weight:700; padding:12px 14px 8px; border-bottom:1px solid var(--border); }
+  .star-panel-empty, .due-panel-empty { font-size:12px; color:var(--muted); padding:16px; text-align:center; font-style:italic; }
   .star-panel-group { padding:4px 0; }
   .star-panel-board { font-size:11px; font-weight:600; color:var(--muted); padding:6px 14px 2px; }
-  .star-panel-item {
-    display:flex; align-items:center; gap:8px; padding:6px 14px; cursor:pointer;
-    font-size:13px; color:var(--fg); transition:background .12s;
-  }
-  .star-panel-item:hover { background:var(--list-bg); }
+  .star-panel-item { display:flex; align-items:center; gap:8px; padding:10px 14px; cursor:pointer; font-size:13px; }
   .star-panel-item .spi-star { color:#e53e3e; flex-shrink:0; }
   .star-panel-item .spi-title { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .star-panel-item .spi-path { font-size:10px; color:var(--muted); flex-shrink:0; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  /* ⏰ 到期提醒 */
-  .due-reminder { position:relative; }
-  .due-reminder-btn { position:relative; color:#e8a33d; }
-  .due-badge {
-    position:absolute; top:-4px; right:-6px; background:#e8a33d; color:#fff;
-    font-size:10px; font-weight:700; min-width:16px; height:16px; line-height:16px;
-    border-radius:8px; text-align:center; padding:0 4px; pointer-events:none;
-  }
-  .due-panel {
-    display:none; position:absolute; top:100%; right:0; z-index:200;
-    background:var(--card-bg); border:1px solid var(--border); border-radius:12px;
-    box-shadow:0 8px 32px rgba(0,0,0,.18); min-width:300px; max-width:420px;
-    max-height:70vh; overflow-y:auto; margin-top:6px;
-  }
-  .due-panel.show { display:block; }
-  .due-panel-title { font-size:13px; font-weight:700; padding:12px 14px 8px; color:var(--fg); border-bottom:1px solid var(--border); }
-  .due-panel-empty { font-size:12px; color:var(--muted); padding:16px; text-align:center; font-style:italic; }
   .due-panel-group { padding:4px 0; border-bottom:1px solid var(--border); }
   .due-panel-group:last-child { border-bottom:none; }
   .due-panel-group-title { font-size:11px; font-weight:600; color:var(--muted); padding:6px 14px 2px; }
-  .due-panel-item {
-    display:flex; align-items:center; gap:8px; padding:6px 14px; cursor:pointer;
-    font-size:13px; color:var(--fg); transition:background .12s;
-  }
-  .due-panel-item:hover { background:var(--list-bg); }
-  .due-panel-item .dpi-icon { flex-shrink:0; }
+  .due-panel-item { display:flex; align-items:center; gap:8px; padding:10px 14px; cursor:pointer; font-size:13px; }
   .due-panel-item .dpi-title { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .due-panel-item .dpi-date { font-size:10px; flex-shrink:0; font-weight:600; }
+  .due-panel-item .dpi-date { font-size:11px; flex-shrink:0; font-weight:600; }
   .due-panel-item .dpi-date.overdue { color:#d0453a; }
   .due-panel-item .dpi-date.today { color:#e53e3e; }
   .due-panel-item .dpi-date.soon { color:#e8a33d; }
   .due-panel-item .dpi-board { font-size:10px; color:var(--muted); flex-shrink:0; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  /* ========== 移动端专用 ========== */
+  @media (max-width: 768px){
+    header { padding: 8px 8px; gap: 5px; }
+    .brand-text { display:none; }
+    header .btn { padding:6px 9px; font-size:11.5px; min-height:34px; }
+    .board-selector { max-width:100px; font-size:12px; padding:6px 8px; }
+    #board { padding:10px; gap:10px; }
+    .list { flex:0 0 86vw; width:86vw; max-width:340px; }
+    .list-header { padding:6px; }
+    .card { padding:10px 12px 42px 12px; }
+    .card-footer { bottom:8px; }
+    .action-btn, .quick-move-btn, .expand-sub-btn, .preview-sub-btn {
+      padding:6px 10px; font-size:12px; min-height:34px;
+    }
+
+    /* 弹窗底部弹起 */
+    .overlay { padding:0; align-items:flex-end; }
+    .modal, #templateModal, #subPreviewModal, #cardPreviewModal, #addLinkModal, #renameListModal {
+      max-width:100%; width:100%;
+      border-radius:16px 16px 0 0;
+      max-height:94vh;
+      padding:18px;
+    }
+    #templateModal, #subPreviewModal, #cardPreviewModal {
+      padding:0; max-height:94vh;
+    }
+    #templateModal #templateHeader,
+    #subPreviewModal #subPreviewHeader,
+    #cardPreviewModal .card-preview-header {
+      padding:14px 16px; padding-top: calc(14px + env(safe-area-inset-top,0));
+    }
+    #quickMoveMenu { border-radius:16px 16px 0 0; }
+
+    /* 防止 iOS 自动缩放 */
+    .modal input, .modal select, .modal textarea,
+    .m-title, .note-block textarea,
+    .checklist-item input[type="text"],
+    .board-link-add input, .att-note-row input,
+    .pin-note textarea { font-size:16px !important; }
+
+    .modal-actions .btn { flex:1; min-height:44px; font-size:13.5px; }
+    .modal-actions .btn.danger,
+    .modal-actions .btn#mSaveAsTemplate { flex:0 0 auto; min-width:auto; padding:10px 12px;}
+    .grid2 { grid-template-columns:1fr 1fr; gap:10px; }
+
+    .attachment-actions .btn { padding:14px 12px; font-size:14px; min-height:48px; }
+
+    .star-panel, .due-panel { top:56px; right:8px; left:8px; max-height:75vh;}
+  }
+
+  @media (max-width: 400px){
+    .list { flex:0 0 90vw; width:90vw; }
+    .grid2 { grid-template-columns:1fr; }
+  }
 </style>
 </head>
 <body>
 
 <header>
   <span class="logo">🌰</span>
+  <span class="brand-text" style="font-weight:700;font-size:14px;">栗子看板</span>
   <select class="board-selector" id="boardSelect"></select>
-  <button class="btn primary small" id="addBoardBtn">＋ 看板</button>
-  <button class="btn small" id="renameBoardBtn" title="重命名当前看板">✎</button>
-  <button class="btn danger small" id="delBoardBtn" title="删除当前看板">🗑</button>
+  <button class="btn primary small" id="addBoardBtn" title="新建看板">＋</button>
+  <button class="btn small" id="renameBoardBtn" title="重命名看板">✎</button>
   <div class="spacer"></div>
-  <button class="btn primary small" id="addListBtn">＋ 列表</button>
-  <button class="btn small" id="exportBtn">导出Excel</button>
-  <button class="btn small" id="backupBtn">📥 备份</button>
-  <button class="btn small" id="snapshotBtn" title="导出当前看板为可离线查看的网页快照">📸 快照</button>
-  <button class="btn small" id="importBtn">📤 导入</button>
-  <input type="file" id="importFileInput" accept=".json" style="display:none;">
-  <button class="btn small" id="themeToggle" title="切换深色/浅色">🌙</button>
-  <div class="due-reminder" id="dueReminder">
-    <button class="btn small due-reminder-btn" id="dueReminderBtn" title="到期提醒（7天内）">⏰<span class="due-badge" id="dueBadge" style="display:none;">0</span></button>
-    <div class="due-panel" id="duePanel"></div>
+  <button class="btn primary small" id="addListBtn" title="新建列表">＋列表</button>
+  <button class="btn small" id="menuBtn" title="更多">☰</button>
+  <button class="btn small" id="themeToggle" title="切换主题">🌙</button>
+  <div class="due-reminder" id="dueReminder" style="position:relative;">
+    <button class="btn small due-reminder-btn" id="dueReminderBtn" title="到期提醒">⏰<span class="due-badge" id="dueBadge" style="display:none;">0</span></button>
   </div>
-  <div class="star-reminder" id="starReminder">
-    <button class="btn small star-reminder-btn" id="starReminderBtn" title="星标提醒">★<span class="star-badge" id="starBadge" style="display:none;">0</span></button>
-    <div class="star-panel" id="starPanel"></div>
+  <div class="star-reminder" id="starReminder" style="position:relative;">
+    <button class="btn small star-reminder-btn" id="starReminderBtn" title="星标">★<span class="star-badge" id="starBadge" style="display:none;">0</span></button>
   </div>
-  <button class="btn danger small" id="resetBtn">重置</button>
 </header>
 
 <div id="breadcrumb"></div>
@@ -644,17 +492,17 @@
     <span class="pin-toggle" id="pinToggleLabel">📋 剪贴板</span>
     <span class="pin-collapse" id="pinCollapseBtn">▼</span>
   </div>
-  <div class="pin-body" id="pinBody">
-    <div class="pin-hint">Ctrl+V 粘贴图片 · 拖入图片文件 · 点击下方区域选择图片</div>
+  <div class="pin-body collapsed" id="pinBody">
+    <div class="pin-hint">点击下方按钮选择图片</div>
     <div class="pin-list" id="pinList"></div>
     <div class="pin-drop-zone" id="pinDropZone">
-      📷 拖入或点击添加图片
+      📷 选择图片
       <input type="file" id="pinFileInput" accept="image/*" multiple style="display:none;">
     </div>
     <div class="board-links">
       <div class="board-links-title">🔗 链接</div>
       <div class="board-link-add">
-        <input type="text" id="linkTitleInput" placeholder="名称（可选）" style="max-width:120px;">
+        <input type="text" id="linkTitleInput" placeholder="名称（可选）">
         <input type="text" id="linkUrlInput" placeholder="粘贴链接地址…">
         <button class="btn small primary" id="addLinkBtn">＋</button>
       </div>
@@ -668,33 +516,33 @@
 <!-- 卡片编辑弹窗 -->
 <div class="overlay" id="overlay">
   <div class="modal">
-    <div style="display:flex;align-items:flex-start;gap:6px;">
-      <textarea id="mTitle" class="m-title" placeholder="卡片标题（Ctrl+Enter 换行）" rows="1" style="flex:1;"></textarea>
-      <button type="button" class="star-btn" id="mStarBtn" title="标记星标（紧急/重要）" style="font-size:22px;padding:2px 6px;">★</button>
+    <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:12px;">
+      <textarea id="mTitle" class="m-title" placeholder="卡片标题（Ctrl+Enter 换行）" rows="1" style="flex:1;margin:0;"></textarea>
+      <button type="button" class="star-btn" id="mStarBtn" title="标记星标" style="font-size:24px;padding:4px 8px;">★</button>
     </div>
     <textarea id="mDesc" placeholder="添加更详细的描述…"></textarea>
-    
+
     <div class="field">
-      <label>笔记（多个文本块，各自可带附件）</label>
+      <label>笔记</label>
       <div class="notes-section" id="notesContainer"></div>
       <button type="button" class="btn small" id="addNoteBtn">＋ 新建笔记块</button>
     </div>
 
     <div class="field">
-      <label>待办清单（子任务）</label>
+      <label>待办清单</label>
       <div class="checklist-container" id="checklistContainer"></div>
       <button type="button" class="btn small" id="addChecklistBtn">＋ 添加待办</button>
     </div>
 
     <div class="field">
-      <label>附件（本地文件 ≤ 500KB 或 OneDrive 等外链）</label>
+      <label>附件（本地 ≤ 200KB，或外链）</label>
       <div class="attachment-actions">
-        <button type="button" class="btn small" id="addAttachmentBtn">📎 上传本地文件</button>
-        <button type="button" class="btn small" id="addExtLinkBtn">🔗 添加外部链接</button>
+        <button type="button" class="btn small primary" id="addAttachmentBtn">📎 选择文件</button>
+        <button type="button" class="btn small" id="addExtLinkBtn">🔗 外链</button>
       </div>
       <div class="attachments-container" id="attachmentsContainer"></div>
       <div class="attachment-hint">
-        📌 本地文件会随 JSON 备份一起保存（≤500KB/个）。
+        📌 大文件建议放 OneDrive，用「🔗 外链」贴进来。
       </div>
       <input type="file" id="attachmentFileInput" multiple style="display:none;">
     </div>
@@ -705,7 +553,7 @@
     </div>
     <div class="field">
       <label>标签</label>
-      <input id="mTags" placeholder="用逗号分隔，如：设计, 紧急">
+      <input id="mTags" placeholder="用逗号分隔">
     </div>
     <div class="grid2">
       <div class="field">
@@ -722,9 +570,9 @@
     </div>
     <div class="modal-actions">
       <button class="btn danger" id="mDelete">删除</button>
-      <button class="btn" id="mSaveAsTemplate" title="把当前卡片（含子看板）保存为模板">📋 存为模板</button>
+      <button class="btn" id="mSaveAsTemplate" title="存为模板">📋</button>
       <div class="spacer"></div>
-      <button class="btn primary" id="mEnterSubBoard" style="display:none;">进入子看板</button>
+      <button class="btn primary" id="mEnterSubBoard" style="display:none;">子看板</button>
       <button class="btn" id="mCancel">取消</button>
       <button class="btn primary" id="mSave">保存</button>
     </div>
@@ -733,7 +581,7 @@
 
 <div class="overlay" id="quickMoveOverlay">
   <div id="quickMoveMenu">
-    <h3>选择要移动到的列表</h3>
+    <h3>移动到列表</h3>
     <div id="quickMoveList"></div>
     <button class="btn danger" id="quickMoveCancel" style="width:100%; margin-top:10px;">取消</button>
   </div>
@@ -741,70 +589,66 @@
 
 <div class="overlay" id="renameListOverlay">
   <div id="renameListModal">
-    <h3>重命名列表</h3>
-    <input id="renameListInput" placeholder="输入新的列表名称">
+    <h3 style="margin-bottom:14px;text-align:center;font-size:15px;">重命名列表</h3>
+    <input id="renameListInput" placeholder="输入新名称" style="width:100%;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:15px;background:var(--input-bg);color:var(--text);margin-bottom:14px;">
     <div class="rename-actions">
-      <button class="btn" id="renameListCancel" style="flex:1;">取消</button>
-      <button class="btn primary" id="renameListConfirm" style="flex:1;">确定</button>
+      <button class="btn" id="renameListCancel">取消</button>
+      <button class="btn primary" id="renameListConfirm">确定</button>
     </div>
   </div>
 </div>
 
 <div class="overlay" id="addLinkOverlay">
   <div id="addLinkModal">
-    <h3>🔗 添加外部链接</h3>
+    <h3>🔗 添加外链</h3>
     <div class="field">
       <label>链接名称</label>
-      <input id="linkName" placeholder="例如：阀门图纸(OneDrive)">
+      <input id="linkName" placeholder="例如：阀门图纸">
     </div>
     <div class="field">
-      <label>链接地址（OneDrive/网盘/任意 URL）</label>
+      <label>链接地址</label>
       <input id="linkUrl" placeholder="https://..." type="url">
     </div>
     <div class="rename-actions">
-      <button class="btn" id="addLinkCancel" style="flex:1;">取消</button>
-      <button class="btn primary" id="addLinkConfirm" style="flex:1;">添加</button>
+      <button class="btn" id="addLinkCancel">取消</button>
+      <button class="btn primary" id="addLinkConfirm">添加</button>
     </div>
   </div>
 </div>
 
-<!-- ★ 模板选择弹窗 -->
 <div class="overlay" id="templateOverlay">
   <div id="templateModal">
     <div id="templateHeader">
       <span style="font-size:20px;">📋</span>
-      <h2>从模板创建卡片</h2>
+      <h2>从模板创建</h2>
       <button class="template-close" id="templateCloseBtn">✕</button>
     </div>
     <div id="templateBody"></div>
   </div>
 </div>
 
-<!-- 附件预览弹窗 -->
 <div class="overlay" id="previewOverlay">
   <div class="preview-toolbar">
     <div class="preview-title" id="previewTitle"></div>
-    <button class="preview-btn" id="previewNewTabBtn" title="新标签页打开">↗</button>
+    <button class="preview-btn" id="previewNewTabBtn" title="新标签页">↗</button>
     <button class="preview-btn" id="previewDownloadBtn" title="下载">⬇</button>
     <button class="preview-btn" id="closePreviewBtn" title="关闭">✕</button>
   </div>
   <div id="previewContent"></div>
 </div>
 
-<!-- 子看板预览弹窗 -->
 <div class="overlay" id="subPreviewOverlay">
   <div id="subPreviewModal">
     <div id="subPreviewHeader">
       <span style="font-size:20px;">📁</span>
-      <h2 id="subPreviewTitle">子看板预览</h2>
-      <button class="btn small" id="subPreviewEnterBtn">进入子看板</button>
+      <h2 id="subPreviewTitle">子看板</h2>
+      <button class="btn small primary" id="subPreviewEnterBtn">进入</button>
       <button class="sub-preview-close" id="subPreviewCloseBtn">✕</button>
     </div>
     <div id="subPreviewBody"></div>
   </div>
 </div>
 
-<!-- 卡片详情预览弹窗 -->
 <div class="overlay" id="cardPreviewOverlay">
   <div id="cardPreviewModal">
     <div class="card-preview-header">
@@ -817,19 +661,16 @@
 </div>
 
 <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">处理中...</span></div>
-
-<!-- ★ 子卡片悬停预览 tooltip -->
 <div id="subCardTooltip"></div>
 
 <script>
 /* =========================================================
-   持久存储 — localStorage（file:// 下 IndexedDB 不可靠）
+   持久存储
    ========================================================= */
 const LS_KEY = 'chestnut-kanban-state';
-const MAX_FILE_SIZE = 500 * 1024;
+const MAX_FILE_SIZE = 200 * 1024; /* 手机端 200KB */
 
-/* 兼容层：保持原有 API 签名，内部全部用 localStorage */
-async function openStateDB() { /* no-op，localStorage 无需打开 */ }
+async function openStateDB() {}
 function loadStateFromDB() {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -837,15 +678,11 @@ function loadStateFromDB() {
   } catch(e) { return Promise.resolve(null); }
 }
 function saveStateToDB(data) {
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(data));
-  } catch(e) { console.error('localStorage save failed', e); }
+  try { localStorage.setItem(LS_KEY, JSON.stringify(data)); }
+  catch(e) { console.error('localStorage save failed', e); }
   return Promise.resolve();
 }
-function clearStateDB() {
-  localStorage.removeItem(LS_KEY);
-  return Promise.resolve();
-}
+function clearStateDB() { localStorage.removeItem(LS_KEY); return Promise.resolve(); }
 
 /* =========================================================
    工具
@@ -897,29 +734,36 @@ function showLoading(text) {
 function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
 
 /* =========================================================
-   ★ 深度克隆卡片（重新生成所有 ID）
+   主题：优先手动，其次跟随系统
    ========================================================= */
-function cloneCard(card) {
-  const copy = JSON.parse(JSON.stringify(card));
-  regenerateIds(copy);
-  return copy;
+const THEME_KEY = 'chestnut-kanban-theme';
+const themeBtn = document.getElementById('themeToggle');
+const mq = window.matchMedia('(prefers-color-scheme: dark)');
+
+function applyTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  const useDark = saved ? saved === 'dark' : mq.matches;
+  document.body.classList.toggle('dark', useDark);
+  themeBtn.textContent = useDark ? '☀️' : '🌙';
+  /* 更新 theme-color 元标签，与浏览器 UI 呼应 */
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = useDark ? '#121212' : '#c8662f';
 }
-function regenerateIds(item) {
-  if (!item) return;
-  item.id = uid();
-  if (item.checklist) item.checklist.forEach(c => c.id = uid());
-  if (item.attachments) item.attachments.forEach(a => a.id = uid());
-  if (item.notes) item.notes.forEach(n => { n.id = uid(); if (n.attachments) n.attachments.forEach(a => a.id = uid()); });
-  if (item.subBoard && item.subBoard.lists) {
-    item.subBoard.lists.forEach(list => {
-      list.id = uid();
-      if (list.cards) list.cards.forEach(c => regenerateIds(c));
-    });
-  }
-}
+applyTheme();
+
+/* 系统主题变化时：只有用户没手动指定才跟随 */
+mq.addEventListener('change', () => {
+  if (!localStorage.getItem(THEME_KEY)) applyTheme();
+});
+
+themeBtn.onclick = () => {
+  const cur = document.body.classList.contains('dark') ? 'light' : 'dark';
+  localStorage.setItem(THEME_KEY, cur);
+  applyTheme();
+};
 
 /* =========================================================
-   数据
+   数据 & 状态
    ========================================================= */
 const PRIORITY = {
   high:   { label: '高', cls: 'high' },
@@ -933,7 +777,7 @@ function defaultData() {
     id: uid(), name: '我的看板',
     lists: [
       { id: uid(), title: '待办', cards: [
-        { id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片可以编辑详情。', tags: ['入门'], priority: 'high', due: '', checklist: [], attachments: [], notes: [], subBoard: null, isExpanded: false }
+        { id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片编辑详情。', tags: ['入门'], priority: 'high', due: '', checklist: [], attachments: [], notes: [], subBoard: null, isExpanded: false }
       ] },
       { id: uid(), title: '进行中', cards: [] },
       { id: uid(), title: '已完成', cards: [] }
@@ -949,9 +793,10 @@ let renamingListId = null;
 let editingChecklist = [];
 let editingAttachments = [];
 let editingNotes = [];
+let editingStarred = false;
 let currentPreviewURL = null;
 let previewingCardId = null;
-let templateTargetListId = null;  // 从哪个列表打开的模板选择
+let templateTargetListId = null;
 
 function getCurrentBoard() {
   let b = state.boards.find(b => b.id === state.currentBoardId);
@@ -967,24 +812,7 @@ async function saveState() {
 }
 
 /* =========================================================
-   主题
-   ========================================================= */
-const THEME_KEY = 'chestnut-kanban-theme';
-const themeBtn = document.getElementById('themeToggle');
-function applyTheme(t) {
-  if (t === 'dark') { document.body.classList.add('dark'); themeBtn.textContent = '☀️'; }
-  else { document.body.classList.remove('dark'); themeBtn.textContent = '🌙'; }
-}
-const savedTheme = localStorage.getItem(THEME_KEY);
-if (savedTheme) applyTheme(savedTheme);
-else applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-themeBtn.onclick = () => {
-  const t = document.body.classList.contains('dark') ? 'light' : 'dark';
-  applyTheme(t); localStorage.setItem(THEME_KEY, t);
-};
-
-/* =========================================================
-   DOM
+   DOM 引用
    ========================================================= */
 const board = document.getElementById('board');
 const overlay = document.getElementById('overlay');
@@ -996,7 +824,6 @@ const mDue = document.getElementById('mDue');
 const mList = document.getElementById('mList');
 const mEnterSubBoard = document.getElementById('mEnterSubBoard');
 const mStarBtn = document.getElementById('mStarBtn');
-let editingStarred = false;
 const checklistContainer = document.getElementById('checklistContainer');
 const attachmentsContainer = document.getElementById('attachmentsContainer');
 const attachmentFileInput = document.getElementById('attachmentFileInput');
@@ -1006,6 +833,7 @@ const quickMoveList = document.getElementById('quickMoveList');
 const boardSelect = document.getElementById('boardSelect');
 const renameListOverlay = document.getElementById('renameListOverlay');
 const renameListInput = document.getElementById('renameListInput');
+const notesContainer = document.getElementById('notesContainer');
 
 /* =========================================================
    渲染
@@ -1035,14 +863,16 @@ document.getElementById('renameBoardBtn').onclick = () => {
   boardStack[0].title = b.name;
   renderBoardSelect(); saveState(); render();
 };
-document.getElementById('delBoardBtn').onclick = () => {
+document.getElementById('delBoardBtn') && (document.getElementById('delBoardBtn').onclick = () => {});
+/* 删除看板移动到菜单里 */
+function deleteCurrentBoard() {
   if (state.boards.length <= 1) { alert('至少保留一个看板'); return; }
   const b = getCurrentBoard();
-  if (!confirm(`确定删除看板「${b.name}」及其所有内容吗？`)) return;
+  if (!confirm(`确定删除看板「${b.name}」？`)) return;
   state.boards = state.boards.filter(x => x.id !== b.id);
   state.currentBoardId = state.boards[0].id;
   syncBoardStack(); renderBoardSelect(); saveState(); render();
-};
+}
 
 function render() {
   const cb = boardStack[boardStack.length - 1];
@@ -1069,24 +899,6 @@ function render() {
   renderLinks();
   updateStarBadge();
   updateDueBadge();
-  requestAnimationFrame(alignCardRows);
-}
-
-/* 逐行对齐所有列中同一位置的卡片高度 */
-function alignCardRows() {
-  const lists = board.querySelectorAll('.list > .cards');
-  if (!lists.length) return;
-  /* 收集每列的卡片数组 */
-  const cols = Array.from(lists).map(c => Array.from(c.querySelectorAll(':scope > .card')));
-  const maxRow = Math.max(...cols.map(c => c.length));
-  /* 先清除之前设置的固定高度 */
-  cols.forEach(col => col.forEach(card => card.style.height = ''));
-  /* 逐行计算最大高度并统一 */
-  for (let r = 0; r < maxRow; r++) {
-    let maxH = 0;
-    cols.forEach(col => { if (col[r]) maxH = Math.max(maxH, col[r].offsetHeight); });
-    cols.forEach(col => { if (col[r]) col[r].style.height = maxH + 'px'; });
-  }
 }
 
 function renderList(list, idx, arr) {
@@ -1095,10 +907,10 @@ function renderList(list, idx, arr) {
   return `
     <div class="list" data-id="${list.id}">
       <div class="list-header">
-        <button class="list-move-btn${isFirst ? ' disabled' : ''}" data-act="move-list-left" data-list-id="${list.id}" title="左移">◀</button>
+        <button class="list-move-btn${isFirst ? ' disabled' : ''}" data-act="move-list-left" data-list-id="${list.id}">◀</button>
         <span class="list-title" data-act="rename-list" data-list-id="${list.id}">${esc(list.title)}</span>
         <span class="list-count">${list.cards.length}</span>
-        <button class="list-move-btn${isLast ? ' disabled' : ''}" data-act="move-list-right" data-list-id="${list.id}" title="右移">▶</button>
+        <button class="list-move-btn${isLast ? ' disabled' : ''}" data-act="move-list-right" data-list-id="${list.id}">▶</button>
         <button class="icon-btn" data-act="del-list" data-list-id="${list.id}">✕</button>
       </div>
       <div class="cards" data-list="${list.id}">
@@ -1106,7 +918,7 @@ function renderList(list, idx, arr) {
       </div>
       <div class="list-bottom-actions">
         <button class="add-card-btn" data-act="add-card" data-list-id="${list.id}">＋ 添加卡片</button>
-        <button class="add-template-btn" data-act="add-from-template" data-list-id="${list.id}" title="从模板创建卡片">📋 从模板</button>
+        <button class="add-template-btn" data-act="add-from-template" data-list-id="${list.id}">📋</button>
       </div>
     </div>
   `;
@@ -1118,7 +930,6 @@ function renderCard(card) {
   const tags = (card.tags||[]).length ? `<div class="card-tags">${card.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : '';
   const due = card.due ? `<span class="due${card.due<today?' overdue':''}">📅 ${esc(card.due.slice(5))}</span>` : '';
   const pri = p.label ? `<span class="pri ${p.cls}">${p.label}</span>` : '';
-  
   let ci = '';
   if ((card.checklist||[]).length > 0) {
     const done = card.checklist.filter(c => c.done).length;
@@ -1135,18 +946,15 @@ function renderCard(card) {
     if (links.length > 0) parts.push(`🔗 ${links.length}`);
     ai = `<span class="indicator">${parts.join(' ')}</span>`;
   }
-  
   let ni = '';
   const cardNotes = card.notes || [];
   if (cardNotes.length > 0) {
     const totalNoteAtts = cardNotes.reduce((s, n) => s + (n.attachments || []).length, 0);
     ni = `<span class="indicator">📝 ${cardNotes.length}${totalNoteAtts ? ` (📎${totalNoteAtts})` : ''}</span>`;
   }
-
   const meta = (due || pri) ? `<div class="card-meta">${due}${pri}</div>` : '';
   const inds = (ci || ai || ni) ? `<div class="card-indicators">${ci}${ai}${ni}</div>` : '';
   const pClass = card.priority && card.priority !== 'none' ? ` p-${card.priority}` : '';
-  
   let sbHtml = '';
   if (card.subBoard) {
     const exp = card.isExpanded || false;
@@ -1156,13 +964,12 @@ function renderCard(card) {
       if (total === 0) content = '<div class="empty-sub">子看板为空</div>';
       else card.subBoard.lists.forEach(l => {
         content += `<div class="sub-list-title">📁 ${esc(l.title)} (${l.cards.length})</div>`;
-        // ★ 修改：子卡片增加星标+删除按钮
         l.cards.forEach(c => {
           const starred = c.starred ? ' starred' : '';
           content += `<div class="sub-card-item" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}">
-            <button class="star-btn${starred}" data-act="toggle-star" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}" title="标记星标">★</button>
+            <button class="star-btn${starred}" data-act="toggle-star" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}">★</button>
             <span class="sub-card-title">${esc(c.title).replace(/\n/g,'<br>')}</span>
-            <button class="del-sub-card-btn" data-act="del-sub-card" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}" title="删除子卡片">✕</button>
+            <button class="del-sub-card-btn" data-act="del-sub-card" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}">✕</button>
           </div>`;
         });
       });
@@ -1170,12 +977,11 @@ function renderCard(card) {
     sbHtml = `<div class="sub-board-preview" style="display:${exp?'block':'none'};">${content}</div>`;
   }
   const sbBtn = card.subBoard
-    ? `<button class="expand-sub-btn ${card.isExpanded?'expanded':''}" data-act="toggle-sub" data-card-id="${card.id}">${card.isExpanded?'[-] 收起':'[+] 子看板'}</button>`
+    ? `<button class="expand-sub-btn ${card.isExpanded?'expanded':''}" data-act="toggle-sub" data-card-id="${card.id}">${card.isExpanded?'收起':'子看板'}</button>`
     : '';
   const previewBtn = card.subBoard
-    ? `<button class="preview-sub-btn" data-act="preview-sub" data-card-id="${card.id}" title="预览子看板内容">👁</button>`
+    ? `<button class="preview-sub-btn" data-act="preview-sub" data-card-id="${card.id}">👁</button>`
     : '';
-  
   return `
     <div class="card${pClass}" data-id="${card.id}">
       <div class="card-main">
@@ -1191,7 +997,7 @@ function renderCard(card) {
           <button class="action-btn" data-act="move-down" data-card-id="${card.id}">↓</button>
         </div>
         <div class="footer-right">
-          <button class="quick-move-btn" data-act="quick-move" data-card-id="${card.id}">⇄ 移动</button>
+          <button class="quick-move-btn" data-act="quick-move" data-card-id="${card.id}">⇄</button>
           ${previewBtn}
           ${sbBtn}
         </div>
@@ -1201,7 +1007,7 @@ function renderCard(card) {
 }
 
 /* =========================================================
-   层级 / 优先级 / 快捷移动
+   层级 / 移动
    ========================================================= */
 window.goBackTo = (i) => { boardStack = boardStack.slice(0, i+1); render(); };
 function enterSubBoard(card) {
@@ -1244,7 +1050,7 @@ function openQuickMoveMenu(cardId) {
     const btn = document.createElement('button');
     btn.className = 'move-option';
     btn.textContent = l.title;
-    if (l.id === curId) { btn.textContent += ' (当前)'; btn.disabled = true; }
+    if (l.id === curId) { btn.textContent += ' (当前)'; btn.disabled = true; btn.style.opacity = '.5'; }
     btn.onclick = () => { moveCard(cardId, l.id); quickMoveOverlay.classList.remove('show'); };
     quickMoveList.appendChild(btn);
   });
@@ -1266,7 +1072,7 @@ function moveCard(cardId, targetListId) {
 document.getElementById('quickMoveCancel').onclick = () => quickMoveOverlay.classList.remove('show');
 
 /* =========================================================
-   ★ 模板功能
+   模板
    ========================================================= */
 const templateOverlay = document.getElementById('templateOverlay');
 const templateBody = document.getElementById('templateBody');
@@ -1276,23 +1082,17 @@ function openTemplatePicker(listId) {
   renderTemplateList();
   templateOverlay.classList.add('show');
 }
-
 function renderTemplateList() {
   const templates = state.templates || [];
   if (templates.length === 0) {
-    templateBody.innerHTML = '<div class="template-empty">还没有模板<br>打开任意卡片，点「📋 存为模板」即可创建</div>';
+    templateBody.innerHTML = '<div class="template-empty">还没有模板<br>打开任意卡片，点「📋」存为模板</div>';
     return;
   }
   let html = '';
   templates.forEach(tpl => {
-    const cardCount = tpl.card ? 1 : 0;
     const subListCount = tpl.card && tpl.card.subBoard ? tpl.card.subBoard.lists.length : 0;
-    const subCardTotal = tpl.card && tpl.card.subBoard 
-      ? tpl.card.subBoard.lists.reduce((s, l) => s + l.cards.length, 0)
-      : 0;
-    let metaText = '';
-    if (subCardTotal > 0) metaText = `含子看板 · ${subListCount} 个列表 · ${subCardTotal} 张卡片`;
-    else metaText = '无子看板';
+    const subCardTotal = tpl.card && tpl.card.subBoard ? tpl.card.subBoard.lists.reduce((s, l) => s + l.cards.length, 0) : 0;
+    const metaText = subCardTotal > 0 ? `子看板 ${subListCount} 列表 / ${subCardTotal} 卡片` : '无子看板';
     html += `
       <div class="template-item" data-template-id="${tpl.id}">
         <div class="tpl-icon">📋</div>
@@ -1300,56 +1100,61 @@ function renderTemplateList() {
           <div class="tpl-name">${esc(tpl.name)}</div>
           <div class="tpl-meta">${esc(metaText)}</div>
         </div>
-        <button class="tpl-del" data-delete-template="${tpl.id}" title="删除模板">🗑</button>
+        <button class="tpl-del" data-delete-template="${tpl.id}">🗑</button>
       </div>
     `;
   });
   templateBody.innerHTML = html;
 }
-
 templateBody.addEventListener('click', async e => {
   const delBtn = e.target.closest('[data-delete-template]');
   if (delBtn) {
     e.stopPropagation();
-    const tplId = delBtn.dataset.deleteTemplate;
-    if (!confirm('确定删除这个模板吗？')) return;
-    state.templates = state.templates.filter(t => t.id !== tplId);
-    await saveState();
-    renderTemplateList();
+    if (!confirm('删除这个模板？')) return;
+    state.templates = state.templates.filter(t => t.id !== delBtn.dataset.deleteTemplate);
+    await saveState(); renderTemplateList();
     return;
   }
   const item = e.target.closest('.template-item');
   if (!item) return;
-  const tplId = item.dataset.templateId;
-  const tpl = state.templates.find(t => t.id === tplId);
+  const tpl = state.templates.find(t => t.id === item.dataset.templateId);
   if (!tpl) return;
-  // 使用模板创建一张新卡片
   const newCard = cloneCard(tpl.card);
   const cb = boardStack[boardStack.length - 1];
   const list = cb.lists.find(l => l.id === templateTargetListId);
-  if (!list) {
-    alert('目标列表不存在');
-    templateOverlay.classList.remove('show');
-    return;
-  }
+  if (!list) { alert('目标列表不存在'); return; }
   list.cards.push(newCard);
   templateOverlay.classList.remove('show');
   render(); saveState();
 });
-
 document.getElementById('templateCloseBtn').onclick = () => templateOverlay.classList.remove('show');
-templateOverlay.addEventListener('click', e => {
-  if (e.target === templateOverlay) templateOverlay.classList.remove('show');
-});
+templateOverlay.addEventListener('click', e => { if (e.target === templateOverlay) templateOverlay.classList.remove('show'); });
 
-/* 存为模板 */
+function cloneCard(card) {
+  const copy = JSON.parse(JSON.stringify(card));
+  regenerateIds(copy);
+  return copy;
+}
+function regenerateIds(item) {
+  if (!item) return;
+  item.id = uid();
+  if (item.checklist) item.checklist.forEach(c => c.id = uid());
+  if (item.attachments) item.attachments.forEach(a => a.id = uid());
+  if (item.notes) item.notes.forEach(n => { n.id = uid(); if (n.attachments) n.attachments.forEach(a => a.id = uid()); });
+  if (item.subBoard && item.subBoard.lists) {
+    item.subBoard.lists.forEach(list => {
+      list.id = uid();
+      if (list.cards) list.cards.forEach(c => regenerateIds(c));
+    });
+  }
+}
+
 document.getElementById('mSaveAsTemplate').onclick = async () => {
   if (!editing) return;
   const cb = boardStack[boardStack.length - 1];
   const l = cb.lists.find(x => x.id === editing.listId);
   const card = l && l.cards.find(c => c.id === editing.cardId);
   if (!card) return;
-  // 先把当前编辑框里的内容写回卡片（防止用户改了没保存就存模板）
   card.title = mTitle.value.trim() || card.title;
   card.desc = mDesc.value.trim();
   card.tags = mTags.value.split(/[,，]/).map(s => s.trim()).filter(Boolean);
@@ -1361,26 +1166,20 @@ document.getElementById('mSaveAsTemplate').onclick = async () => {
     if (a.kind === 'link') return { id: a.id, kind: 'link', name: a.name, size: 0, type: 'link', url: a.url, note: a.note || '' };
     return { id: a.id, kind: 'file', name: a.name, size: a.size || 0, type: a.type || '', data: a.data || '', note: a.note || '' };
   });
-  
   const tplName = prompt('模板名称', card.title);
   if (tplName === null) return;
   if (!state.templates) state.templates = [];
-  state.templates.push({
-    id: uid(),
-    name: (tplName.trim() || card.title),
-    card: cloneCard(card)
-  });
+  state.templates.push({ id: uid(), name: tplName.trim() || card.title, card: cloneCard(card) });
   await saveState();
   alert('✅ 已保存为模板');
 };
 
 /* =========================================================
-   子看板预览
+   子看板预览 & Tooltip
    ========================================================= */
 const subPreviewOverlay = document.getElementById('subPreviewOverlay');
 const subPreviewBody = document.getElementById('subPreviewBody');
 const subPreviewTitle = document.getElementById('subPreviewTitle');
-
 let _subPreviewCards = [];
 
 function findCardById(cardId) {
@@ -1391,13 +1190,6 @@ function findCardById(cardId) {
   }
   return null;
 }
-
-/* =========================================================
-   ★ 子卡片悬停预览 tooltip
-   ========================================================= */
-const subCardTooltip = document.getElementById('subCardTooltip');
-let _sctTimer = null;
-
 function findSubCardObj(parentCardId, subListId, subCardId) {
   const pCard = findCardById(parentCardId);
   if (!pCard || !pCard.subBoard) return null;
@@ -1409,25 +1201,22 @@ function findSubCardObj(parentCardId, subListId, subCardId) {
   return null;
 }
 
+const subCardTooltip = document.getElementById('subCardTooltip');
+let _sctTimer = null;
 function buildCardTooltipHtml(card) {
   if (!card) return '<div class="sct-empty">无内容</div>';
   let h = '';
-  /* 标签 */
   if (card.tags && card.tags.length) {
     h += `<div class="sct-tags">${card.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>`;
   }
-  /* 元信息 */
   const mp = [];
   if (card.priority && card.priority !== 'none') mp.push(PRIORITY[card.priority].label + '优先级');
-  if (card.owner) mp.push('👤 ' + esc(card.owner));
   if (card.due) mp.push('📅 ' + esc(card.due));
   if (mp.length) h += `<div class="sct-meta">${mp.join(' · ')}</div>`;
-  /* 描述 */
   if (card.desc) {
     const d = card.desc.length > 120 ? card.desc.slice(0, 120) + '…' : card.desc;
     h += `<div class="sct-desc">${esc(d)}</div>`;
   }
-  /* 待办清单 */
   const cl = card.checklist || [];
   if (cl.length) {
     const dn = cl.filter(c => c.done).length;
@@ -1435,9 +1224,7 @@ function buildCardTooltipHtml(card) {
     cl.slice(0, 5).forEach(c => {
       h += `<div class="sct-check${c.done ? ' done' : ''}">${c.done ? '✓' : '○'} ${esc(c.text)}</div>`;
     });
-    if (cl.length > 5) h += `<div class="sct-check" style="color:var(--muted)">… 还有 ${cl.length - 5} 项</div>`;
   }
-  /* 附件 */
   const atts = card.attachments || [];
   if (atts.length) {
     h += `<div class="sct-section">📎 附件 (${atts.length})</div>`;
@@ -1445,9 +1232,7 @@ function buildCardTooltipHtml(card) {
       const icon = a.kind === 'link' ? '🔗' : getFileIcon(a.name, a.type);
       h += `<div class="sct-att">${icon} ${esc(a.name)}</div>`;
     });
-    if (atts.length > 3) h += `<div class="sct-att" style="color:var(--muted)">… 还有 ${atts.length - 3} 个</div>`;
   }
-  /* 笔记 */
   const notes = card.notes || [];
   if (notes.length) {
     h += `<div class="sct-section">📝 笔记 (${notes.length})</div>`;
@@ -1456,52 +1241,43 @@ function buildCardTooltipHtml(card) {
       h += `<div class="sct-note">📝 ${esc(txt)}</div>`;
     });
   }
-  /* 下级子看板 */
   if (card.subBoard) {
     const t = card.subBoard.lists.reduce((s, l) => s + l.cards.length, 0);
-    h += `<div class="sct-sub">📁 含子看板（${t} 个卡片）</div>`;
+    h += `<div class="sct-sub">📁 含子看板（${t} 卡片）</div>`;
   }
   if (!h) h = '<div class="sct-empty">暂无详情</div>';
   return h;
 }
-
 function showSubCardTooltip(el, card) {
   const starHtml = card.starred ? '<span class="card-star">★</span>' : '';
   subCardTooltip.innerHTML = `<div class="sct-title">${starHtml}${esc(card.title).replace(/\n/g,'<br>')}</div>` + buildCardTooltipHtml(card);
   subCardTooltip.style.display = 'block';
-  /* 定位：紧贴元素右侧，垂直居中 */
   const rect = el.getBoundingClientRect();
   const tw = subCardTooltip.offsetWidth;
   const th = subCardTooltip.offsetHeight;
   let left = rect.right + 10;
   let top = rect.top + rect.height / 2 - th / 2;
-  /* 右侧放不下就放左侧 */
   if (left + tw > window.innerWidth - 8) left = rect.left - tw - 10;
-  /* 上下不超出视口 */
   if (top < 8) top = 8;
   if (top + th > window.innerHeight - 8) top = window.innerHeight - th - 8;
   subCardTooltip.style.left = left + 'px';
   subCardTooltip.style.top = top + 'px';
   requestAnimationFrame(() => subCardTooltip.classList.add('show'));
 }
-
 function hideSubCardTooltip() {
   subCardTooltip.classList.remove('show');
   subCardTooltip.style.display = 'none';
 }
-
-/* 委托到 #board 上的 mouseenter/mouseleave */
-document.getElementById('board').addEventListener('mouseover', e => {
+board.addEventListener('mouseover', e => {
   const item = e.target.closest('.sub-card-item');
   if (!item) return;
   clearTimeout(_sctTimer);
   _sctTimer = setTimeout(() => {
     const card = findSubCardObj(item.dataset.parentCardId, item.dataset.subListId, item.dataset.subCardId);
     if (card) showSubCardTooltip(item, card);
-  }, 300);       // 300ms 延迟避免快速划过闪烁
+  }, 300);
 });
-
-document.getElementById('board').addEventListener('mouseout', e => {
+board.addEventListener('mouseout', e => {
   const item = e.target.closest('.sub-card-item');
   if (!item) return;
   clearTimeout(_sctTimer);
@@ -1520,15 +1296,10 @@ function openSubPreview(cardId) {
   subPreviewBody.innerHTML = renderSubPreviewContent(card.subBoard.lists);
   subPreviewOverlay.classList.add('show');
 }
-
 function renderSubPreviewContent(lists) {
-  if (!lists || lists.length === 0) {
-    return '<div class="sub-preview-empty">子看板为空</div>';
-  }
+  if (!lists || lists.length === 0) return '<div class="sub-preview-empty">子看板为空</div>';
   let totalCards = lists.reduce((s, l) => s + l.cards.length, 0);
-  if (totalCards === 0) {
-    return '<div class="sub-preview-empty">子看板里还没有卡片</div>';
-  }
+  if (totalCards === 0) return '<div class="sub-preview-empty">子看板里还没有卡片</div>';
   let html = '';
   lists.forEach(list => {
     html += `<div class="sub-preview-list">`;
@@ -1543,14 +1314,11 @@ function renderSubPreviewContent(lists) {
         const atts = card.attachments || [];
         const files = atts.filter(a => a.kind === 'file').length;
         const links = atts.filter(a => a.kind === 'link').length;
-        
         const metaParts = [];
-        if (card.owner) metaParts.push(`👤 ${esc(card.owner)}`);
         if (total > 0) metaParts.push(`☑ ${done}/${total}`);
         if (files > 0) metaParts.push(`📎 ${files}`);
         if (links > 0) metaParts.push(`🔗 ${links}`);
         if (card.due) metaParts.push(`📅 ${card.due}`);
-        
         html += `<div class="sub-preview-card">
           <div class="sub-preview-card-title">`;
         if (card.starred) html += `<span class="card-star">★</span>`;
@@ -1558,20 +1326,19 @@ function renderSubPreviewContent(lists) {
         html += `${esc(card.title).replace(/\n/g,'<br>')}</div>`;
         if (card.desc) html += `<div class="sub-preview-card-desc">${esc(card.desc)}</div>`;
         if (metaParts.length > 0) html += `<div class="sub-preview-card-meta">${metaParts.join(' · ')}</div>`;
-        /* 笔记摘要 */
         const cardNotes = card.notes || [];
         if (cardNotes.length > 0) {
-          html += `<div class="sub-preview-card-notes">`;
+          html += `<div style="margin-top:4px;">`;
           cardNotes.forEach(n => {
             const txt = (n.text || '').slice(0, 50) + ((n.text || '').length > 50 ? '…' : '');
             const nAtts = (n.attachments || []).length;
-            html += `<div class="sub-preview-note">📝 ${esc(txt)}${nAtts ? ` (📎${nAtts})` : ''}</div>`;
+            html += `<div style="font-size:11px;color:var(--muted);">📝 ${esc(txt)}${nAtts ? ` (📎${nAtts})` : ''}</div>`;
           });
           html += `</div>`;
         }
         if (card.subBoard) {
           const nestedTotal = card.subBoard.lists.reduce((s, l) => s + l.cards.length, 0);
-          html += `<div class="sub-preview-nested">📁 下级子看板（${nestedTotal} 个卡片）</div>`;
+          html += `<div style="margin-top:6px;padding-left:12px;border-left:2px solid var(--sub-border);font-size:11px;color:var(--muted);">📁 下级子看板（${nestedTotal}）</div>`;
         }
         html += `</div>`;
       });
@@ -1580,36 +1347,20 @@ function renderSubPreviewContent(lists) {
   });
   return html;
 }
-
-document.getElementById('subPreviewCloseBtn').onclick = () => {
-  subPreviewOverlay.classList.remove('show');
-  previewingCardId = null;
-};
-subPreviewOverlay.addEventListener('click', e => {
-  if (e.target === subPreviewOverlay) {
-    subPreviewOverlay.classList.remove('show');
-    previewingCardId = null;
-  }
-});
+document.getElementById('subPreviewCloseBtn').onclick = () => { subPreviewOverlay.classList.remove('show'); previewingCardId = null; };
+subPreviewOverlay.addEventListener('click', e => { if (e.target === subPreviewOverlay) { subPreviewOverlay.classList.remove('show'); previewingCardId = null; } });
 document.getElementById('subPreviewEnterBtn').onclick = () => {
   if (!previewingCardId) return;
   const card = findCardById(previewingCardId);
-  if (card) {
-    subPreviewOverlay.classList.remove('show');
-    previewingCardId = null;
-    enterSubBoard(card);
-  }
+  if (card) { subPreviewOverlay.classList.remove('show'); previewingCardId = null; enterSubBoard(card); }
 };
-
 subPreviewBody.addEventListener('click', e => {
   const cardEl = e.target.closest('.sub-preview-card');
   if (!cardEl) return;
   e.stopPropagation();
   const allCards = Array.from(subPreviewBody.querySelectorAll('.sub-preview-card'));
   const idx = allCards.indexOf(cardEl);
-  if (idx >= 0 && _subPreviewCards[idx]) {
-    openCardPreview(_subPreviewCards[idx]);
-  }
+  if (idx >= 0 && _subPreviewCards[idx]) openCardPreview(_subPreviewCards[idx]);
 });
 
 /* =========================================================
@@ -1622,47 +1373,30 @@ const cardPreviewTitle = document.getElementById('cardPreviewTitle');
 function openCardPreview(card) {
   if (!card) return;
   cardPreviewTitle.innerHTML = (card.starred ? '<span class="card-star">★</span>' : '') + esc(card.title).replace(/\n/g,'<br>');
-
   let html = '';
-
   if (card.tags && card.tags.length > 0) {
     html += `<div class="card-preview-tags">${card.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>`;
   }
-
   const metaParts = [];
   if (card.priority && card.priority !== 'none') {
-    const pl = PRIORITY[card.priority].label;
-    const pcls = PRIORITY[card.priority].cls;
-    metaParts.push(`<span class="pri ${pcls}">${pl}优先级</span>`);
+    metaParts.push(`<span class="pri ${PRIORITY[card.priority].cls}">${PRIORITY[card.priority].label}优先级</span>`);
   }
-  if (card.owner) metaParts.push(`👤 ${esc(card.owner)}`);
   if (card.due) metaParts.push(`📅 ${esc(card.due)}`);
-  if (metaParts.length > 0) {
-    html += `<div class="card-preview-meta">${metaParts.join('')}</div>`;
-  }
-
-  if (card.desc) {
-    html += `<div class="card-preview-desc">${esc(card.desc)}</div>`;
-  }
-
+  if (metaParts.length > 0) html += `<div class="card-preview-meta">${metaParts.join('')}</div>`;
+  if (card.desc) html += `<div class="card-preview-desc">${esc(card.desc)}</div>`;
   const checklist = card.checklist || [];
   if (checklist.length > 0) {
     const done = checklist.filter(c => c.done).length;
-    html += `<div class="card-preview-section-title">☑ 待办清单 (${done}/${checklist.length})</div>`;
-    html += `<div class="card-preview-checklist">`;
+    html += `<div class="card-preview-section-title">☑ 待办 (${done}/${checklist.length})</div>`;
     checklist.forEach(c => {
       html += `<div class="card-preview-check-item ${c.done ? 'done' : ''}">
-        <div class="check-icon">✓</div>
-        <div class="check-text">${esc(c.text)}</div>
+        <div class="check-icon">✓</div><div class="check-text">${esc(c.text)}</div>
       </div>`;
     });
-    html += `</div>`;
   }
-
   const atts = card.attachments || [];
   if (atts.length > 0) {
     html += `<div class="card-preview-section-title">📎 附件 (${atts.length})</div>`;
-    html += `<div class="card-preview-attachments">`;
     atts.forEach((a, i) => {
       const isLink = a.kind === 'link';
       const icon = isLink ? '🔗' : getFileIcon(a.name, a.type);
@@ -1670,18 +1404,12 @@ function openCardPreview(card) {
       const noteHtml = a.note ? `<div class="att-note">📝 ${esc(a.note)}</div>` : '';
       html += `<div class="card-preview-att-item" data-att-index="${i}" style="${a.note ? 'flex-wrap:wrap' : ''}">
         <div class="att-icon">${icon}</div>
-        <div class="att-info">
-          <div class="att-name">${esc(a.name)}</div>
-          <div class="att-size">${sizeText}</div>
-        </div>
+        <div class="att-info"><div class="att-name">${esc(a.name)}</div><div class="att-size">${sizeText}</div></div>
         <div class="att-action">${isLink ? '↗' : '👁'}</div>
         ${noteHtml}
       </div>`;
     });
-    html += `</div>`;
   }
-
-  /* 笔记区块 */
   const notes = card.notes || [];
   if (notes.length > 0) {
     html += `<div class="card-preview-section-title">📝 笔记 (${notes.length})</div>`;
@@ -1693,42 +1421,27 @@ function openCardPreview(card) {
         const icon = isLink ? '🔗' : getFileIcon(a.name, a.type);
         const sizeText = isLink ? '外部链接' : formatFileSize(a.size);
         html += `<div class="card-preview-note-att" data-note-idx="${ni}" data-note-att-idx="${ai}">
-          <span class="att-icon">${icon}</span>
-          <span class="att-name">${esc(a.name)}</span>
-          <span class="att-size">${sizeText}</span>
+          <span>${icon}</span><span class="att-name">${esc(a.name)}</span><span class="att-size">${sizeText}</span>
         </div>`;
       });
       html += `</div>`;
     });
   }
-
   if (card.subBoard) {
     const subTotal = card.subBoard.lists.reduce((s, l) => s + l.cards.length, 0);
-    html += `<button class="card-preview-subboard-btn" id="cardPreviewSubBtn">📁 查看子看板（${subTotal} 个卡片）</button>`;
+    html += `<button class="card-preview-subboard-btn" id="cardPreviewSubBtn">📁 查看子看板（${subTotal} 卡片）</button>`;
   }
-
-  if (!html) {
-    html = '<div class="card-preview-empty">这个卡片还没有内容</div>';
-  }
-
+  if (!html) html = '<div class="card-preview-empty">这个卡片还没有内容</div>';
   cardPreviewBody.innerHTML = html;
-
   cardPreviewBody.querySelectorAll('.card-preview-att-item').forEach(el => {
-    el.onclick = () => {
-      const idx = parseInt(el.dataset.attIndex);
-      previewAttachment(atts[idx]);
-    };
+    el.onclick = () => previewAttachment(atts[+el.dataset.attIndex]);
   });
-
-  /* 笔记附件点击 */
   cardPreviewBody.querySelectorAll('.card-preview-note-att').forEach(el => {
     el.onclick = () => {
-      const ni = +el.dataset.noteIdx, ai = +el.dataset.noteAttIdx;
-      const att = notes[ni]?.attachments?.[ai];
+      const att = notes[+el.dataset.noteIdx]?.attachments?.[+el.dataset.noteAttIdx];
       if (att) previewAttachment(att);
     };
   });
-
   const subBtn = document.getElementById('cardPreviewSubBtn');
   if (subBtn) {
     subBtn.onclick = () => {
@@ -1737,26 +1450,16 @@ function openCardPreview(card) {
         previewingCardId = card.id;
         subPreviewTitle.textContent = card.title;
         _subPreviewCards = [];
-        card.subBoard.lists.forEach(list => {
-          list.cards.forEach(c => _subPreviewCards.push(c));
-        });
+        card.subBoard.lists.forEach(list => list.cards.forEach(c => _subPreviewCards.push(c)));
         subPreviewBody.innerHTML = renderSubPreviewContent(card.subBoard.lists);
         subPreviewOverlay.classList.add('show');
       }, 100);
     };
   }
-
   cardPreviewOverlay.classList.add('show');
 }
-
-document.getElementById('cardPreviewCloseBtn').onclick = () => {
-  cardPreviewOverlay.classList.remove('show');
-};
-cardPreviewOverlay.addEventListener('click', e => {
-  if (e.target.id === 'cardPreviewOverlay') {
-    cardPreviewOverlay.classList.remove('show');
-  }
-});
+document.getElementById('cardPreviewCloseBtn').onclick = () => cardPreviewOverlay.classList.remove('show');
+cardPreviewOverlay.addEventListener('click', e => { if (e.target.id === 'cardPreviewOverlay') cardPreviewOverlay.classList.remove('show'); });
 
 /* =========================================================
    列表重命名
@@ -1858,7 +1561,6 @@ function renderAttachmentsUI() {
     attachmentsContainer.appendChild(div);
   });
 }
-/* 附件注释编辑 */
 attachmentsContainer.addEventListener('input', (e) => {
   const inp = e.target.closest('.att-note-input');
   if (!inp) return;
@@ -1874,7 +1576,7 @@ attachmentsContainer.addEventListener('click', e => {
   else if (dl) downloadAttachment(editingAttachments[+dl.dataset.index]);
   else if (rm) {
     const att = editingAttachments[+rm.dataset.index];
-    if (confirm(`确定删除「${att.name}」吗？`)) {
+    if (confirm(`删除「${att.name}」？`)) {
       editingAttachments.splice(+rm.dataset.index, 1);
       renderAttachmentsUI();
     }
@@ -1883,10 +1585,7 @@ attachmentsContainer.addEventListener('click', e => {
 
 function previewAttachment(att) {
   if (!att) return;
-  if (att.kind === 'link') {
-    if (att.url) window.open(att.url, '_blank');
-    return;
-  }
+  if (att.kind === 'link') { if (att.url) window.open(att.url, '_blank'); return; }
   if (!att.data) { alert('⚠️ 附件数据缺失'); return; }
   const mime = att.type || '';
   const ln = (att.name || '').toLowerCase();
@@ -1911,7 +1610,7 @@ function showPreviewImage(dataURL, name) {
 }
 function showPreviewFrame(dataURL, name) {
   const c = document.getElementById('previewContent');
-  c.innerHTML = '<div class="preview-loading">加载中...</div>';
+  c.innerHTML = '<div class="preview-loading" style="color:#fff;">加载中...</div>';
   const blob = dataURLToBlob(dataURL);
   const url = URL.createObjectURL(blob);
   currentPreviewURL = url;
@@ -1938,7 +1637,6 @@ function downloadAttachment(att) {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-
 document.getElementById('closePreviewBtn').onclick = () => {
   document.getElementById('previewOverlay').classList.remove('show');
   document.getElementById('previewContent').innerHTML = '';
@@ -1977,7 +1675,7 @@ attachmentFileInput.addEventListener('change', async e => {
   try {
     for (const f of files) {
       if (f.size > MAX_FILE_SIZE) {
-        alert(`❌ 「${f.name}」大小 ${formatFileSize(f.size)}，超过 500KB 限制，已跳过。\n\n建议：大文件放到 OneDrive，用「🔗 添加外部链接」贴进来。`);
+        alert(`❌「${f.name}」${formatFileSize(f.size)} 超过 200KB 限制。\n\n大文件建议放 OneDrive，用「🔗 外链」贴进来。`);
         continue;
       }
       try {
@@ -1993,7 +1691,7 @@ attachmentFileInput.addEventListener('change', async e => {
   attachmentFileInput.value = '';
 });
 
-/* ★ 拖拽上传 —— 通用工具函数 */
+/* 拖拽上传（桌面端仍可用） */
 async function handleDroppedFiles(files, targetArray, onDone) {
   const fileList = Array.from(files);
   if (!fileList.length) return;
@@ -2001,21 +1699,17 @@ async function handleDroppedFiles(files, targetArray, onDone) {
   try {
     for (const f of fileList) {
       if (f.size > MAX_FILE_SIZE) {
-        alert(`❌ 「${f.name}」大小 ${formatFileSize(f.size)}，超过 500KB 限制，已跳过。\n\n建议：大文件放到 OneDrive，用「🔗 添加外部链接」贴进来。`);
+        alert(`❌「${f.name}」超过 200KB 限制。`);
         continue;
       }
       try {
         const dataURL = await fileToDataURL(f);
-        targetArray.push({
-          id: uid(), kind: 'file', name: f.name, size: f.size,
-          type: f.type || 'application/octet-stream', data: dataURL
-        });
+        targetArray.push({ id: uid(), kind: 'file', name: f.name, size: f.size, type: f.type || 'application/octet-stream', data: dataURL });
       } catch (err) { alert(`读取「${f.name}」失败`); }
     }
     if (onDone) onDone();
   } finally { hideLoading(); }
 }
-
 function enableDropZone(el, onDrop) {
   el.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); el.classList.add('drag-over'); });
   el.addEventListener('dragleave', e => { e.preventDefault(); e.stopPropagation(); el.classList.remove('drag-over'); });
@@ -2025,13 +1719,9 @@ function enableDropZone(el, onDrop) {
     if (files && files.length) await onDrop(files);
   });
 }
-
-/* ★ 绑定：主附件区拖拽 */
 enableDropZone(attachmentsContainer.closest('.field'), async files => {
   await handleDroppedFiles(files, editingAttachments, renderAttachmentsUI);
 });
-
-/* ★ 绑定：整个弹窗作为兜底拖拽区 */
 enableDropZone(document.querySelector('.modal'), async files => {
   await handleDroppedFiles(files, editingAttachments, renderAttachmentsUI);
 });
@@ -2059,10 +1749,8 @@ document.getElementById('linkUrl').addEventListener('keydown', e => {
 });
 
 /* =========================================================
-   笔记区块
+   笔记
    ========================================================= */
-const notesContainer = document.getElementById('notesContainer');
-
 function renderNotesUI() {
   notesContainer.innerHTML = '';
   if (editingNotes.length === 0) {
@@ -2073,13 +1761,12 @@ function renderNotesUI() {
     const div = document.createElement('div');
     div.className = 'note-block';
     div.dataset.noteIndex = ni;
-
     let attsHtml = '';
     (note.attachments || []).forEach((att, ai) => {
       const isLink = att.kind === 'link';
       const icon = isLink ? '🔗' : getFileIcon(att.name, att.type);
       const sizeText = isLink ? '外部链接' : formatFileSize(att.size);
-      attsHtml += `<div class="attachment-item" data-note-idx="${ni}" data-att-idx="${ai}">
+      attsHtml += `<div class="attachment-item">
         <div class="file-icon">${icon}</div>
         <div class="file-info"><div class="file-name">${esc(att.name)}</div><div class="file-size ${isLink?'link-tag':''}">${sizeText}</div></div>
         <div class="file-actions">
@@ -2088,27 +1775,23 @@ function renderNotesUI() {
         </div>
       </div>`;
     });
-
     div.innerHTML = `
       <div class="note-block-header">
         <span class="note-label">📝 笔记 #${ni + 1}</span>
-        <button class="note-remove" data-ni="${ni}" title="删除此笔记块">✕</button>
+        <button class="note-remove" data-ni="${ni}">✕</button>
       </div>
       <textarea class="note-text" data-ni="${ni}" placeholder="输入笔记内容…">${esc(note.text || '')}</textarea>
-      <div class="note-atts">${attsHtml || ''}</div>
+      <div class="note-atts">${attsHtml}</div>
       <div class="note-att-actions">
-        <button class="btn small note-add-file" data-ni="${ni}">📎 上传文件</button>
-        <button class="btn small note-add-link" data-ni="${ni}">🔗 添加链接</button>
+        <button class="btn small note-add-file" data-ni="${ni}">📎 文件</button>
+        <button class="btn small note-add-link" data-ni="${ni}">🔗 链接</button>
       </div>
     `;
     notesContainer.appendChild(div);
   });
-
-  /* ★ 绑定：笔记区块拖拽上传 */
   notesContainer.querySelectorAll('.note-block').forEach(block => {
     enableDropZone(block, async files => {
       const ni = +block.dataset.noteIndex;
-      /* 先保存当前所有笔记文本（renderNotesUI 会重建 DOM） */
       notesContainer.querySelectorAll('.note-text').forEach(ta => {
         editingNotes[+ta.dataset.ni].text = ta.value;
       });
@@ -2116,31 +1799,23 @@ function renderNotesUI() {
     });
   });
 }
-
-/* 笔记区容器事件代理 */
 notesContainer.addEventListener('input', e => {
   if (e.target.classList.contains('note-text')) {
     editingNotes[+e.target.dataset.ni].text = e.target.value;
   }
 });
 notesContainer.addEventListener('click', e => {
-  /* 删除笔记块 */
   const rm = e.target.closest('.note-remove');
   if (rm) {
-    if (confirm('删除这个笔记块？')) {
-      editingNotes.splice(+rm.dataset.ni, 1);
-      renderNotesUI();
-    }
+    if (confirm('删除这个笔记块？')) { editingNotes.splice(+rm.dataset.ni, 1); renderNotesUI(); }
     return;
   }
-  /* 预览笔记附件 */
   const pv = e.target.closest('.note-att-preview');
   if (pv) {
     const att = editingNotes[+pv.dataset.ni]?.attachments?.[+pv.dataset.ai];
     if (att) previewAttachment(att);
     return;
   }
-  /* 删除笔记附件 */
   const ra = e.target.closest('.note-att-remove');
   if (ra) {
     const ni = +ra.dataset.ni, ai = +ra.dataset.ai;
@@ -2151,7 +1826,6 @@ notesContainer.addEventListener('click', e => {
     }
     return;
   }
-  /* 上传笔记附件 */
   const af = e.target.closest('.note-add-file');
   if (af) {
     const ni = +af.dataset.ni;
@@ -2163,16 +1837,10 @@ notesContainer.addEventListener('click', e => {
       showLoading('处理附件...');
       try {
         for (const f of files) {
-          if (f.size > MAX_FILE_SIZE) {
-            alert(`❌「${f.name}」超过 500KB 限制，已跳过。`);
-            continue;
-          }
+          if (f.size > MAX_FILE_SIZE) { alert(`❌「${f.name}」超过 200KB 限制。`); continue; }
           try {
             const dataURL = await fileToDataURL(f);
-            editingNotes[ni].attachments.push({
-              id: uid(), kind: 'file', name: f.name, size: f.size,
-              type: f.type || 'application/octet-stream', data: dataURL
-            });
+            editingNotes[ni].attachments.push({ id: uid(), kind: 'file', name: f.name, size: f.size, type: f.type || 'application/octet-stream', data: dataURL });
           } catch (err) { alert(`读取「${f.name}」失败`); }
         }
         renderNotesUI();
@@ -2181,13 +1849,12 @@ notesContainer.addEventListener('click', e => {
     inp.click();
     return;
   }
-  /* 添加笔记链接 */
   const al = e.target.closest('.note-add-link');
   if (al) {
     const ni = +al.dataset.ni;
     const name = prompt('链接名称', '外部链接');
     if (name === null) return;
-    let url = prompt('链接地址 (https://...)');
+    let url = prompt('链接地址');
     if (!url) return;
     if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
     editingNotes[ni].attachments.push({ id: uid(), kind: 'link', name: name.trim() || '外部链接', size: 0, type: 'link', url });
@@ -2195,7 +1862,6 @@ notesContainer.addEventListener('click', e => {
     return;
   }
 });
-
 document.getElementById('addNoteBtn').onclick = () => {
   editingNotes.push({ id: uid(), text: '', attachments: [] });
   renderNotesUI();
@@ -2204,7 +1870,7 @@ document.getElementById('addNoteBtn').onclick = () => {
 };
 
 /* =========================================================
-   卡片详情
+   卡片编辑
    ========================================================= */
 function openCard(cardId) {
   const cb = boardStack[boardStack.length - 1];
@@ -2227,18 +1893,17 @@ function openCard(cardId) {
     });
     renderAttachmentsUI();
     editingNotes = (card.notes || []).map(n => ({
-      id: n.id || uid(),
-      text: n.text || '',
+      id: n.id || uid(), text: n.text || '',
       attachments: (n.attachments || []).map(a => ({ ...a }))
     }));
     renderNotesUI();
     mList.innerHTML = cb.lists.map(x =>
       `<option value="${x.id}" ${x.id === l.id ? 'selected' : ''}>${esc(x.title)}</option>`
     ).join('');
-    mEnterSubBoard.textContent = card.subBoard ? '进入子看板' : '创建子看板';
+    mEnterSubBoard.textContent = card.subBoard ? '子看板' : '建子看板';
     mEnterSubBoard.style.display = 'block';
     overlay.classList.add('show');
-    setTimeout(() => { autoResizeMTitle(); mTitle.focus(); mTitle.select(); }, 30);
+    setTimeout(() => { autoResizeMTitle(); }, 30);
     return;
   }
 }
@@ -2248,14 +1913,12 @@ overlay.addEventListener('click', e => { if (e.target === overlay) closeModal();
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal(); });
 mTitle.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.ctrlKey) {
-    /* Ctrl+Enter 插入换行 */
     e.preventDefault();
     const s = mTitle.selectionStart, end = mTitle.selectionEnd;
     mTitle.value = mTitle.value.slice(0, s) + '\n' + mTitle.value.slice(end);
     mTitle.selectionStart = mTitle.selectionEnd = s + 1;
     autoResizeMTitle();
   } else if (e.key === 'Enter' && !e.ctrlKey) {
-    /* 普通 Enter 保存 */
     e.preventDefault();
     document.getElementById('mSave').click();
   }
@@ -2263,7 +1926,7 @@ mTitle.addEventListener('keydown', e => {
 mTitle.addEventListener('input', autoResizeMTitle);
 function autoResizeMTitle() {
   mTitle.style.height = 'auto';
-  mTitle.style.height = mTitle.scrollHeight + 'px';
+  mTitle.style.height = Math.min(mTitle.scrollHeight, 160) + 'px';
 }
 
 document.getElementById('mSave').onclick = async () => {
@@ -2284,8 +1947,7 @@ document.getElementById('mSave').onclick = async () => {
     return { id: a.id, kind: 'file', name: a.name, size: a.size || 0, type: a.type || '', data: a.data || '', note: a.note || '' };
   });
   card.notes = editingNotes.filter(n => n.text.trim() || (n.attachments && n.attachments.length)).map(n => ({
-    id: n.id || uid(),
-    text: n.text.trim(),
+    id: n.id || uid(), text: n.text.trim(),
     attachments: (n.attachments || []).map(a => {
       if (a.kind === 'link') return { id: a.id, kind: 'link', name: a.name, size: 0, type: 'link', url: a.url };
       return { id: a.id, kind: 'file', name: a.name, size: a.size || 0, type: a.type || '', data: a.data || '' };
@@ -2301,16 +1963,12 @@ document.getElementById('mSave').onclick = async () => {
   }
   closeModal(); render();
   showLoading('保存中...');
-  try { await saveStateToDB(state); }
-  finally { hideLoading(); }
+  try { await saveStateToDB(state); } finally { hideLoading(); }
 };
-
-/* ★ 星标切换 */
 mStarBtn.onclick = () => {
   editingStarred = !editingStarred;
   mStarBtn.classList.toggle('starred', editingStarred);
 };
-
 document.getElementById('mEnterSubBoard').onclick = () => {
   if (!editing) return;
   const cb = boardStack[boardStack.length - 1];
@@ -2343,11 +2001,8 @@ board.addEventListener('click', async e => {
   if (mv) { e.stopPropagation(); openQuickMoveMenu(mv.dataset.cardId); return; }
   const pv = e.target.closest('[data-act="preview-sub"]');
   if (pv) { e.stopPropagation(); openSubPreview(pv.dataset.cardId); return; }
-  
-  // ★ 从模板添加
   const tplBtn = e.target.closest('[data-act="add-from-template"]');
   if (tplBtn) { e.stopPropagation(); openTemplatePicker(tplBtn.dataset.listId); return; }
-  
   const tg = e.target.closest('[data-act="toggle-sub"]');
   if (tg) {
     e.stopPropagation();
@@ -2358,52 +2013,35 @@ board.addEventListener('click', async e => {
     }
     render(); saveState(); return;
   }
-
-  // ★ 子卡片星标切换
   const starBtn = e.target.closest('[data-act="toggle-star"]');
   if (starBtn) {
     e.stopPropagation();
     const card = findSubCardObj(starBtn.dataset.parentCardId, starBtn.dataset.subListId, starBtn.dataset.subCardId);
-    if (card) {
-      card.starred = !card.starred;
-      render(); saveState();
-    }
+    if (card) { card.starred = !card.starred; render(); saveState(); }
     return;
   }
-
-  // ★ 删除子卡片 (必须放在进入子看板逻辑之前，且阻止事件冒泡)
   const delSubBtn = e.target.closest('[data-act="del-sub-card"]');
   if (delSubBtn) {
     e.stopPropagation();
-    const parentCardId = delSubBtn.dataset.parentCardId;
-    const subListId = delSubBtn.dataset.subListId;
-    const subCardId = delSubBtn.dataset.subCardId;
-    
-    if (confirm('确定删除这张子卡片吗？')) {
+    if (confirm('删除这张子卡片？')) {
       const cb = boardStack[boardStack.length - 1];
       let found = false;
       for (const l of cb.lists) {
-        const pCard = l.cards.find(c => c.id === parentCardId);
+        const pCard = l.cards.find(c => c.id === delSubBtn.dataset.parentCardId);
         if (pCard && pCard.subBoard) {
-          const sList = pCard.subBoard.lists.find(sl => sl.id === subListId);
+          const sList = pCard.subBoard.lists.find(sl => sl.id === delSubBtn.dataset.subListId);
           if (sList) {
             const initLen = sList.cards.length;
-            sList.cards = sList.cards.filter(sc => sc.id !== subCardId);
+            sList.cards = sList.cards.filter(sc => sc.id !== delSubBtn.dataset.subCardId);
             if (sList.cards.length < initLen) found = true;
             break;
           }
         }
       }
-      if (found) {
-        render(); 
-        saveState();
-      } else {
-        alert('未找到该子卡片，可能已被删除');
-      }
+      if (found) { render(); saveState(); }
     }
     return;
   }
-
   const sc = e.target.closest('.sub-card-item');
   if (sc) {
     e.stopPropagation();
@@ -2427,7 +2065,7 @@ board.addEventListener('click', async e => {
       const idx = cb.lists.findIndex(x => x.id === listId);
       if (idx < 0) return;
       if (cb.lists.length <= 1) { alert('至少保留一个列表'); return; }
-      if (confirm(`确定删除列表「${cb.lists[idx].title}」？`)) {
+      if (confirm(`删除列表「${cb.lists[idx].title}」？`)) {
         cb.lists.splice(idx, 1);
         render(); await saveState();
       }
@@ -2487,7 +2125,124 @@ document.getElementById('addListBtn').onclick = () => {
   render(); saveState();
 };
 
-document.getElementById('resetBtn').onclick = async () => {
+/* 菜单按钮：备份/导入/导出/重置/删除看板 */
+document.getElementById('menuBtn').onclick = () => {
+  const choice = prompt(
+    '选择操作：\n' +
+    '1 - 📥 备份（导出 JSON）\n' +
+    '2 - 📤 导入（从 JSON 恢复）\n' +
+    '3 - 📊 导出 Excel\n' +
+    '4 - 📸 导出网页快照\n' +
+    '5 - 🗑 删除当前看板\n' +
+    '6 - ⚠️ 重置全部数据\n\n' +
+    '输入数字，或取消'
+  );
+  if (choice === '1') backupState();
+  else if (choice === '2') document.getElementById('importFileInput').click();
+  else if (choice === '3') exportExcel();
+  else if (choice === '4') snapshotBoard();
+  else if (choice === '5') deleteCurrentBoard();
+  else if (choice === '6') resetAll();
+};
+
+async function backupState() {
+  let cnt = 0, noteCnt = 0, noteAttCnt = 0, pinCnt = 0, linkCnt = 0;
+  state.boards.forEach(b => {
+    pinCnt += (b.pins||[]).length;
+    linkCnt += (b.links||[]).length;
+    b.lists.forEach(l => l.cards.forEach(c => {
+      cnt += (c.attachments||[]).filter(a => a.kind === 'file').length;
+      (c.notes||[]).forEach(n => { noteCnt++; noteAttCnt += (n.attachments||[]).filter(a => a.kind === 'file').length; });
+    }));
+  });
+  const msg = `📥 备份将导出：\n· 卡片附件 ${cnt}\n· 笔记 ${noteCnt}（含附件 ${noteAttCnt}）\n· 剪贴板图片 ${pinCnt}\n· 链接 ${linkCnt}\n· 模板 ${(state.templates||[]).length}\n\n继续？`;
+  if (!confirm(msg)) return;
+  showLoading('生成 JSON...');
+  try {
+    const str = JSON.stringify(state);
+    const blob = new Blob([str], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const mb = (blob.size/1024/1024).toFixed(2);
+    a.download = `栗子看板备份_${new Date().toISOString().slice(0,10)}_${mb}MB.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    alert(`✅ 已导出 ${mb} MB`);
+  } finally { hideLoading(); }
+}
+
+function exportExcel() {
+  const cb = boardStack[boardStack.length - 1];
+  const bn = boardStack[0].title;
+  let csv = `\uFEFF看板: ${bn}\n列表,标题,描述,标签,优先级,截止日期,待办清单,本地附件,外部链接,笔记\n`;
+  cb.lists.forEach(l => l.cards.forEach(c => {
+    const tags = (c.tags||[]).join(' ');
+    const cl = (c.checklist||[]).map(x => `${x.done?'[x]':'[ ]'}${x.text}`).join('; ');
+    const fl = (c.attachments||[]).filter(a => a.kind === 'file').map(a => `${a.name}(${formatFileSize(a.size)})`).join('; ');
+    const lk = (c.attachments||[]).filter(a => a.kind === 'link').map(a => `${a.name}: ${a.url}`).join('; ');
+    const nt = (c.notes||[]).map((n,i) => `[笔记${i+1}]${n.text||''}`).join('; ');
+    const clean = s => String(s||'').replace(/"/g,'""').replace(/\n/g,' ');
+    csv += [`"${clean(l.title)}"`,`"${clean(c.title)}"`,`"${clean(c.desc)}"`,`"${clean(tags)}"`,`"${c.priority||'none'}"`,`"${c.due||''}"`,`"${clean(cl)}"`,`"${clean(fl)}"`,`"${clean(lk)}"`,`"${clean(nt)}"`].join(',') + '\n';
+  }));
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `栗子看板_${bn}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+async function snapshotBoard() {
+  showLoading('生成快照...');
+  try {
+    const cb = boardStack[boardStack.length - 1];
+    const prevExpanded = [];
+    cb.lists.forEach(l => l.cards.forEach(c => {
+      if (c.subBoard) { prevExpanded.push({ card: c, was: c.isExpanded }); c.isExpanded = true; }
+    }));
+    render();
+    await new Promise(r => setTimeout(r, 100));
+    const clone = document.documentElement.cloneNode(true);
+    clone.querySelectorAll('.overlay, #loadingOverlay, #subCardTooltip').forEach(el => el.remove());
+    clone.querySelectorAll('script').forEach(el => el.remove());
+    const header = clone.querySelector('header');
+    if (header) {
+      header.querySelectorAll('button, select, input').forEach(el => el.remove());
+      header.querySelector('.spacer')?.remove();
+      const boardName = getCurrentBoard()?.name || '看板';
+      const ts = new Date().toLocaleString('zh-CN');
+      header.innerHTML = `<span class="logo">🌰</span><span style="font-weight:700;font-size:15px;">栗子看板快照 · ${esc(boardName)}</span><div class="spacer"></div><span style="font-size:12px;color:var(--muted);">📸 ${ts}</span>`;
+    }
+    clone.querySelectorAll('.star-btn.starred').forEach(el => {
+      const span = document.createElement('span');
+      span.className = 'card-star'; span.textContent = '★';
+      el.replaceWith(span);
+    });
+    clone.querySelectorAll('.card-footer, .list-bottom-actions, .list-header button, .star-btn, .del-sub-card-btn').forEach(el => el.remove());
+    clone.querySelectorAll('.pin-drop-zone, .pin-del, .pin-fold-btn').forEach(el => el.remove());
+    clone.querySelectorAll('.pin-item.collapsed').forEach(el => el.classList.remove('collapsed'));
+    clone.querySelectorAll('.board-link-add, .board-link-del').forEach(el => el.remove());
+    const allStyles = clone.querySelectorAll('style');
+    if (allStyles.length) allStyles[allStyles.length - 1].textContent += `\nbody{overflow:auto !important;}\n@media print{ .card{break-inside:avoid;} }`;
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const snapName = getCurrentBoard()?.name || '看板';
+    const mb = (blob.size / 1024 / 1024).toFixed(2);
+    a.download = `栗子看板快照_${snapName}_${new Date().toISOString().slice(0,10)}.html`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    prevExpanded.forEach(({ card, was }) => { card.isExpanded = was; });
+    render();
+    alert(`✅ 快照已导出（${mb} MB）`);
+  } catch (e) {
+    console.error(e);
+    alert('❌ 快照导出失败：' + e.message);
+  } finally { hideLoading(); }
+}
+
+async function resetAll() {
   const ans = prompt('⚠️ 重置会清空所有数据，且不可恢复。\n\n请输入确认文字：\n我知道重置会把所有内容清空');
   if (ans !== '我知道重置会把所有内容清空') {
     if (ans !== null) alert('❌ 输入不正确，已取消');
@@ -2502,161 +2257,20 @@ document.getElementById('resetBtn').onclick = async () => {
     render();
     alert('✅ 已重置');
   } finally { hideLoading(); }
-};
+}
 
-document.getElementById('exportBtn').onclick = () => {
-  const cb = boardStack[boardStack.length - 1];
-  const bn = boardStack[0].title;
-  let csv = `\uFEFF看板: ${bn}\n列表,标题,描述,标签,优先级,截止日期,待办清单,本地附件,外部链接,笔记\n`;
-  cb.lists.forEach(l => l.cards.forEach(c => {
-    const tags = (c.tags||[]).join(' ');
-    const cl = (c.checklist||[]).map(x => `${x.done?'[x]':'[ ]'}${x.text}`).join('; ');
-    const fl = (c.attachments||[]).filter(a => a.kind === 'file').map(a => `${a.name}(${formatFileSize(a.size)})`).join('; ');
-    const lk = (c.attachments||[]).filter(a => a.kind === 'link').map(a => `${a.name}: ${a.url}`).join('; ');
-    const nt = (c.notes||[]).map((n,i) => `[笔记${i+1}]${n.text||''}${(n.attachments||[]).length ? ' (附件:' + n.attachments.map(a=>a.name).join(',') + ')' : ''}`).join('; ');
-    const clean = s => String(s||'').replace(/"/g,'""').replace(/\n/g,' ');
-    csv += [`"${clean(l.title)}"`,`"${clean(c.title)}"`,`"${clean(c.desc)}"`,`"${clean(tags)}"`,`"${c.priority||'none'}"`,`"${c.due||''}"`,`"${clean(cl)}"`,`"${clean(fl)}"`,`"${clean(lk)}"`,`"${clean(nt)}"`].join(',') + '\n';
-  }));
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `栗子看板_${bn}_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-};
-
-document.getElementById('backupBtn').onclick = async () => {
-  let cnt = 0, noteCnt = 0, noteAttCnt = 0, pinCnt = 0, linkCnt = 0;
-  state.boards.forEach(b => {
-    pinCnt += (b.pins||[]).length;
-    linkCnt += (b.links||[]).length;
-    b.lists.forEach(l => l.cards.forEach(c => {
-      cnt += (c.attachments||[]).filter(a => a.kind === 'file').length;
-      (c.notes||[]).forEach(n => { noteCnt++; noteAttCnt += (n.attachments||[]).filter(a => a.kind === 'file').length; });
-    }));
-  });
-  const tplCnt = (state.templates || []).length;
-  const msg = `📥 备份将导出：\n· 所有看板卡片\n· ${cnt} 个本地附件（Base64 内嵌）\n· ${noteCnt} 个笔记块（含 ${noteAttCnt} 个附件）\n· ${pinCnt} 张剪贴板图片\n· ${linkCnt} 个链接\n· ${tplCnt} 个模板\n\n继续吗？`;
-  if (!confirm(msg)) return;
-  showLoading('生成 JSON...');
-  try {
-    const str = JSON.stringify(state);
-    const blob = new Blob([str], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    const mb = (blob.size/1024/1024).toFixed(2);
-    a.download = `栗子看板备份_${new Date().toISOString().slice(0,10)}_${mb}MB.json`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    alert(`✅ 已导出，大小约 ${mb} MB`);
-  } finally { hideLoading(); }
-};
-
-/* =========================================================
-   📸 网页快照导出
-   ========================================================= */
-document.getElementById('snapshotBtn').onclick = async () => {
-  showLoading('生成网页快照...');
-  try {
-    /* 1) 先展开所有子看板以便完整呈现 */
-    const cb = boardStack[boardStack.length - 1];
-    const prevExpanded = [];
-    cb.lists.forEach(l => l.cards.forEach(c => {
-      if (c.subBoard) { prevExpanded.push({ card: c, was: c.isExpanded }); c.isExpanded = true; }
-    }));
-    render();
-    await new Promise(r => setTimeout(r, 100));
-
-    /* 2) 克隆整个文档 */
-    const clone = document.documentElement.cloneNode(true);
-
-    /* 3) 移除弹窗 overlay（只保留看板主体） */
-    clone.querySelectorAll('.overlay, #loadingOverlay, #subCardTooltip').forEach(el => el.remove());
-
-    /* 4) 移除所有 <script> 标签（快照是静态的） */
-    clone.querySelectorAll('script').forEach(el => el.remove());
-
-    /* 5) 给 header 加上快照标识 */
-    const header = clone.querySelector('header');
-    if (header) {
-      /* 移除交互按钮 */
-      header.querySelectorAll('button, select, input').forEach(el => el.remove());
-      header.querySelector('.spacer')?.remove();
-      const boardName = getCurrentBoard()?.name || '看板';
-      const ts = new Date().toLocaleString('zh-CN');
-      header.innerHTML = `
-        <span class="logo">🌰</span>
-        <span style="font-weight:700;font-size:15px;">栗子看板快照 · ${esc(boardName)}</span>
-        <div class="spacer"></div>
-        <span style="font-size:12px;color:var(--muted);">📸 ${ts}</span>
-      `;
-    }
-
-    /* 6) 星标按钮转为静态文字，然后移除操作按钮 */
-    clone.querySelectorAll('.star-btn.starred').forEach(el => {
-      const span = document.createElement('span');
-      span.className = 'card-star';
-      span.textContent = '★';
-      el.replaceWith(span);
-    });
-    clone.querySelectorAll('.card-footer, .list-bottom-actions, .list-header button, .star-btn, .del-sub-card-btn').forEach(el => el.remove());
-
-    /* 7) 剪贴板区域：移除拖放区、删除按钮 */
-    clone.querySelectorAll('.pin-drop-zone, .pin-del, .pin-fold-btn').forEach(el => el.remove());
-    /* 展开所有折叠的 pin */
-    clone.querySelectorAll('.pin-item.collapsed').forEach(el => el.classList.remove('collapsed'));
-    /* 链接区：移除添加表单和删除按钮 */
-    clone.querySelectorAll('.board-link-add, .board-link-del').forEach(el => el.remove());
-
-    /* 8) 加入打印友好样式 */
-    const style = clone.querySelector('style') || document.createElement('style');
-    const extraCSS = `
-      body { overflow: auto !important; }
-      @media print {
-        header { position: static !important; }
-        body { padding-top: 0 !important; }
-        .card { break-inside: avoid; }
-      }
-    `;
-    // 在 style 末尾追加
-    const allStyles = clone.querySelectorAll('style');
-    if (allStyles.length) allStyles[allStyles.length - 1].textContent += extraCSS;
-
-    /* 9) 生成完整 HTML */
-    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
-    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    const snapName = getCurrentBoard()?.name || '看板';
-    const mb = (blob.size / 1024 / 1024).toFixed(2);
-    a.download = `栗子看板快照_${snapName}_${new Date().toISOString().slice(0,10)}.html`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-
-    /* 10) 恢复原来的展开状态 */
-    prevExpanded.forEach(({ card, was }) => { card.isExpanded = was; });
-    render();
-
-    alert(`✅ 快照已导出（${mb} MB）\n用浏览器打开即可离线查看。`);
-  } catch (e) {
-    console.error(e);
-    alert('❌ 快照导出失败：' + e.message);
-  } finally { hideLoading(); }
-};
-
+/* 导入 */
 const importFileInput = document.getElementById('importFileInput');
-document.getElementById('importBtn').onclick = () => importFileInput.click();
 importFileInput.onchange = async e => {
   const f = e.target.files[0];
   if (!f) return;
-  if (!confirm(`导入「${f.name}」将覆盖当前数据，继续吗？`)) { importFileInput.value = ''; return; }
+  if (!confirm(`导入「${f.name}」将覆盖当前数据，继续？`)) { importFileInput.value = ''; return; }
   showLoading('导入中...');
   try {
     const txt = await f.text();
     const d = JSON.parse(txt);
-    if (d && Array.isArray(d.boards)) {
-      state = d;
-    } else if (d && Array.isArray(d.lists)) {
+    if (d && Array.isArray(d.boards)) state = d;
+    else if (d && Array.isArray(d.lists)) {
       state = { boards: [{ id: uid(), name: '导入的看板', lists: d.lists }], currentBoardId: null, templates: [] };
       state.currentBoardId = state.boards[0].id;
     } else throw new Error('文件格式错误');
@@ -2685,20 +2299,16 @@ importFileInput.onchange = async e => {
 };
 
 /* =========================================================
-   图片剪贴板 (Pinboard)
+   图片剪贴板
    ========================================================= */
-const pinHeader   = document.getElementById('pinHeader');
-const pinBody     = document.getElementById('pinBody');
+const pinHeader = document.getElementById('pinHeader');
+const pinBody = document.getElementById('pinBody');
 const pinCollapseBtn = document.getElementById('pinCollapseBtn');
-const pinList     = document.getElementById('pinList');
+const pinList = document.getElementById('pinList');
 const pinDropZone = document.getElementById('pinDropZone');
 const pinFileInput = document.getElementById('pinFileInput');
 
-function ensurePins(b) {
-  if (!b.pins) b.pins = [];
-  return b.pins;
-}
-
+function ensurePins(b) { if (!b.pins) b.pins = []; return b.pins; }
 function renderPinboard() {
   const b = getCurrentBoard();
   if (!b) return;
@@ -2708,18 +2318,14 @@ function renderPinboard() {
     const summary = (p.note || '').slice(0, 10) || '(无注释)';
     const dots = (p.note || '').length > 10 ? '…' : '';
     return `<div class="pin-item${isFolded ? ' collapsed' : ''}" data-idx="${i}">
-       <button class="pin-fold-btn" data-idx="${i}" title="${isFolded ? '展开' : '折叠'}">${isFolded ? '▶' : '▼'}</button>
-       <span class="pin-summary" data-idx="${i}"><span class="pin-summary-icon">🖼</span>${esc(summary)}${dots}</span>
+       <button class="pin-fold-btn" data-idx="${i}">${isFolded ? '▶' : '▼'}</button>
+       <span class="pin-summary" data-idx="${i}">🖼 ${esc(summary)}${dots}</span>
        <div class="pin-thumb" data-idx="${i}"><img src="${p.data}"></div>
-       <div class="pin-note">
-         <textarea data-idx="${i}" placeholder="添加注释…">${esc(p.note || '')}</textarea>
-       </div>
-       <button class="pin-del" data-idx="${i}" title="删除">✕</button>
+       <div class="pin-note"><textarea data-idx="${i}" placeholder="注释…">${esc(p.note || '')}</textarea></div>
+       <button class="pin-del" data-idx="${i}">✕</button>
      </div>`;
   }).join('');
 }
-
-/* 添加图片的通用逻辑 */
 async function addPinImages(files) {
   const b = getCurrentBoard();
   if (!b) return;
@@ -2728,7 +2334,7 @@ async function addPinImages(files) {
   for (const f of files) {
     if (!f.type.startsWith('image/')) continue;
     if (f.size > MAX_FILE_SIZE) {
-      alert(`❌「${f.name}」大小 ${formatFileSize(f.size)}，超过 500KB 限制，已跳过。`);
+      alert(`❌「${f.name}」${formatFileSize(f.size)} 超过 200KB 限制。`);
       continue;
     }
     try {
@@ -2743,61 +2349,6 @@ async function addPinImages(files) {
     saveState(); renderPinboard();
   }
 }
-
-/* Ctrl+V 粘贴图片 — 全局监听 */
-document.addEventListener('paste', async (e) => {
-  /* 提取剪贴板中的图片 */
-  const items = Array.from(e.clipboardData?.items || []);
-  const imgFiles = [];
-  for (const item of items) {
-    if (item.type.startsWith('image/')) {
-      const f = item.getAsFile();
-      if (f) imgFiles.push(f);
-    }
-  }
-  if (!imgFiles.length) return;
-
-  /* ① 卡片编辑弹窗打开时 → 图片添加到卡片附件 */
-  if (overlay.classList.contains('show')) {
-    e.preventDefault();
-    for (const f of imgFiles) {
-      if (f.size > MAX_FILE_SIZE) {
-        alert(`❌「${f.name || '粘贴图片'}」大小 ${formatFileSize(f.size)}，超过 500KB 限制，已跳过。`);
-        continue;
-      }
-      try {
-        const dataURL = await fileToDataURL(f);
-        editingAttachments.push({
-          id: uid(), kind: 'file',
-          name: f.name || ('paste-' + Date.now() + '.png'),
-          size: f.size, type: f.type || 'image/png', data: dataURL
-        });
-      } catch (err) { console.error(err); }
-    }
-    renderAttachmentsUI();
-    return;
-  }
-
-  /* ② 焦点在输入框/文本框内时不拦截（让用户正常粘贴文字） */
-  const tag = (document.activeElement || {}).tagName;
-  if (tag === 'INPUT' || tag === 'TEXTAREA' || (document.activeElement && document.activeElement.isContentEditable)) return;
-
-  /* ③ 其他情况 → 图片添加到剪贴板区域 */
-  e.preventDefault();
-  await addPinImages(imgFiles);
-});
-
-/* 拖拽图片到 drop zone */
-pinDropZone.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); pinDropZone.classList.add('drag-over'); });
-pinDropZone.addEventListener('dragleave', (e) => { e.preventDefault(); e.stopPropagation(); pinDropZone.classList.remove('drag-over'); });
-pinDropZone.addEventListener('drop', async (e) => {
-  e.preventDefault(); e.stopPropagation();
-  pinDropZone.classList.remove('drag-over');
-  const files = Array.from(e.dataTransfer.files || []);
-  if (files.length) await addPinImages(files);
-});
-
-/* 点击 drop zone 选择文件 */
 pinDropZone.addEventListener('click', (e) => {
   if (e.target === pinFileInput) return;
   pinFileInput.click();
@@ -2807,10 +2358,7 @@ pinFileInput.onchange = async () => {
   if (files.length) await addPinImages(files);
   pinFileInput.value = '';
 };
-
-/* 点击缩略图预览 / 折叠展开 / 删除 */
 pinList.addEventListener('click', (e) => {
-  /* ★ 折叠/展开按钮 */
   const foldBtn = e.target.closest('.pin-fold-btn');
   if (foldBtn) {
     const idx = +foldBtn.dataset.idx;
@@ -2820,7 +2368,6 @@ pinList.addEventListener('click', (e) => {
     if (pin) { pin._folded = !pin._folded; renderPinboard(); }
     return;
   }
-  /* ★ 折叠摘要点击 → 展开 */
   const summary = e.target.closest('.pin-summary');
   if (summary) {
     const idx = +summary.dataset.idx;
@@ -2839,18 +2386,14 @@ pinList.addEventListener('click', (e) => {
     if (pin) showPreviewImage(pin.data, pin.name || '粘贴图片');
     return;
   }
-  /* 删除 */
   const del = e.target.closest('.pin-del');
   if (del) {
     const idx = +del.dataset.idx;
     const b = getCurrentBoard();
     if (!b) return;
-    ensurePins(b).splice(idx, 1);
-    saveState(); renderPinboard();
+    if (confirm('删除这张图片？')) { ensurePins(b).splice(idx, 1); saveState(); renderPinboard(); }
   }
 });
-
-/* 注释编辑（防抖保存） */
 let _pinNoteTimer = null;
 pinList.addEventListener('input', (e) => {
   if (e.target.tagName !== 'TEXTAREA') return;
@@ -2863,70 +2406,80 @@ pinList.addEventListener('input', (e) => {
     if (pin) { pin.note = e.target.value; saveState(); }
   }, 300);
 });
-
-/* 折叠/展开 */
 pinHeader.addEventListener('click', () => {
   pinBody.classList.toggle('collapsed');
   pinCollapseBtn.style.transform = pinBody.classList.contains('collapsed') ? 'rotate(-90deg)' : '';
 });
 
+/* 桌面端 Ctrl+V 粘贴图片到剪贴板 */
+document.addEventListener('paste', async (e) => {
+  const items = Array.from(e.clipboardData?.items || []);
+  const imgFiles = [];
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      const f = item.getAsFile();
+      if (f) imgFiles.push(f);
+    }
+  }
+  if (!imgFiles.length) return;
+  if (overlay.classList.contains('show')) {
+    e.preventDefault();
+    for (const f of imgFiles) {
+      if (f.size > MAX_FILE_SIZE) { alert(`❌ 粘贴图片过大，超过 200KB 限制。`); continue; }
+      try {
+        const dataURL = await fileToDataURL(f);
+        editingAttachments.push({
+          id: uid(), kind: 'file',
+          name: f.name || ('paste-' + Date.now() + '.png'),
+          size: f.size, type: f.type || 'image/png', data: dataURL
+        });
+      } catch (err) { console.error(err); }
+    }
+    renderAttachmentsUI();
+    return;
+  }
+  const tag = (document.activeElement || {}).tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || (document.activeElement && document.activeElement.isContentEditable)) return;
+  e.preventDefault();
+  await addPinImages(imgFiles);
+});
+
 /* =========================================================
-   🔗 看板链接
+   看板链接
    ========================================================= */
 const boardLinkList = document.getElementById('boardLinkList');
-const linkUrlInput  = document.getElementById('linkUrlInput');
+const linkUrlInput = document.getElementById('linkUrlInput');
 const linkTitleInput = document.getElementById('linkTitleInput');
 
-function ensureLinks(b) {
-  if (!b.links) b.links = [];
-  return b.links;
-}
-
+function ensureLinks(b) { if (!b.links) b.links = []; return b.links; }
 function renderLinks() {
   const b = getCurrentBoard();
   if (!b) return;
   const links = ensureLinks(b);
-  if (links.length === 0) {
-    boardLinkList.innerHTML = '';
-    return;
-  }
+  if (links.length === 0) { boardLinkList.innerHTML = ''; return; }
   boardLinkList.innerHTML = links.map((lk, i) => {
     const linkHtml = lk.title
-      ? `<a href="${esc(lk.url)}" target="_blank" rel="noopener" class="link-label" title="${esc(lk.url)}">${esc(lk.title)}</a>`
+      ? `<a href="${esc(lk.url)}" target="_blank" rel="noopener" style="color:var(--text);font-weight:500;">${esc(lk.title)}</a>`
       : `<a href="${esc(lk.url)}" target="_blank" rel="noopener">${esc(lk.url)}</a>`;
-    return `<div class="board-link-item" data-idx="${i}">
-      🔗 ${linkHtml}
-      <button class="board-link-del" data-idx="${i}" title="删除链接">✕</button>
-    </div>`;
+    return `<div class="board-link-item">🔗 ${linkHtml}<button class="board-link-del" data-idx="${i}">✕</button></div>`;
   }).join('');
 }
-
-/* 添加链接 */
 function addBoardLink() {
   let url = linkUrlInput.value.trim();
   if (!url) return;
-  /* 自动补 https:// */
-  if (!/^https?:\/\e//i.test(url)) url = 'https://' +8 url;
-  const title = linkaTitleInput.value.trim();
-  const b = getCurrent33Board();
-  if (!b) returnd;
-  ensureLinks(b).push({ id';
-: uid(), url, title });
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  const title = linkTitleInput.value.trim();
+  const b = getCurrentBoard();
+  if (!b) return;
+  ensureLinks(b).push({ id: uid(), url, title });
   linkUrlInput.value = '';
   linkTitleInput.value = '';
   saveState(); renderLinks();
   linkTitleInput.focus();
 }
-
 document.getElementById('addLinkBtn').onclick = addBoardLink;
-linkUrlInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); addBoardLink(); }
-});
-linkTitleInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); linkUrlInput.focus(); }
-});
-
-/* 删除链接 */
+linkUrlInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addBoardLink(); } });
+linkTitleInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); linkUrlInput.focus(); } });
 boardLinkList.addEventListener('click', e => {
   const del = e.target.closest('.board-link-del');
   if (!del) return;
@@ -2938,68 +2491,55 @@ boardLinkList.addEventListener('click', e => {
 });
 
 /* =========================================================
-   ⏰ 到期提醒面板
+   到期提醒
    ========================================================= */
 const dueReminderBtn = document.getElementById('dueReminderBtn');
 const dueBadge = document.getElementById('dueBadge');
-const duePanel = document.getElementById('duePanel');
+const duePanel = document.createElement('div');
+duePanel.className = 'due-panel';
+duePanel.id = 'duePanel';
+document.getElementById('dueReminder').appendChild(duePanel);
 
-/* 递归收集所有有截止日期的卡片 */
 function collectDueCards() {
   const results = [];
   state.boards.forEach(board => {
     function walk(lists, path) {
       lists.forEach(l => l.cards.forEach(c => {
-        if (c.due) {
-          results.push({ card: c, boardId: board.id, boardName: board.name, path });
-        }
-        if (c.subBoard && c.subBoard.lists) {
-          walk(c.subBoard.lists, path ? path + ' › ' + c.title : c.title);
-        }
+        if (c.due) results.push({ card: c, boardId: board.id, boardName: board.name, path });
+        if (c.subBoard && c.subBoard.lists) walk(c.subBoard.lists, path ? path + ' › ' + c.title : c.title);
       }));
     }
     walk(board.lists, '');
   });
   return results;
 }
-
-/* 筛选一周内到期（含已过期）的卡片 */
 function getDueWithin7Days() {
   const now = new Date();
   const todayStr = now.toISOString().slice(0, 10);
   const d7 = new Date(now);
   d7.setDate(d7.getDate() + 7);
   const weekStr = d7.toISOString().slice(0, 10);
-  return collectDueCards().filter(it => it.card.due <= weekStr)
-    .sort((a, b) => a.card.due.localeCompare(b.card.due));
+  return collectDueCards().filter(it => it.card.due <= weekStr).sort((a, b) => a.card.due.localeCompare(b.card.due));
 }
-
 function updateDueBadge() {
   const cnt = getDueWithin7Days().length;
-  if (cnt > 0) {
-    dueBadge.textContent = cnt > 99 ? '99+' : cnt;
-    dueBadge.style.display = '';
-  } else {
-    dueBadge.style.display = 'none';
-  }
+  if (cnt > 0) { dueBadge.textContent = cnt > 99 ? '99+' : cnt; dueBadge.style.display = ''; }
+  else dueBadge.style.display = 'none';
 }
-
 function renderDueReminder() {
   const items = getDueWithin7Days();
   updateDueBadge();
   if (items.length === 0) {
-    duePanel.innerHTML = '<div class="due-panel-title">⏰ 到期提醒</div><div class="due-panel-empty">一周内没有到期的卡片 🎉</div>';
+    duePanel.innerHTML = '<div class="due-panel-title">⏰ 到期提醒</div><div class="due-panel-empty">一周内无到期卡片 🎉</div>';
     return;
   }
   const todayStr = new Date().toISOString().slice(0, 10);
-  /* 分组：已过期 / 今天 / 即将到期 */
   const overdue = [], todayItems = [], upcoming = [];
   items.forEach(it => {
     if (it.card.due < todayStr) overdue.push(it);
     else if (it.card.due === todayStr) todayItems.push(it);
     else upcoming.push(it);
   });
-
   function daysLabel(dueStr) {
     const diff = Math.round((new Date(dueStr) - new Date(todayStr)) / 86400000);
     if (diff < 0) return `已过期${-diff}天`;
@@ -3007,44 +2547,32 @@ function renderDueReminder() {
     if (diff === 1) return '明天';
     return `${diff}天后`;
   }
-
   let html = `<div class="due-panel-title">⏰ 到期提醒（${items.length}）</div>`;
-
-  function renderGroup(title, list, dateClass) {
+  function renderGroup(title, list, cls) {
     if (!list.length) return '';
     let g = `<div class="due-panel-group"><div class="due-panel-group-title">${title}</div>`;
     list.forEach(it => {
       g += `<div class="due-panel-item" data-board-id="${it.boardId}" data-card-id="${it.card.id}">
-        <span class="dpi-icon">${dateClass === 'overdue' ? '🔴' : dateClass === 'today' ? '🟡' : '🟢'}</span>
+        <span>${cls === 'overdue' ? '🔴' : cls === 'today' ? '🟡' : '🟢'}</span>
         <span class="dpi-title">${esc(it.card.title).replace(/\n/g,' ')}</span>
-        <span class="dpi-date ${dateClass}">${daysLabel(it.card.due)}</span>
-        <span class="dpi-board" title="${esc(it.boardName)}">${esc(it.boardName)}</span>
+        <span class="dpi-date ${cls}">${daysLabel(it.card.due)}</span>
+        <span class="dpi-board">${esc(it.boardName)}</span>
       </div>`;
     });
     g += '</div>';
     return g;
   }
-
   html += renderGroup('🔴 已过期', overdue, 'overdue');
-  html += renderGroup('🟡 今天到期', todayItems, 'today');
+  html += renderGroup('🟡 今天', todayItems, 'today');
   html += renderGroup('🟢 即将到期', upcoming, 'soon');
   duePanel.innerHTML = html;
 }
-
-/* 切换面板 */
 dueReminderBtn.onclick = (e) => {
   e.stopPropagation();
-  /* 关闭星标面板 */
-  starPanel.classList.remove('show');
-  if (duePanel.classList.contains('show')) {
-    duePanel.classList.remove('show');
-  } else {
-    renderDueReminder();
-    duePanel.classList.add('show');
-  }
+  document.querySelector('.star-panel')?.classList.remove('show');
+  if (duePanel.classList.contains('show')) duePanel.classList.remove('show');
+  else { renderDueReminder(); duePanel.classList.add('show'); }
 };
-
-/* 点击面板项目 → 跳转 */
 duePanel.addEventListener('click', (e) => {
   const item = e.target.closest('.due-panel-item');
   if (!item) return;
@@ -3053,37 +2581,33 @@ duePanel.addEventListener('click', (e) => {
   const cardId = item.dataset.cardId;
   if (state.currentBoardId !== boardId) {
     state.currentBoardId = boardId;
-    syncBoardStack();
-    renderBoardSelect();
+    syncBoardStack(); renderBoardSelect();
   }
   duePanel.classList.remove('show');
-  render();
-  saveState();
+  render(); saveState();
   setTimeout(() => {
     const cardEl = document.querySelector(`.card[data-id="${cardId}"]`);
     if (cardEl) {
       cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      cardEl.style.transition = 'box-shadow .3s';
-      cardEl.style.boxShadow = '0 0 0 3px #      setTimeout(() => { cardEl.style.boxShadow = ''; }, 2000);
+      cardEl.style.boxShadow = '0 0 0 3px #e8a33d';
+      setTimeout(() => { cardEl.style.boxShadow = ''; }, 2000);
     }
   }, 150);
 });
-
-/* 点击外部关闭 */
 document.addEventListener('click', (e) => {
-  if (!e.target.closest('#dueReminder')) {
-    duePanel.classList.remove('show');
-  }
+  if (!e.target.closest('#dueReminder')) duePanel.classList.remove('show');
 });
 
 /* =========================================================
-   ★ 星标提醒面板
+   星标提醒
    ========================================================= */
 const starReminderBtn = document.getElementById('starReminderBtn');
 const starBadge = document.getElementById('starBadge');
-const starPanel = document.getElementById('starPanel');
+const starPanel = document.createElement('div');
+starPanel.className = 'star-panel';
+starPanel.id = 'starPanel';
+document.getElementById('starReminder').appendChild(starPanel);
 
-/* 仅更新角标数字（在 render() 中调用，轻量） */
 function updateStarBadge() {
   let cnt = 0;
   function walk(lists) {
@@ -3093,47 +2617,28 @@ function updateStarBadge() {
     }));
   }
   state.boards.forEach(b => walk(b.lists));
-  if (cnt > 0) {
-    starBadge.textContent = cnt > 99 ? '99+' : cnt;
-    starBadge.style.display = '';
-  } else {
-    starBadge.style.display = 'none';
-  }
+  if (cnt > 0) { starBadge.textContent = cnt > 99 ? '99+' : cnt; starBadge.style.display = ''; }
+  else starBadge.style.display = 'none';
 }
-
-/* 递归收集所有星标卡片，返回 [{card, boardId, boardName, path}] */
 function collectStarredCards() {
   const results = [];
   state.boards.forEach(board => {
     function walk(lists, path) {
-      lists.forEach(l => {
-        l.cards.forEach(c => {
-          if (c.starred) {
-            results.push({ card: c, boardId: board.id, boardName: board.name, path });
-          }
-          if (c.subBoard && c.subBoard.lists) {
-            walk(c.subBoard.lists, path ? path + ' › ' + c.title : c.title);
-          }
-        });
-      });
+      lists.forEach(l => l.cards.forEach(c => {
+        if (c.starred) results.push({ card: c, boardId: board.id, boardName: board.name, path });
+        if (c.subBoard && c.subBoard.lists) walk(c.subBoard.lists, path ? path + ' › ' + c.title : c.title);
+      }));
     }
     walk(board.lists, '');
   });
   return results;
 }
-
 function renderStarReminder() {
   const items = collectStarredCards();
-  /* 更新角标 */
-  if (items.length > 0) {
-    starBadge.textContent = items.length > 99 ? '99+' : items.length;
-    starBadge.style.display = '';
-  } else {
-    starBadge.style.display = 'none';
-  }
-  /* 面板内容按看板分组 */
+  if (items.length > 0) { starBadge.textContent = items.length > 99 ? '99+' : items.length; starBadge.style.display = ''; }
+  else starBadge.style.display = 'none';
   if (items.length === 0) {
-    starPanel.innerHTML = '<div class="star-panel-title">★ 星标提醒</div><div class="star-panel-empty">暂无星标卡片</div>';
+    starPanel.innerHTML = '<div class="star-panel-title">★ 星标提醒</div><div class="star-panel-empty">暂无星标</div>';
     return;
   }
   let html = '<div class="star-panel-title">★ 星标提醒（' + items.length + '）</div>';
@@ -3144,67 +2649,46 @@ function renderStarReminder() {
   });
   for (const bId in grouped) {
     const g = grouped[bId];
-    html += `<div class="star-panel-group">`;
-    html += `<div class="star-panel-board">📋 ${esc(g.name)}</div>`;
+    html += `<div class="star-panel-group"><div class="star-panel-board">📋 ${esc(g.name)}</div>`;
     g.items.forEach(it => {
-      const pathHtml = it.path ? `<span class="spi-path" title="${esc(it.path)}">${esc(it.path)}</span>` : '';
+      const pathHtml = it.path ? `<span class="spi-path">${esc(it.path)}</span>` : '';
       html += `<div class="star-panel-item" data-board-id="${bId}" data-card-id="${it.card.id}">
-        <span class="spi-star">★</span>
-        <span class="spi-title">${esc(it.card.title)}</span>
-        ${pathHtml}
+        <span class="spi-star">★</span><span class="spi-title">${esc(it.card.title)}</span>${pathHtml}
       </div>`;
     });
     html += `</div>`;
   }
   starPanel.innerHTML = html;
 }
-
-/* 切换面板 */
 starReminderBtn.onclick = (e) => {
   e.stopPropagation();
-  /* 关闭到期面板 */
   duePanel.classList.remove('show');
-  if (starPanel.classList.contains('show')) {
-    starPanel.classList.remove('show');
-  } else {
-    renderStarReminder();
-    starPanel.classList.add('show');
-  }
+  if (starPanel.classList.contains('show')) starPanel.classList.remove('show');
+  else { renderStarReminder(); starPanel.classList.add('show'); }
 };
-
-/* 点击面板项目 → 跳转到对应看板 */
 starPanel.addEventListener('click', (e) => {
   const item = e.target.closest('.star-panel-item');
   if (!item) return;
   e.stopPropagation();
   const boardId = item.dataset.boardId;
   const cardId = item.dataset.cardId;
-  /* 切换到目标看板 */
   if (state.currentBoardId !== boardId) {
     state.currentBoardId = boardId;
-    syncBoardStack();
-    renderBoardSelect();
+    syncBoardStack(); renderBoardSelect();
   }
   starPanel.classList.remove('show');
-  render();
-  saveState();
-  /* 延迟后高亮并滚动到目标卡片 */
+  render(); saveState();
   setTimeout(() => {
     const cardEl = document.querySelector(`.card[data-id="${cardId}"]`);
     if (cardEl) {
       cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      cardEl.style.transition = 'box-shadow .3s';
       cardEl.style.boxShadow = '0 0 0 3px #e53e3e';
       setTimeout(() => { cardEl.style.boxShadow = ''; }, 2000);
     }
   }, 150);
 });
-
-/* 点击外部关闭面板 */
 document.addEventListener('click', (e) => {
-  if (!e.target.closest('#starReminder')) {
-    starPanel.classList.remove('show');
-  }
+  if (!e.target.closest('#starReminder')) starPanel.classList.remove('show');
 });
 
 /* =========================================================
@@ -3215,9 +2699,8 @@ async function init() {
   try {
     await openStateDB();
     const dbState = await loadStateFromDB();
-    if (dbState && dbState.boards && dbState.boards.length > 0) {
-      state = dbState;
-    } else {
+    if (dbState && dbState.boards && dbState.boards.length > 0) state = dbState;
+    else {
       const old = localStorage.getItem('chestnut-kanban-v5') || localStorage.getItem('chestnut-kanban-v4');
       if (old) {
         try {
@@ -3259,8 +2742,6 @@ async function init() {
   hideLoading();
 }
 init();
-window.addEventListener('resize', () => requestAnimationFrame(alignCardRows));
-
 </script>
 </body>
 </html>
