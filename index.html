@@ -119,11 +119,15 @@
   .sub-board-preview {margin-top: 10px; padding: 8px; background: var(--sub-bg); border-radius: 8px; border: 1px solid var(--sub-border);}
   .sub-board-preview .sub-list-title {font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px;}
   .sub-board-preview .sub-card-item {
-    font-size: 13px; padding: 8px 8px; background: var(--card-bg);
+    font-size: 13px; padding: 6px 6px; background: var(--card-bg);
     border-radius: 6px; margin-bottom: 5px; border: 1px solid var(--border);
     display: flex; justify-content: space-between; align-items: center; gap:6px;
   }
   .sub-card-title { flex: 1; overflow: hidden; word-break: break-word; cursor:pointer; }
+  .sub-board-preview .sub-card-item.sub-done .sub-card-title {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
   .del-sub-card-btn {
     background: none; border: none; color: var(--muted); cursor: pointer;
     font-size: 15px; padding: 4px 8px; line-height: 1; flex-shrink: 0;
@@ -134,6 +138,17 @@
   .star-btn.starred { filter:none; opacity:1; }
   .card-star { color:#e53e3e; margin-right:3px; }
   .sub-board-preview .empty-sub {font-size: 12px; color: var(--muted); font-style: italic;}
+
+  /* 子卡片完成按钮 */
+  .done-sub-card-btn {
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    font-size: 15px; padding: 4px 8px; line-height: 1; flex-shrink: 0;
+    border-radius: 4px; transition: .15s; min-height:32px; min-width:32px;
+    font-weight: 700;
+  }
+  .done-sub-card-btn:active { background: #22c55e; color: #fff; }
+  .done-sub-card-btn.done { color: #22c55e; }
+  .done-sub-card-btn.done:active { background: #22c55e; color: #fff; }
 
   @media (hover:none){ #subCardTooltip { display:none !important; } }
   #subCardTooltip {
@@ -280,6 +295,8 @@
   .sub-preview-list-count {font-size: 11px; color: var(--muted); background: rgba(0,0,0,.06); padding: 1px 7px; border-radius: 10px; font-weight: 600;}
   .sub-preview-card {padding: 12px; margin-bottom: 8px; background: var(--sub-bg); border: 1px solid var(--sub-border); border-radius: 8px; cursor: pointer;}
   .sub-preview-card:active {border-color: var(--accent);}
+  .sub-preview-card.sub-done {opacity:.6;}
+  .sub-preview-card.sub-done .sub-preview-card-title {text-decoration: line-through;}
   .sub-preview-card-title {font-size: 13px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;}
   .priority-dot {width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;}
   .priority-dot.high { background: #e2574c; }
@@ -387,7 +404,6 @@
   .due-panel-item .dpi-date.soon { color:#e8a33d; }
   .due-panel-item .dpi-board { font-size:10px; color:var(--muted); flex-shrink:0; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
-  /* 通用输入/确认弹窗 */
   .dlg {background:var(--card-bg); border-radius:14px; width:100%; max-width:420px; padding:20px;}
   .dlg h3 {font-size:16px; margin-bottom:14px; text-align:center; font-weight:700;}
   .dlg .dlg-input {width:100%; border:1px solid var(--border); border-radius:8px; padding:12px; font-size:16px; background:var(--input-bg); color:var(--text); margin-bottom:14px; outline:none; font-family:inherit;}
@@ -440,7 +456,6 @@
 
     .star-panel, .due-panel { top:56px; right:8px; left:8px; max-height:75vh;}
 
-    /* 通用弹窗在手机上从底部弹起 */
     .dlg { max-width:100%; border-radius:16px 16px 0 0; padding:20px; }
   }
 
@@ -498,7 +513,6 @@
 
 <main id="board"></main>
 
-<!-- 卡片编辑弹窗 -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:12px;">
@@ -645,7 +659,6 @@
   </div>
 </div>
 
-<!-- 通用输入弹窗 -->
 <div class="overlay" id="inputOverlay">
   <div class="dlg">
     <h3 id="inputTitle">输入</h3>
@@ -657,7 +670,6 @@
   </div>
 </div>
 
-<!-- 通用确认弹窗 -->
 <div class="overlay" id="confirmOverlay">
   <div class="dlg">
     <h3 id="confirmTitle">确认</h3>
@@ -675,7 +687,7 @@
 
 <script>
 /* =========================================================
-   通用输入/确认弹窗（替代 prompt / confirm）
+   通用输入/确认弹窗
    ========================================================= */
 function showInput(title, defaultValue = '', placeholder = '') {
   return new Promise((resolve) => {
@@ -1036,9 +1048,15 @@ function renderCard(card) {
         content += `<div class="sub-list-title">📁 ${esc(l.title)} (${l.cards.length})</div>`;
         l.cards.forEach(c => {
           const starred = c.starred ? ' starred' : '';
-          content += `<div class="sub-card-item" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}">
+          const doneCls = c.subDone ? ' sub-done' : '';
+          // ★ 有截止日期才有已完成按钮
+          const doneBtn = c.due
+            ? `<button class="done-sub-card-btn${c.subDone ? ' done' : ''}" data-act="toggle-sub-done" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}" title="${c.subDone ? '标记为未完成' : '标记为已完成'}">${c.subDone ? '✓' : '○'}</button>`
+            : '';
+          content += `<div class="sub-card-item${doneCls}" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}">
             <button class="star-btn${starred}" data-act="toggle-star" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}">★</button>
             <span class="sub-card-title">${esc(c.title).replace(/\n/g,'<br>')}</span>
+            ${doneBtn}
             <button class="del-sub-card-btn" data-act="del-sub-card" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}">✕</button>
           </div>`;
         });
@@ -1389,8 +1407,10 @@ function renderSubPreviewContent(lists) {
         if (files > 0) metaParts.push(`📎 ${files}`);
         if (links > 0) metaParts.push(`🔗 ${links}`);
         if (card.due) metaParts.push(`📅 ${card.due}`);
-        html += `<div class="sub-preview-card">
+        const doneCls = card.subDone ? ' sub-done' : '';
+        html += `<div class="sub-preview-card${doneCls}">
           <div class="sub-preview-card-title">`;
+        if (card.subDone) html += `<span style="color:#22c55e;font-weight:700;">✓</span>`;
         if (card.starred) html += `<span class="card-star">★</span>`;
         if (pClass) html += `<span class="priority-dot ${pClass}"></span>`;
         html += `${esc(card.title).replace(/\n/g,'<br>')}</div>`;
@@ -2089,6 +2109,17 @@ board.addEventListener('click', async e => {
     if (card) { card.starred = !card.starred; render(); saveState(); }
     return;
   }
+  // ★ 切换子卡片完成状态（必须放在进入子看板之前）
+  const doneSubBtn = e.target.closest('[data-act="toggle-sub-done"]');
+  if (doneSubBtn) {
+    e.stopPropagation();
+    const card = findSubCardObj(doneSubBtn.dataset.parentCardId, doneSubBtn.dataset.subListId, doneSubBtn.dataset.subCardId);
+    if (card) {
+      card.subDone = !card.subDone;
+      render(); saveState();
+    }
+    return;
+  }
   const delSubBtn = e.target.closest('[data-act="del-sub-card"]');
   if (delSubBtn) {
     e.stopPropagation();
@@ -2283,7 +2314,7 @@ async function snapshotBoard() {
       span.className = 'card-star'; span.textContent = '★';
       el.replaceWith(span);
     });
-    clone.querySelectorAll('.card-footer, .list-bottom-actions, .list-header button, .star-btn, .del-sub-card-btn').forEach(el => el.remove());
+    clone.querySelectorAll('.card-footer, .list-bottom-actions, .list-header button, .star-btn, .del-sub-card-btn, .done-sub-card-btn').forEach(el => el.remove());
     clone.querySelectorAll('.pin-drop-zone, .pin-del, .pin-fold-btn').forEach(el => el.remove());
     clone.querySelectorAll('.pin-item.collapsed').forEach(el => el.classList.remove('collapsed'));
     clone.querySelectorAll('.board-link-add, .board-link-del').forEach(el => el.remove());
@@ -2324,7 +2355,6 @@ async function resetAll() {
   } finally { hideLoading(); }
 }
 
-/* 导入 */
 const importFileInput = document.getElementById('importFileInput');
 importFileInput.onchange = async e => {
   const f = e.target.files[0];
