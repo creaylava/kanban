@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🌰 栗子看板</title>
+<title>🌰 栗子看板 · 本地版</title>
 <style>
   :root{
     --bg:#f5f2ed; --list-bg:#e9e4db; --card-bg:#fff; --text:#2e2a26;
@@ -61,12 +61,12 @@
 
   #board{
     flex:1; display:flex; gap:14px; padding:18px 20px 24px;
-    overflow-x:auto; overflow-y:hidden; align-items:flex-start;
+    overflow:auto; align-items:flex-start;
   }
   .empty{margin:auto; color:var(--muted); font-size:14px;}
   .list{
     flex:0 0 280px; width:280px; background:var(--list-bg);
-    border-radius:12px; display:flex; flex-direction:column; max-height:100%; padding:4px;
+    border-radius:12px; display:flex; flex-direction:column; padding:4px;
   }
   .list-header{display:flex; align-items:center; gap:6px; padding:8px 10px;}
   .list-title{
@@ -79,9 +79,10 @@
   .list-count{font-size:12px; color:var(--muted); background:rgba(0,0,0,.06); border-radius:10px; padding:1px 7px; flex-shrink: 0;}
   .icon-btn{border:none; background:transparent; color:var(--muted); font-size:15px; cursor:pointer; padding:4px 6px; border-radius:6px; line-height:1; flex-shrink: 0; transition:.15s;}
   .icon-btn:hover{background:rgba(208,69,58,.15); color:#d0453a;}
-  .cards{flex:1; overflow-y:auto; overflow-x:hidden; padding:2px 6px 0; min-height:12px;}
-  .cards::-webkit-scrollbar{width:8px;}
-  .cards::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15); border-radius:4px;}
+  .list-move-btn{border:none; background:transparent; color:var(--muted); font-size:13px; cursor:pointer; padding:2px 5px; border-radius:5px; line-height:1; flex-shrink:0; transition:.15s; opacity:.5;}
+  .list-move-btn:hover{background:rgba(0,0,0,.1); opacity:1;}
+  .list-move-btn.disabled{opacity:.15; cursor:default; pointer-events:none;}
+  .cards{padding:2px 6px 0; min-height:12px;}
   .card{
     position:relative; overflow:hidden; background:var(--card-bg); border-radius:10px;
     padding:10px 12px 32px 12px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.07);
@@ -124,7 +125,7 @@
   }
   .sub-board-preview .sub-card-item:hover { border-color: var(--accent); }
   .sub-card-title {
-    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 1; overflow: hidden; word-break: break-word;
   }
   .del-sub-card-btn {
     background: none; border: none; color: var(--muted); cursor: pointer;
@@ -132,7 +133,35 @@
     border-radius: 4px; transition: .15s;
   }
   .del-sub-card-btn:hover { background: #d0453a; color: #fff; }
+  /* ★ 子卡片星标 */
+  .star-btn { background:none; border:none; cursor:pointer; font-size:14px; padding:0 3px; flex-shrink:0; line-height:1; filter:grayscale(1) opacity(.35); transition:.15s; }
+  .star-btn:hover { filter:none; }
+  .star-btn.starred { filter:none; opacity:1; }
+  .card-star { color:#e53e3e; margin-right:3px; }
   .sub-board-preview .empty-sub {font-size: 12px; color: var(--muted); font-style: italic;}
+
+  /* ★ 子卡片悬停预览 tooltip */
+  #subCardTooltip {
+    position: fixed; z-index: 300; pointer-events: none;
+    background: var(--card-bg); border: 1px solid var(--accent);
+    border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,.18);
+    padding: 14px 16px; max-width: 340px; min-width: 180px;
+    font-size: 13px; line-height: 1.5; display: none;
+    transition: opacity .15s; opacity: 0;
+  }
+  #subCardTooltip.show { display: block; opacity: 1; }
+  .sct-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: var(--fg); }
+  .sct-meta { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .sct-desc { font-size: 12px; color: var(--fg); margin-bottom: 6px; white-space: pre-line; word-break: break-word; max-height: 60px; overflow: hidden; }
+  .sct-tags { margin-bottom: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .sct-tags .tag { font-size: 10px; padding: 1px 6px; }
+  .sct-section { font-size: 11px; font-weight: 600; color: var(--muted); margin: 6px 0 3px; }
+  .sct-check { font-size: 11px; color: var(--fg); padding: 1px 0; }
+  .sct-check.done { text-decoration: line-through; color: var(--muted); }
+  .sct-att { font-size: 11px; color: var(--fg); padding: 1px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sct-note { font-size: 11px; color: var(--muted); padding: 1px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sct-sub { font-size: 11px; color: var(--accent); margin-top: 4px; }
+  .sct-empty { font-size: 11px; color: var(--muted); font-style: italic; }
 
   /* ★ 列表底部的按钮组 */
   .list-bottom-actions {
@@ -158,7 +187,8 @@
   .overlay{position:fixed; inset:0; background:rgba(30,25,20,.45); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
   .overlay.show{display:flex;}
   .modal{background:var(--card-bg); border-radius:14px; width:100%; max-width:540px; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.25); max-height:90vh; overflow-y:auto;}
-  .m-title{font-size:17px; font-weight:600; margin-bottom:14px;}
+  .m-title{font-size:17px; font-weight:600; margin-bottom:14px; resize:none; overflow:hidden; min-height:28px; line-height:1.4; border:1px solid var(--border); border-radius:6px; background:var(--input-bg); color:var(--text); padding:4px 8px; font-family:inherit; outline:none; }
+  .m-title:focus{border-color:var(--accent);}
   .modal textarea{width:100%; height:80px; resize:vertical; margin-bottom:14px;}
   .field{margin-bottom:14px;}
   .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px;}
@@ -186,8 +216,60 @@
   .attachment-item .file-actions button:hover {background: var(--accent); color: #fff;}
   .attachment-item .file-actions button.remove-btn:hover {background: #d0453a; color: #fff;}
   .attachment-item .file-thumb {width: 36px; height: 36px; border-radius: 5px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border); cursor: pointer;}
+  .attachment-item { flex-wrap:wrap; }
+  .att-note-row { width:100%; margin-top:4px; }
+  .att-note-row input { width:100%; border:1px solid var(--border); border-radius:5px; background:var(--input-bg); color:var(--text); padding:3px 7px; font-size:11px; font-family:inherit; outline:none; }
+  .att-note-row input:focus { border-color:var(--accent); }
+  .att-note-row input::placeholder { color:var(--muted); }
   .attachment-empty {font-size: 12px; color: var(--muted); font-style: italic; text-align: center; padding: 8px;}
   .attachment-hint {font-size: 10px; color: var(--muted); margin-top: 6px; line-height: 1.5;}
+
+  /* ★ 笔记区块 */
+  .notes-section {margin-bottom: 5px;}
+  .note-block {
+    border: 1px solid var(--border); border-radius: 10px; padding: 10px;
+    background: var(--sub-bg); margin-bottom: 10px; position: relative;
+  }
+  .note-block-header {display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;}
+  .note-block-header .note-label {font-size: 11px; color: var(--muted); font-weight: 600;}
+  .note-block-header .note-remove {background: none; border: none; color: #d0453a; font-size: 15px; cursor: pointer; padding: 2px 6px; border-radius: 4px;}
+  .note-block-header .note-remove:hover {background: rgba(208,69,58,.12);}
+  .note-block textarea {
+    width: 100%; min-height: 60px; resize: vertical; border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit;
+    background: var(--card-bg); color: var(--text); outline: none; line-height: 1.5;
+  }
+  .note-block textarea:focus {border-color: var(--accent);}
+  .note-atts {margin-top: 6px;}
+  .note-atts .attachment-item {margin-bottom: 4px;}
+  .note-att-actions {display: flex; gap: 6px; margin-top: 6px;}
+  .note-att-actions .btn {font-size: 11px; padding: 3px 8px;}
+
+  /* ★ 拖拽视觉反馈 */
+  .drag-over {
+    outline: 2px dashed var(--accent) !important;
+    outline-offset: -2px;
+    background: rgba(200, 102, 47, 0.05) !important;
+  }
+
+  /* 预览中的笔记 */
+  .card-preview-note {
+    border: 1px solid var(--sub-border); border-radius: 8px; padding: 10px;
+    background: var(--sub-bg); margin-bottom: 8px;
+  }
+  .card-preview-note-text {font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; margin-bottom: 6px;}
+  .card-preview-note-att {
+    display: flex; align-items: center; gap: 6px; padding: 5px 8px;
+    background: var(--card-bg); border-radius: 6px; border: 1px solid var(--border);
+    margin-bottom: 4px; cursor: pointer; font-size: 12px;
+  }
+  .card-preview-note-att:hover {border-color: var(--accent);}
+  .card-preview-note-att .att-icon {font-size: 16px; flex-shrink: 0;}
+  .card-preview-note-att .att-name {flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+  .card-preview-note-att .att-size {font-size: 10px; color: var(--muted); flex-shrink: 0;}
+  /* 子看板预览中的笔记 */
+  .sub-preview-card-notes {margin-top: 4px;}
+  .sub-preview-note {font-size: 11px; color: var(--muted); padding: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
   #addLinkOverlay {align-items: center; padding: 20px; z-index: 150;}
   #addLinkModal {background: var(--card-bg); border-radius: 14px; width: 100%; max-width: 420px; padding: 20px;}
@@ -383,6 +465,7 @@
   .card-preview-att-item .att-name {font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
   .card-preview-att-item .att-size {font-size: 10px; color: var(--muted); margin-top: 2px;}
   .card-preview-att-item .att-action {color: var(--muted); font-size: 12px;}
+  .card-preview-att-item .att-note {width:100%; font-size:11px; color:var(--muted); margin-top:3px; font-style:italic; word-break:break-word;}
   .card-preview-subboard-btn {
     display: block; width: 100%; padding: 12px; margin-top: 6px;
     background: rgba(59,130,246,.1); color: #3b82f6; border: 1px solid #3b82f6;
@@ -420,7 +503,111 @@
       padding: 4px 6px; font-size: 11px; white-space: nowrap;
     }
     #subPreviewModal, #cardPreviewModal, #templateModal { max-height: 92vh; }
+    #pinboard { max-width:100%; }
   }
+
+  /* 图片剪贴板 */
+  #pinboard { padding:0 20px; flex-shrink:0; max-width:320px; box-sizing:border-box; }
+  .pin-header { display:flex; align-items:center; gap:8px; cursor:pointer; padding:6px 0; user-select:none; }
+  .pin-toggle { font-size:13px; font-weight:600; color:var(--muted); }
+  .pin-collapse { font-size:11px; color:var(--muted); transition:transform .2s; }
+  .pin-body.collapsed { display:none; }
+  .pin-hint { font-size:11px; color:var(--muted); margin-bottom:6px; }
+  .pin-list { display:flex; flex-direction:column; gap:10px; }
+  .pin-item { display:flex; gap:8px; background:var(--list-bg); border-radius:10px; padding:8px; width:100%; position:relative; }
+  .pin-thumb { flex-shrink:0; width:72px; height:72px; border-radius:8px; overflow:hidden; cursor:pointer; border:1px solid var(--border); }
+  .pin-thumb img { width:100%; height:100%; object-fit:cover; }
+  .pin-note { flex:1; min-width:0; display:flex; flex-direction:column; }
+  .pin-note textarea { width:100%; flex:1; border:1px solid var(--border); border-radius:6px; background:var(--input-bg); color:var(--text); padding:6px 8px; font-size:12px; font-family:inherit; resize:vertical; outline:none; min-height:40px; }
+  .pin-note textarea:focus { border-color:var(--accent); }
+  .pin-del { position:absolute; top:4px; right:4px; background:rgba(0,0,0,.55); color:#fff; border:none; border-radius:50%; width:20px; height:20px; font-size:12px; cursor:pointer; display:none; align-items:center; justify-content:center; line-height:1; }
+  .pin-item:hover .pin-del { display:flex; }
+  /* ★ pin 单项折叠 */
+  .pin-item.collapsed { max-width:none; padding:4px 8px; align-items:center; }
+  .pin-item.collapsed .pin-thumb,
+  .pin-item.collapsed .pin-note { display:none; }
+  .pin-item.collapsed .pin-del { top:50%; transform:translateY(-50%); right:4px; }
+  .pin-fold-btn { background:none; border:none; color:var(--muted); cursor:pointer; font-size:11px; padding:2px 4px; flex-shrink:0; border-radius:4px; }
+  .pin-fold-btn:hover { color:var(--accent); }
+  .pin-summary { display:none; font-size:12px; color:var(--fg); cursor:pointer; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pin-item.collapsed .pin-summary { display:block; }
+  .pin-summary-icon { margin-right:4px; }
+  .pin-drop-zone { border:2px dashed var(--border); border-radius:10px; padding:10px; text-align:center; color:var(--muted); font-size:11px; cursor:pointer; transition:border-color .2s, background .2s; min-height:40px; display:flex; align-items:center; justify-content:center; gap:4px; }
+  .pin-drop-zone:hover, .pin-drop-zone.drag-over { border-color:var(--accent); background:rgba(200,102,47,.06); }
+  /* ★ 看板链接区 */
+  .board-links { margin-top:8px; }
+  .board-links-title { font-size:12px; font-weight:600; color:var(--muted); margin-bottom:4px; }
+  .board-link-add { display:flex; gap:6px; margin-bottom:6px; }
+  .board-link-add input { flex:1; border:1px solid var(--border); border-radius:6px; background:var(--input-bg); color:var(--text); padding:4px 8px; font-size:12px; font-family:inherit; outline:none; }
+  .board-link-add input:focus { border-color:var(--accent); }
+  .board-link-add button { flex-shrink:0; }
+  .board-link-list { display:flex; flex-direction:column; gap:4px; }
+  .board-link-item { display:flex; align-items:flex-start; gap:6px; padding:4px 8px; background:var(--list-bg); border-radius:8px; font-size:12px; position:relative; }
+  .board-link-item:hover { background:var(--border); }
+  .board-link-item a { color:var(--accent); text-decoration:none; word-break:break-all; flex:1; min-width:0; }
+  .board-link-item a:hover { text-decoration:underline; }
+  .board-link-item a.link-label { color:var(--fg); font-weight:500; }
+  .board-link-del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:13px; padding:0 4px; flex-shrink:0; border-radius:4px; }
+  .board-link-del:hover { color:#d0453a; }
+  /* ★ 星标提醒 */
+  .star-reminder { position:relative; }
+  .star-reminder-btn { position:relative; color:#e53e3e; }
+  .star-badge {
+    position:absolute; top:-4px; right:-6px; background:#e53e3e; color:#fff;
+    font-size:10px; font-weight:700; min-width:16px; height:16px; line-height:16px;
+    border-radius:8px; text-align:center; padding:0 4px; pointer-events:none;
+  }
+  .star-panel {
+    display:none; position:absolute; top:100%; right:0; z-index:200;
+    background:var(--card-bg); border:1px solid var(--border); border-radius:12px;
+    box-shadow:0 8px 32px rgba(0,0,0,.18); min-width:300px; max-width:420px;
+    max-height:70vh; overflow-y:auto; margin-top:6px;
+  }
+  .star-panel.show { display:block; }
+  .star-panel-title { font-size:13px; font-weight:700; padding:12px 14px 8px; color:var(--fg); border-bottom:1px solid var(--border); }
+  .star-panel-empty { font-size:12px; color:var(--muted); padding:16px; text-align:center; font-style:italic; }
+  .star-panel-group { padding:4px 0; }
+  .star-panel-board { font-size:11px; font-weight:600; color:var(--muted); padding:6px 14px 2px; }
+  .star-panel-item {
+    display:flex; align-items:center; gap:8px; padding:6px 14px; cursor:pointer;
+    font-size:13px; color:var(--fg); transition:background .12s;
+  }
+  .star-panel-item:hover { background:var(--list-bg); }
+  .star-panel-item .spi-star { color:#e53e3e; flex-shrink:0; }
+  .star-panel-item .spi-title { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .star-panel-item .spi-path { font-size:10px; color:var(--muted); flex-shrink:0; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  /* ⏰ 到期提醒 */
+  .due-reminder { position:relative; }
+  .due-reminder-btn { position:relative; color:#e8a33d; }
+  .due-badge {
+    position:absolute; top:-4px; right:-6px; background:#e8a33d; color:#fff;
+    font-size:10px; font-weight:700; min-width:16px; height:16px; line-height:16px;
+    border-radius:8px; text-align:center; padding:0 4px; pointer-events:none;
+  }
+  .due-panel {
+    display:none; position:absolute; top:100%; right:0; z-index:200;
+    background:var(--card-bg); border:1px solid var(--border); border-radius:12px;
+    box-shadow:0 8px 32px rgba(0,0,0,.18); min-width:300px; max-width:420px;
+    max-height:70vh; overflow-y:auto; margin-top:6px;
+  }
+  .due-panel.show { display:block; }
+  .due-panel-title { font-size:13px; font-weight:700; padding:12px 14px 8px; color:var(--fg); border-bottom:1px solid var(--border); }
+  .due-panel-empty { font-size:12px; color:var(--muted); padding:16px; text-align:center; font-style:italic; }
+  .due-panel-group { padding:4px 0; border-bottom:1px solid var(--border); }
+  .due-panel-group:last-child { border-bottom:none; }
+  .due-panel-group-title { font-size:11px; font-weight:600; color:var(--muted); padding:6px 14px 2px; }
+  .due-panel-item {
+    display:flex; align-items:center; gap:8px; padding:6px 14px; cursor:pointer;
+    font-size:13px; color:var(--fg); transition:background .12s;
+  }
+  .due-panel-item:hover { background:var(--list-bg); }
+  .due-panel-item .dpi-icon { flex-shrink:0; }
+  .due-panel-item .dpi-title { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .due-panel-item .dpi-date { font-size:10px; flex-shrink:0; font-weight:600; }
+  .due-panel-item .dpi-date.overdue { color:#d0453a; }
+  .due-panel-item .dpi-date.today { color:#e53e3e; }
+  .due-panel-item .dpi-date.soon { color:#e8a33d; }
+  .due-panel-item .dpi-board { font-size:10px; color:var(--muted); flex-shrink:0; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -435,22 +622,64 @@
   <button class="btn primary small" id="addListBtn">＋ 列表</button>
   <button class="btn small" id="exportBtn">导出Excel</button>
   <button class="btn small" id="backupBtn">📥 备份</button>
+  <button class="btn small" id="snapshotBtn" title="导出当前看板为可离线查看的网页快照">📸 快照</button>
   <button class="btn small" id="importBtn">📤 导入</button>
   <input type="file" id="importFileInput" accept=".json" style="display:none;">
-  <button class="btn icon" id="syncBtn" title="GitHub 同步">☁️</button>
   <button class="btn small" id="themeToggle" title="切换深色/浅色">🌙</button>
+  <div class="due-reminder" id="dueReminder">
+    <button class="btn small due-reminder-btn" id="dueReminderBtn" title="到期提醒（7天内）">⏰<span class="due-badge" id="dueBadge" style="display:none;">0</span></button>
+    <div class="due-panel" id="duePanel"></div>
+  </div>
+  <div class="star-reminder" id="starReminder">
+    <button class="btn small star-reminder-btn" id="starReminderBtn" title="星标提醒">★<span class="star-badge" id="starBadge" style="display:none;">0</span></button>
+    <div class="star-panel" id="starPanel"></div>
+  </div>
   <button class="btn danger small" id="resetBtn">重置</button>
 </header>
 
 <div id="breadcrumb"></div>
+
+<div id="pinboard">
+  <div class="pin-header" id="pinHeader">
+    <span class="pin-toggle" id="pinToggleLabel">📋 剪贴板</span>
+    <span class="pin-collapse" id="pinCollapseBtn">▼</span>
+  </div>
+  <div class="pin-body" id="pinBody">
+    <div class="pin-hint">Ctrl+V 粘贴图片 · 拖入图片文件 · 点击下方区域选择图片</div>
+    <div class="pin-list" id="pinList"></div>
+    <div class="pin-drop-zone" id="pinDropZone">
+      📷 拖入或点击添加图片
+      <input type="file" id="pinFileInput" accept="image/*" multiple style="display:none;">
+    </div>
+    <div class="board-links">
+      <div class="board-links-title">🔗 链接</div>
+      <div class="board-link-add">
+        <input type="text" id="linkTitleInput" placeholder="名称（可选）" style="max-width:120px;">
+        <input type="text" id="linkUrlInput" placeholder="粘贴链接地址…">
+        <button class="btn small primary" id="addLinkBtn">＋</button>
+      </div>
+      <div class="board-link-list" id="boardLinkList"></div>
+    </div>
+  </div>
+</div>
+
 <main id="board"></main>
 
 <!-- 卡片编辑弹窗 -->
 <div class="overlay" id="overlay">
   <div class="modal">
-    <input id="mTitle" class="m-title" placeholder="卡片标题">
+    <div style="display:flex;align-items:flex-start;gap:6px;">
+      <textarea id="mTitle" class="m-title" placeholder="卡片标题（Ctrl+Enter 换行）" rows="1" style="flex:1;"></textarea>
+      <button type="button" class="star-btn" id="mStarBtn" title="标记星标（紧急/重要）" style="font-size:22px;padding:2px 6px;">★</button>
+    </div>
     <textarea id="mDesc" placeholder="添加更详细的描述…"></textarea>
     
+    <div class="field">
+      <label>笔记（多个文本块，各自可带附件）</label>
+      <div class="notes-section" id="notesContainer"></div>
+      <button type="button" class="btn small" id="addNoteBtn">＋ 新建笔记块</button>
+    </div>
+
     <div class="field">
       <label>待办清单（子任务）</label>
       <div class="checklist-container" id="checklistContainer"></div>
@@ -461,11 +690,11 @@
       <label>附件（本地文件 ≤ 500KB 或 OneDrive 等外链）</label>
       <div class="attachment-actions">
         <button type="button" class="btn small" id="addAttachmentBtn">📎 上传本地文件</button>
-        <button type="button" class="btn small" id="addLinkBtn">🔗 添加外部链接</button>
+        <button type="button" class="btn small" id="addExtLinkBtn">🔗 添加外部链接</button>
       </div>
       <div class="attachments-container" id="attachmentsContainer"></div>
       <div class="attachment-hint">
-        📌 本地文件会随 JSON 备份和 GitHub 同步一起保存（≤500KB/个）。
+        📌 本地文件会随 JSON 备份一起保存（≤500KB/个）。
       </div>
       <input type="file" id="attachmentFileInput" multiple style="display:none;">
     </div>
@@ -587,91 +816,35 @@
   </div>
 </div>
 
-<!-- GitHub 同步弹窗 -->
-<div class="overlay" id="syncOverlay">
-  <div class="modal" style="max-width:480px;">
-    <div class="m-title">☁️ GitHub 同步</div>
-    <div class="sync-status" id="syncStatusBox">检查配置...</div>
-
-    <div class="field">
-      <label>GitHub Token（只存在本机）</label>
-      <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxx 或 github_pat_xxx">
-      <div class="help-text">
-        去 <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a>
-        生成 Classic token，只需勾选 <code>gist</code> 权限。
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Gist ID</label>
-      <input type="text" id="ghGistInput" placeholder="例如 a1b2c3d4e5f6...">
-      <div class="help-text">
-        去 <a href="https://gist.github.com" target="_blank">gist.github.com</a> 创建 Secret Gist，
-        文件名填 <code>kanban.json</code>，内容填 <code>{}</code>。地址栏最后一段就是 Gist ID。
-      </div>
-    </div>
-
-    <div class="checkbox-row">
-      <input type="checkbox" id="autoSyncCheck">
-      <label for="autoSyncCheck">自动同步（修改后 3 秒上传）</label>
-    </div>
-
-    <div class="modal-actions" style="margin-top:10px;">
-      <button class="btn" id="testConnBtn">🔌 测试</button>
-      <button class="btn" id="syncPullBtn">⬇️ 拉取</button>
-      <button class="btn primary" id="syncPushBtn">⬆️ 推送</button>
-    </div>
-    <div class="modal-actions" style="margin-top:8px;">
-      <button class="btn" id="syncSaveConfigBtn" style="flex:1;">💾 保存配置</button>
-      <button class="btn" id="syncCloseBtn" style="flex:1;">关闭</button>
-    </div>
-  </div>
-</div>
-
 <div id="loadingOverlay"><div class="spinner"></div><span id="loadingText">处理中...</span></div>
+
+<!-- ★ 子卡片悬停预览 tooltip -->
+<div id="subCardTooltip"></div>
 
 <script>
 /* =========================================================
-   IndexedDB
+   持久存储 — localStorage（file:// 下 IndexedDB 不可靠）
    ========================================================= */
-const DB_NAME = 'kanban_db_v2';
-const DB_VERSION = 1;
-const STATE_STORE = 'state';
-const STATE_KEY = 'main';
+const LS_KEY = 'chestnut-kanban-state';
 const MAX_FILE_SIZE = 500 * 1024;
 
-let stateDB = null;
-function openStateDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = (e) => {
-      const d = e.target.result;
-      if (!d.objectStoreNames.contains(STATE_STORE)) d.createObjectStore(STATE_STORE);
-    };
-    req.onsuccess = (e) => { stateDB = e.target.result; resolve(); };
-    req.onerror = reject;
-  });
-}
+/* 兼容层：保持原有 API 签名，内部全部用 localStorage */
+async function openStateDB() { /* no-op，localStorage 无需打开 */ }
 function loadStateFromDB() {
-  return new Promise((resolve, reject) => {
-    const req = stateDB.transaction(STATE_STORE, 'readonly').objectStore(STATE_STORE).get(STATE_KEY);
-    req.onsuccess = () => resolve(req.result || null);
-    req.onerror = reject;
-  });
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return Promise.resolve(raw ? JSON.parse(raw) : null);
+  } catch(e) { return Promise.resolve(null); }
 }
 function saveStateToDB(data) {
-  return new Promise((resolve, reject) => {
-    const tx = stateDB.transaction(STATE_STORE, 'readwrite');
-    tx.objectStore(STATE_STORE).put(data, STATE_KEY);
-    tx.oncomplete = resolve; tx.onerror = reject;
-  });
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+  } catch(e) { console.error('localStorage save failed', e); }
+  return Promise.resolve();
 }
 function clearStateDB() {
-  return new Promise((resolve, reject) => {
-    const tx = stateDB.transaction(STATE_STORE, 'readwrite');
-    tx.objectStore(STATE_STORE).clear();
-    tx.oncomplete = resolve; tx.onerror = reject;
-  });
+  localStorage.removeItem(LS_KEY);
+  return Promise.resolve();
 }
 
 /* =========================================================
@@ -736,6 +909,7 @@ function regenerateIds(item) {
   item.id = uid();
   if (item.checklist) item.checklist.forEach(c => c.id = uid());
   if (item.attachments) item.attachments.forEach(a => a.id = uid());
+  if (item.notes) item.notes.forEach(n => { n.id = uid(); if (n.attachments) n.attachments.forEach(a => a.id = uid()); });
   if (item.subBoard && item.subBoard.lists) {
     item.subBoard.lists.forEach(list => {
       list.id = uid();
@@ -759,7 +933,7 @@ function defaultData() {
     id: uid(), name: '我的看板',
     lists: [
       { id: uid(), title: '待办', cards: [
-        { id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片可以编辑详情。', tags: ['入门'], priority: 'high', due: '', checklist: [], attachments: [], subBoard: null, isExpanded: false }
+        { id: uid(), title: '欢迎使用栗子看板 🌰', desc: '点击卡片可以编辑详情。', tags: ['入门'], priority: 'high', due: '', checklist: [], attachments: [], notes: [], subBoard: null, isExpanded: false }
       ] },
       { id: uid(), title: '进行中', cards: [] },
       { id: uid(), title: '已完成', cards: [] }
@@ -774,6 +948,7 @@ let editing = null;
 let renamingListId = null;
 let editingChecklist = [];
 let editingAttachments = [];
+let editingNotes = [];
 let currentPreviewURL = null;
 let previewingCardId = null;
 let templateTargetListId = null;  // 从哪个列表打开的模板选择
@@ -789,135 +964,6 @@ function syncBoardStack() {
 }
 async function saveState() {
   try { await saveStateToDB(state); } catch (e) { console.error(e); }
-  if (autoSyncEnabled) schedulePush();
-}
-
-/* =========================================================
-   GitHub 同步
-   ========================================================= */
-const GH_TOKEN_KEY = 'chestnut-kanban-gh-token';
-const GH_GIST_KEY = 'chestnut-kanban-gh-gist';
-const AUTO_SYNC_KEY = 'chestnut-kanban-auto-sync';
-const MAX_SYNC_SIZE = 900 * 1024;
-
-let ghToken = localStorage.getItem(GH_TOKEN_KEY) || '';
-let ghGistId = localStorage.getItem(GH_GIST_KEY) || '';
-let autoSyncEnabled = localStorage.getItem(AUTO_SYNC_KEY) === '1';
-let _isPushing = false;
-let _pushTimer = null;
-let _lastSyncTime = null;
-
-function setSyncStatus(msg, type) {
-  const box = document.getElementById('syncStatusBox');
-  if (!box) return;
-  box.textContent = msg;
-  box.className = 'sync-status ' + (type || '');
-}
-function schedulePush() {
-  if (_pushTimer) clearTimeout(_pushTimer);
-  _pushTimer = setTimeout(() => pushToCloud({ silent: true }), 3000);
-}
-async function ghFetchGist() {
-  const res = await fetch(`https://api.github.com/gists/${ghGistId}`, {
-    headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github+json' }
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0, 150)}`);
-  return res.json();
-}
-async function ghUpdateGist(content) {
-  const res = await fetch(`https://api.github.com/gists/${ghGistId}`, {
-    method: 'PATCH',
-    headers: {
-      'Authorization': `token ${ghToken}`,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ files: { 'kanban.json': { content } } })
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0, 150)}`);
-  return res.json();
-}
-async function testConnection() {
-  if (!ghToken || !ghGistId) { setSyncStatus('❌ 请先填写 Token 和 Gist ID', 'err'); return false; }
-  try {
-    setSyncStatus('🔌 正在测试连接...', 'info');
-    const gist = await ghFetchGist();
-    const file = gist.files && gist.files['kanban.json'];
-    if (!file) { setSyncStatus('⚠️ 连接成功，但 Gist 里没有 kanban.json 文件', 'info'); return false; }
-    setSyncStatus(`✅ 连接成功！\n文件大小：${file.size} 字节\n最后更新：${new Date(gist.updated_at).toLocaleString()}`, 'ok');
-    return true;
-  } catch (e) {
-    setSyncStatus('❌ 连接失败：' + e.message, 'err');
-    return false;
-  }
-}
-async function pushToCloud(opts = {}) {
-  if (!ghToken || !ghGistId) {
-    if (!opts.silent) setSyncStatus('❌ 请先填写 Token 和 Gist ID', 'err');
-    return;
-  }
-  try {
-    _isPushing = true;
-    setSyncStatus('⏫ 上传中...', 'info');
-    const content = JSON.stringify(state);
-    const sizeKB = (new Blob([content]).size / 1024).toFixed(1);
-    if (new Blob([content]).size > MAX_SYNC_SIZE) {
-      setSyncStatus(`❌ 数据太大（${sizeKB} KB），超过 900KB 限制。`, 'err');
-      if (!opts.silent) alert('数据过大，无法上传。');
-      _isPushing = false;
-      return;
-    }
-    await ghUpdateGist(content);
-    _lastSyncTime = new Date();
-    setSyncStatus(`✅ 已上传（${sizeKB} KB，${_lastSyncTime.toLocaleTimeString()}）`, 'ok');
-  } catch (e) {
-    console.error(e);
-    setSyncStatus('❌ 上传失败：' + e.message, 'err');
-    if (!opts.silent) alert('上传失败：' + e.message);
-  } finally {
-    setTimeout(() => { _isPushing = false; }, 500);
-  }
-}
-async function pullFromCloud(opts = {}) {
-  if (!ghToken || !ghGistId) {
-    if (!opts.silent) setSyncStatus('❌ 请先填写 Token 和 Gist ID', 'err');
-    return;
-  }
-  try {
-    setSyncStatus('⏬ 拉取中...', 'info');
-    const gist = await ghFetchGist();
-    const file = gist.files && gist.files['kanban.json'];
-    if (!file) { setSyncStatus('⚠️ Gist 里没有 kanban.json', 'err'); return; }
-    const raw = file.content || '';
-    if (!raw.trim() || raw.trim() === '{}') {
-      setSyncStatus('ℹ️ 云端为空，请先点「推送」上传。', 'info');
-      return;
-    }
-    const cloudData = JSON.parse(raw);
-    if (!cloudData.boards || !Array.isArray(cloudData.boards)) throw new Error('云端数据格式不对');
-    _isPushing = true;
-    state = cloudData;
-    if (!state.templates) state.templates = [];
-    if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
-      state.currentBoardId = state.boards[0].id;
-    }
-    state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
-      if (!c.checklist) c.checklist = [];
-      if (!c.attachments) c.attachments = [];
-      c.attachments.forEach(a => { if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file'; });
-    })));
-    await saveStateToDB(state);
-    syncBoardStack();
-    renderBoardSelect();
-    render();
-    setTimeout(() => { _isPushing = false; }, 500);
-    _lastSyncTime = new Date();
-    setSyncStatus(`✅ 已拉取（${_lastSyncTime.toLocaleTimeString()}）`, 'ok');
-  } catch (e) {
-    console.error(e);
-    setSyncStatus('❌ 拉取失败：' + e.message, 'err');
-    if (!opts.silent) alert('拉取失败：' + e.message);
-  }
 }
 
 /* =========================================================
@@ -949,6 +995,8 @@ const mPriority = document.getElementById('mPriority');
 const mDue = document.getElementById('mDue');
 const mList = document.getElementById('mList');
 const mEnterSubBoard = document.getElementById('mEnterSubBoard');
+const mStarBtn = document.getElementById('mStarBtn');
+let editingStarred = false;
 const checklistContainer = document.getElementById('checklistContainer');
 const attachmentsContainer = document.getElementById('attachmentsContainer');
 const attachmentFileInput = document.getElementById('attachmentFileInput');
@@ -1017,14 +1065,40 @@ function render() {
     cb.lists.push({ id: uid(), title: title.trim() || '新列表', cards: [] });
     render(); saveState();
   };
+  renderPinboard();
+  renderLinks();
+  updateStarBadge();
+  updateDueBadge();
+  requestAnimationFrame(alignCardRows);
 }
 
-function renderList(list) {
+/* 逐行对齐所有列中同一位置的卡片高度 */
+function alignCardRows() {
+  const lists = board.querySelectorAll('.list > .cards');
+  if (!lists.length) return;
+  /* 收集每列的卡片数组 */
+  const cols = Array.from(lists).map(c => Array.from(c.querySelectorAll(':scope > .card')));
+  const maxRow = Math.max(...cols.map(c => c.length));
+  /* 先清除之前设置的固定高度 */
+  cols.forEach(col => col.forEach(card => card.style.height = ''));
+  /* 逐行计算最大高度并统一 */
+  for (let r = 0; r < maxRow; r++) {
+    let maxH = 0;
+    cols.forEach(col => { if (col[r]) maxH = Math.max(maxH, col[r].offsetHeight); });
+    cols.forEach(col => { if (col[r]) col[r].style.height = maxH + 'px'; });
+  }
+}
+
+function renderList(list, idx, arr) {
+  const isFirst = idx === 0;
+  const isLast  = idx === arr.length - 1;
   return `
     <div class="list" data-id="${list.id}">
       <div class="list-header">
+        <button class="list-move-btn${isFirst ? ' disabled' : ''}" data-act="move-list-left" data-list-id="${list.id}" title="左移">◀</button>
         <span class="list-title" data-act="rename-list" data-list-id="${list.id}">${esc(list.title)}</span>
         <span class="list-count">${list.cards.length}</span>
+        <button class="list-move-btn${isLast ? ' disabled' : ''}" data-act="move-list-right" data-list-id="${list.id}" title="右移">▶</button>
         <button class="icon-btn" data-act="del-list" data-list-id="${list.id}">✕</button>
       </div>
       <div class="cards" data-list="${list.id}">
@@ -1062,8 +1136,15 @@ function renderCard(card) {
     ai = `<span class="indicator">${parts.join(' ')}</span>`;
   }
   
+  let ni = '';
+  const cardNotes = card.notes || [];
+  if (cardNotes.length > 0) {
+    const totalNoteAtts = cardNotes.reduce((s, n) => s + (n.attachments || []).length, 0);
+    ni = `<span class="indicator">📝 ${cardNotes.length}${totalNoteAtts ? ` (📎${totalNoteAtts})` : ''}</span>`;
+  }
+
   const meta = (due || pri) ? `<div class="card-meta">${due}${pri}</div>` : '';
-  const inds = (ci || ai) ? `<div class="card-indicators">${ci}${ai}</div>` : '';
+  const inds = (ci || ai || ni) ? `<div class="card-indicators">${ci}${ai}${ni}</div>` : '';
   const pClass = card.priority && card.priority !== 'none' ? ` p-${card.priority}` : '';
   
   let sbHtml = '';
@@ -1075,10 +1156,12 @@ function renderCard(card) {
       if (total === 0) content = '<div class="empty-sub">子看板为空</div>';
       else card.subBoard.lists.forEach(l => {
         content += `<div class="sub-list-title">📁 ${esc(l.title)} (${l.cards.length})</div>`;
-        // ★ 修改：子卡片增加删除按钮
+        // ★ 修改：子卡片增加星标+删除按钮
         l.cards.forEach(c => {
+          const starred = c.starred ? ' starred' : '';
           content += `<div class="sub-card-item" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}">
-            <span class="sub-card-title">${esc(c.title)}</span>
+            <button class="star-btn${starred}" data-act="toggle-star" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}" title="标记星标">★</button>
+            <span class="sub-card-title">${esc(c.title).replace(/\n/g,'<br>')}</span>
             <button class="del-sub-card-btn" data-act="del-sub-card" data-sub-card-id="${c.id}" data-sub-list-id="${l.id}" data-parent-card-id="${card.id}" title="删除子卡片">✕</button>
           </div>`;
         });
@@ -1097,7 +1180,7 @@ function renderCard(card) {
     <div class="card${pClass}" data-id="${card.id}">
       <div class="card-main">
         ${tags}
-        <div class="card-title">${esc(card.title)}</div>
+        <div class="card-title">${card.starred ? '<span class="card-star">★</span>' : ''}${esc(card.title).replace(/\n/g,'<br>')}</div>
         ${meta}
         ${inds}
       </div>
@@ -1128,6 +1211,15 @@ function enterSubBoard(card) {
   }
   boardStack.push({ lists: card.subBoard.lists, title: card.title });
   closeModal(); render();
+}
+function moveList(listId, dir) {
+  const cb = boardStack[boardStack.length - 1];
+  const i = cb.lists.findIndex(l => l.id === listId);
+  if (i < 0) return;
+  const t = i + dir;
+  if (t < 0 || t >= cb.lists.length) return;
+  [cb.lists[i], cb.lists[t]] = [cb.lists[t], cb.lists[i]];
+  render(); saveState();
 }
 function moveCardPriority(cardId, dir) {
   const cb = boardStack[boardStack.length - 1];
@@ -1263,10 +1355,11 @@ document.getElementById('mSaveAsTemplate').onclick = async () => {
   card.tags = mTags.value.split(/[,，]/).map(s => s.trim()).filter(Boolean);
   card.priority = mPriority.value;
   card.due = mDue.value;
+  card.starred = editingStarred;
   card.checklist = editingChecklist.filter(c => c.text.trim()).map(c => ({ id: c.id || uid(), text: c.text.trim(), done: !!c.done }));
   card.attachments = editingAttachments.map(a => {
-    if (a.kind === 'link') return { id: a.id, kind: 'link', name: a.name, size: 0, type: 'link', url: a.url };
-    return { id: a.id, kind: 'file', name: a.name, size: a.size || 0, type: a.type || '', data: a.data || '' };
+    if (a.kind === 'link') return { id: a.id, kind: 'link', name: a.name, size: 0, type: 'link', url: a.url, note: a.note || '' };
+    return { id: a.id, kind: 'file', name: a.name, size: a.size || 0, type: a.type || '', data: a.data || '', note: a.note || '' };
   });
   
   const tplName = prompt('模板名称', card.title);
@@ -1298,6 +1391,122 @@ function findCardById(cardId) {
   }
   return null;
 }
+
+/* =========================================================
+   ★ 子卡片悬停预览 tooltip
+   ========================================================= */
+const subCardTooltip = document.getElementById('subCardTooltip');
+let _sctTimer = null;
+
+function findSubCardObj(parentCardId, subListId, subCardId) {
+  const pCard = findCardById(parentCardId);
+  if (!pCard || !pCard.subBoard) return null;
+  for (const l of pCard.subBoard.lists) {
+    if (subListId && l.id !== subListId) continue;
+    const c = l.cards.find(x => x.id === subCardId);
+    if (c) return c;
+  }
+  return null;
+}
+
+function buildCardTooltipHtml(card) {
+  if (!card) return '<div class="sct-empty">无内容</div>';
+  let h = '';
+  /* 标签 */
+  if (card.tags && card.tags.length) {
+    h += `<div class="sct-tags">${card.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>`;
+  }
+  /* 元信息 */
+  const mp = [];
+  if (card.priority && card.priority !== 'none') mp.push(PRIORITY[card.priority].label + '优先级');
+  if (card.owner) mp.push('👤 ' + esc(card.owner));
+  if (card.due) mp.push('📅 ' + esc(card.due));
+  if (mp.length) h += `<div class="sct-meta">${mp.join(' · ')}</div>`;
+  /* 描述 */
+  if (card.desc) {
+    const d = card.desc.length > 120 ? card.desc.slice(0, 120) + '…' : card.desc;
+    h += `<div class="sct-desc">${esc(d)}</div>`;
+  }
+  /* 待办清单 */
+  const cl = card.checklist || [];
+  if (cl.length) {
+    const dn = cl.filter(c => c.done).length;
+    h += `<div class="sct-section">☑ 待办 (${dn}/${cl.length})</div>`;
+    cl.slice(0, 5).forEach(c => {
+      h += `<div class="sct-check${c.done ? ' done' : ''}">${c.done ? '✓' : '○'} ${esc(c.text)}</div>`;
+    });
+    if (cl.length > 5) h += `<div class="sct-check" style="color:var(--muted)">… 还有 ${cl.length - 5} 项</div>`;
+  }
+  /* 附件 */
+  const atts = card.attachments || [];
+  if (atts.length) {
+    h += `<div class="sct-section">📎 附件 (${atts.length})</div>`;
+    atts.slice(0, 3).forEach(a => {
+      const icon = a.kind === 'link' ? '🔗' : getFileIcon(a.name, a.type);
+      h += `<div class="sct-att">${icon} ${esc(a.name)}</div>`;
+    });
+    if (atts.length > 3) h += `<div class="sct-att" style="color:var(--muted)">… 还有 ${atts.length - 3} 个</div>`;
+  }
+  /* 笔记 */
+  const notes = card.notes || [];
+  if (notes.length) {
+    h += `<div class="sct-section">📝 笔记 (${notes.length})</div>`;
+    notes.slice(0, 3).forEach(n => {
+      const txt = (n.text || '').slice(0, 50) + ((n.text || '').length > 50 ? '…' : '');
+      h += `<div class="sct-note">📝 ${esc(txt)}</div>`;
+    });
+  }
+  /* 下级子看板 */
+  if (card.subBoard) {
+    const t = card.subBoard.lists.reduce((s, l) => s + l.cards.length, 0);
+    h += `<div class="sct-sub">📁 含子看板（${t} 个卡片）</div>`;
+  }
+  if (!h) h = '<div class="sct-empty">暂无详情</div>';
+  return h;
+}
+
+function showSubCardTooltip(el, card) {
+  const starHtml = card.starred ? '<span class="card-star">★</span>' : '';
+  subCardTooltip.innerHTML = `<div class="sct-title">${starHtml}${esc(card.title).replace(/\n/g,'<br>')}</div>` + buildCardTooltipHtml(card);
+  subCardTooltip.style.display = 'block';
+  /* 定位：紧贴元素右侧，垂直居中 */
+  const rect = el.getBoundingClientRect();
+  const tw = subCardTooltip.offsetWidth;
+  const th = subCardTooltip.offsetHeight;
+  let left = rect.right + 10;
+  let top = rect.top + rect.height / 2 - th / 2;
+  /* 右侧放不下就放左侧 */
+  if (left + tw > window.innerWidth - 8) left = rect.left - tw - 10;
+  /* 上下不超出视口 */
+  if (top < 8) top = 8;
+  if (top + th > window.innerHeight - 8) top = window.innerHeight - th - 8;
+  subCardTooltip.style.left = left + 'px';
+  subCardTooltip.style.top = top + 'px';
+  requestAnimationFrame(() => subCardTooltip.classList.add('show'));
+}
+
+function hideSubCardTooltip() {
+  subCardTooltip.classList.remove('show');
+  subCardTooltip.style.display = 'none';
+}
+
+/* 委托到 #board 上的 mouseenter/mouseleave */
+document.getElementById('board').addEventListener('mouseover', e => {
+  const item = e.target.closest('.sub-card-item');
+  if (!item) return;
+  clearTimeout(_sctTimer);
+  _sctTimer = setTimeout(() => {
+    const card = findSubCardObj(item.dataset.parentCardId, item.dataset.subListId, item.dataset.subCardId);
+    if (card) showSubCardTooltip(item, card);
+  }, 300);       // 300ms 延迟避免快速划过闪烁
+});
+
+document.getElementById('board').addEventListener('mouseout', e => {
+  const item = e.target.closest('.sub-card-item');
+  if (!item) return;
+  clearTimeout(_sctTimer);
+  hideSubCardTooltip();
+});
 
 function openSubPreview(cardId) {
   const card = findCardById(cardId);
@@ -1344,11 +1553,22 @@ function renderSubPreviewContent(lists) {
         
         html += `<div class="sub-preview-card">
           <div class="sub-preview-card-title">`;
+        if (card.starred) html += `<span class="card-star">★</span>`;
         if (pClass) html += `<span class="priority-dot ${pClass}"></span>`;
-        html += `${esc(card.title)}</div>`;
+        html += `${esc(card.title).replace(/\n/g,'<br>')}</div>`;
         if (card.desc) html += `<div class="sub-preview-card-desc">${esc(card.desc)}</div>`;
         if (metaParts.length > 0) html += `<div class="sub-preview-card-meta">${metaParts.join(' · ')}</div>`;
-        
+        /* 笔记摘要 */
+        const cardNotes = card.notes || [];
+        if (cardNotes.length > 0) {
+          html += `<div class="sub-preview-card-notes">`;
+          cardNotes.forEach(n => {
+            const txt = (n.text || '').slice(0, 50) + ((n.text || '').length > 50 ? '…' : '');
+            const nAtts = (n.attachments || []).length;
+            html += `<div class="sub-preview-note">📝 ${esc(txt)}${nAtts ? ` (📎${nAtts})` : ''}</div>`;
+          });
+          html += `</div>`;
+        }
         if (card.subBoard) {
           const nestedTotal = card.subBoard.lists.reduce((s, l) => s + l.cards.length, 0);
           html += `<div class="sub-preview-nested">📁 下级子看板（${nestedTotal} 个卡片）</div>`;
@@ -1401,7 +1621,7 @@ const cardPreviewTitle = document.getElementById('cardPreviewTitle');
 
 function openCardPreview(card) {
   if (!card) return;
-  cardPreviewTitle.textContent = card.title;
+  cardPreviewTitle.innerHTML = (card.starred ? '<span class="card-star">★</span>' : '') + esc(card.title).replace(/\n/g,'<br>');
 
   let html = '';
 
@@ -1447,16 +1667,39 @@ function openCardPreview(card) {
       const isLink = a.kind === 'link';
       const icon = isLink ? '🔗' : getFileIcon(a.name, a.type);
       const sizeText = isLink ? '外部链接' : formatFileSize(a.size);
-      html += `<div class="card-preview-att-item" data-att-index="${i}">
+      const noteHtml = a.note ? `<div class="att-note">📝 ${esc(a.note)}</div>` : '';
+      html += `<div class="card-preview-att-item" data-att-index="${i}" style="${a.note ? 'flex-wrap:wrap' : ''}">
         <div class="att-icon">${icon}</div>
         <div class="att-info">
           <div class="att-name">${esc(a.name)}</div>
           <div class="att-size">${sizeText}</div>
         </div>
         <div class="att-action">${isLink ? '↗' : '👁'}</div>
+        ${noteHtml}
       </div>`;
     });
     html += `</div>`;
+  }
+
+  /* 笔记区块 */
+  const notes = card.notes || [];
+  if (notes.length > 0) {
+    html += `<div class="card-preview-section-title">📝 笔记 (${notes.length})</div>`;
+    notes.forEach((note, ni) => {
+      html += `<div class="card-preview-note">`;
+      if (note.text) html += `<div class="card-preview-note-text">${esc(note.text)}</div>`;
+      (note.attachments || []).forEach((a, ai) => {
+        const isLink = a.kind === 'link';
+        const icon = isLink ? '🔗' : getFileIcon(a.name, a.type);
+        const sizeText = isLink ? '外部链接' : formatFileSize(a.size);
+        html += `<div class="card-preview-note-att" data-note-idx="${ni}" data-note-att-idx="${ai}">
+          <span class="att-icon">${icon}</span>
+          <span class="att-name">${esc(a.name)}</span>
+          <span class="att-size">${sizeText}</span>
+        </div>`;
+      });
+      html += `</div>`;
+    });
   }
 
   if (card.subBoard) {
@@ -1474,6 +1717,15 @@ function openCardPreview(card) {
     el.onclick = () => {
       const idx = parseInt(el.dataset.attIndex);
       previewAttachment(atts[idx]);
+    };
+  });
+
+  /* 笔记附件点击 */
+  cardPreviewBody.querySelectorAll('.card-preview-note-att').forEach(el => {
+    el.onclick = () => {
+      const ni = +el.dataset.noteIdx, ai = +el.dataset.noteAttIdx;
+      const att = notes[ni]?.attachments?.[ai];
+      if (att) previewAttachment(att);
     };
   });
 
@@ -1599,10 +1851,20 @@ function renderAttachmentsUI() {
         ${isLink ? '' : `<button class="download-btn" data-index="${i}">⬇</button>`}
         <button class="remove-btn" data-index="${i}">✕</button>
       </div>
+      <div class="att-note-row">
+        <input type="text" class="att-note-input" data-index="${i}" placeholder="添加注释…" value="${esc(att.note || '')}">
+      </div>
     `;
     attachmentsContainer.appendChild(div);
   });
 }
+/* 附件注释编辑 */
+attachmentsContainer.addEventListener('input', (e) => {
+  const inp = e.target.closest('.att-note-input');
+  if (!inp) return;
+  const idx = +inp.dataset.index;
+  if (editingAttachments[idx]) editingAttachments[idx].note = inp.value;
+});
 attachmentsContainer.addEventListener('click', e => {
   const pv = e.target.closest('.preview-btn');
   const dl = e.target.closest('.download-btn');
@@ -1731,8 +1993,51 @@ attachmentFileInput.addEventListener('change', async e => {
   attachmentFileInput.value = '';
 });
 
+/* ★ 拖拽上传 —— 通用工具函数 */
+async function handleDroppedFiles(files, targetArray, onDone) {
+  const fileList = Array.from(files);
+  if (!fileList.length) return;
+  showLoading('处理附件...');
+  try {
+    for (const f of fileList) {
+      if (f.size > MAX_FILE_SIZE) {
+        alert(`❌ 「${f.name}」大小 ${formatFileSize(f.size)}，超过 500KB 限制，已跳过。\n\n建议：大文件放到 OneDrive，用「🔗 添加外部链接」贴进来。`);
+        continue;
+      }
+      try {
+        const dataURL = await fileToDataURL(f);
+        targetArray.push({
+          id: uid(), kind: 'file', name: f.name, size: f.size,
+          type: f.type || 'application/octet-stream', data: dataURL
+        });
+      } catch (err) { alert(`读取「${f.name}」失败`); }
+    }
+    if (onDone) onDone();
+  } finally { hideLoading(); }
+}
+
+function enableDropZone(el, onDrop) {
+  el.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); el.classList.add('drag-over'); });
+  el.addEventListener('dragleave', e => { e.preventDefault(); e.stopPropagation(); el.classList.remove('drag-over'); });
+  el.addEventListener('drop', async e => {
+    e.preventDefault(); e.stopPropagation(); el.classList.remove('drag-over');
+    const files = e.dataTransfer.files;
+    if (files && files.length) await onDrop(files);
+  });
+}
+
+/* ★ 绑定：主附件区拖拽 */
+enableDropZone(attachmentsContainer.closest('.field'), async files => {
+  await handleDroppedFiles(files, editingAttachments, renderAttachmentsUI);
+});
+
+/* ★ 绑定：整个弹窗作为兜底拖拽区 */
+enableDropZone(document.querySelector('.modal'), async files => {
+  await handleDroppedFiles(files, editingAttachments, renderAttachmentsUI);
+});
+
 const addLinkOverlay = document.getElementById('addLinkOverlay');
-document.getElementById('addLinkBtn').onclick = () => {
+document.getElementById('addExtLinkBtn').onclick = () => {
   document.getElementById('linkName').value = '';
   document.getElementById('linkUrl').value = '';
   addLinkOverlay.classList.add('show');
@@ -1754,6 +2059,151 @@ document.getElementById('linkUrl').addEventListener('keydown', e => {
 });
 
 /* =========================================================
+   笔记区块
+   ========================================================= */
+const notesContainer = document.getElementById('notesContainer');
+
+function renderNotesUI() {
+  notesContainer.innerHTML = '';
+  if (editingNotes.length === 0) {
+    notesContainer.innerHTML = '<div class="attachment-empty">暂无笔记</div>';
+    return;
+  }
+  editingNotes.forEach((note, ni) => {
+    const div = document.createElement('div');
+    div.className = 'note-block';
+    div.dataset.noteIndex = ni;
+
+    let attsHtml = '';
+    (note.attachments || []).forEach((att, ai) => {
+      const isLink = att.kind === 'link';
+      const icon = isLink ? '🔗' : getFileIcon(att.name, att.type);
+      const sizeText = isLink ? '外部链接' : formatFileSize(att.size);
+      attsHtml += `<div class="attachment-item" data-note-idx="${ni}" data-att-idx="${ai}">
+        <div class="file-icon">${icon}</div>
+        <div class="file-info"><div class="file-name">${esc(att.name)}</div><div class="file-size ${isLink?'link-tag':''}">${sizeText}</div></div>
+        <div class="file-actions">
+          <button class="preview-btn note-att-preview" data-ni="${ni}" data-ai="${ai}">👁</button>
+          <button class="remove-btn note-att-remove" data-ni="${ni}" data-ai="${ai}">✕</button>
+        </div>
+      </div>`;
+    });
+
+    div.innerHTML = `
+      <div class="note-block-header">
+        <span class="note-label">📝 笔记 #${ni + 1}</span>
+        <button class="note-remove" data-ni="${ni}" title="删除此笔记块">✕</button>
+      </div>
+      <textarea class="note-text" data-ni="${ni}" placeholder="输入笔记内容…">${esc(note.text || '')}</textarea>
+      <div class="note-atts">${attsHtml || ''}</div>
+      <div class="note-att-actions">
+        <button class="btn small note-add-file" data-ni="${ni}">📎 上传文件</button>
+        <button class="btn small note-add-link" data-ni="${ni}">🔗 添加链接</button>
+      </div>
+    `;
+    notesContainer.appendChild(div);
+  });
+
+  /* ★ 绑定：笔记区块拖拽上传 */
+  notesContainer.querySelectorAll('.note-block').forEach(block => {
+    enableDropZone(block, async files => {
+      const ni = +block.dataset.noteIndex;
+      /* 先保存当前所有笔记文本（renderNotesUI 会重建 DOM） */
+      notesContainer.querySelectorAll('.note-text').forEach(ta => {
+        editingNotes[+ta.dataset.ni].text = ta.value;
+      });
+      await handleDroppedFiles(files, editingNotes[ni].attachments, renderNotesUI);
+    });
+  });
+}
+
+/* 笔记区容器事件代理 */
+notesContainer.addEventListener('input', e => {
+  if (e.target.classList.contains('note-text')) {
+    editingNotes[+e.target.dataset.ni].text = e.target.value;
+  }
+});
+notesContainer.addEventListener('click', e => {
+  /* 删除笔记块 */
+  const rm = e.target.closest('.note-remove');
+  if (rm) {
+    if (confirm('删除这个笔记块？')) {
+      editingNotes.splice(+rm.dataset.ni, 1);
+      renderNotesUI();
+    }
+    return;
+  }
+  /* 预览笔记附件 */
+  const pv = e.target.closest('.note-att-preview');
+  if (pv) {
+    const att = editingNotes[+pv.dataset.ni]?.attachments?.[+pv.dataset.ai];
+    if (att) previewAttachment(att);
+    return;
+  }
+  /* 删除笔记附件 */
+  const ra = e.target.closest('.note-att-remove');
+  if (ra) {
+    const ni = +ra.dataset.ni, ai = +ra.dataset.ai;
+    const att = editingNotes[ni]?.attachments?.[ai];
+    if (att && confirm(`删除「${att.name}」？`)) {
+      editingNotes[ni].attachments.splice(ai, 1);
+      renderNotesUI();
+    }
+    return;
+  }
+  /* 上传笔记附件 */
+  const af = e.target.closest('.note-add-file');
+  if (af) {
+    const ni = +af.dataset.ni;
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.multiple = true;
+    inp.onchange = async () => {
+      const files = Array.from(inp.files || []);
+      if (!files.length) return;
+      showLoading('处理附件...');
+      try {
+        for (const f of files) {
+          if (f.size > MAX_FILE_SIZE) {
+            alert(`❌「${f.name}」超过 500KB 限制，已跳过。`);
+            continue;
+          }
+          try {
+            const dataURL = await fileToDataURL(f);
+            editingNotes[ni].attachments.push({
+              id: uid(), kind: 'file', name: f.name, size: f.size,
+              type: f.type || 'application/octet-stream', data: dataURL
+            });
+          } catch (err) { alert(`读取「${f.name}」失败`); }
+        }
+        renderNotesUI();
+      } finally { hideLoading(); }
+    };
+    inp.click();
+    return;
+  }
+  /* 添加笔记链接 */
+  const al = e.target.closest('.note-add-link');
+  if (al) {
+    const ni = +al.dataset.ni;
+    const name = prompt('链接名称', '外部链接');
+    if (name === null) return;
+    let url = prompt('链接地址 (https://...)');
+    if (!url) return;
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    editingNotes[ni].attachments.push({ id: uid(), kind: 'link', name: name.trim() || '外部链接', size: 0, type: 'link', url });
+    renderNotesUI();
+    return;
+  }
+});
+
+document.getElementById('addNoteBtn').onclick = () => {
+  editingNotes.push({ id: uid(), text: '', attachments: [] });
+  renderNotesUI();
+  const areas = notesContainer.querySelectorAll('.note-text');
+  if (areas.length) areas[areas.length - 1].focus();
+};
+
+/* =========================================================
    卡片详情
    ========================================================= */
 function openCard(cardId) {
@@ -1767,6 +2217,8 @@ function openCard(cardId) {
     mTags.value = (card.tags || []).join(', ');
     mPriority.value = card.priority || 'none';
     mDue.value = card.due || '';
+    editingStarred = !!card.starred;
+    mStarBtn.classList.toggle('starred', editingStarred);
     editingChecklist = (card.checklist || []).map(c => ({ ...c }));
     renderChecklistUI();
     editingAttachments = (card.attachments || []).map(a => {
@@ -1774,13 +2226,19 @@ function openCard(cardId) {
       return { ...a };
     });
     renderAttachmentsUI();
+    editingNotes = (card.notes || []).map(n => ({
+      id: n.id || uid(),
+      text: n.text || '',
+      attachments: (n.attachments || []).map(a => ({ ...a }))
+    }));
+    renderNotesUI();
     mList.innerHTML = cb.lists.map(x =>
       `<option value="${x.id}" ${x.id === l.id ? 'selected' : ''}>${esc(x.title)}</option>`
     ).join('');
     mEnterSubBoard.textContent = card.subBoard ? '进入子看板' : '创建子看板';
     mEnterSubBoard.style.display = 'block';
     overlay.classList.add('show');
-    setTimeout(() => { mTitle.focus(); mTitle.select(); }, 30);
+    setTimeout(() => { autoResizeMTitle(); mTitle.focus(); mTitle.select(); }, 30);
     return;
   }
 }
@@ -1788,7 +2246,25 @@ function closeModal() { overlay.classList.remove('show'); editing = null; }
 document.getElementById('mCancel').onclick = closeModal;
 overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal(); });
-mTitle.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('mSave').click(); });
+mTitle.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.ctrlKey) {
+    /* Ctrl+Enter 插入换行 */
+    e.preventDefault();
+    const s = mTitle.selectionStart, end = mTitle.selectionEnd;
+    mTitle.value = mTitle.value.slice(0, s) + '\n' + mTitle.value.slice(end);
+    mTitle.selectionStart = mTitle.selectionEnd = s + 1;
+    autoResizeMTitle();
+  } else if (e.key === 'Enter' && !e.ctrlKey) {
+    /* 普通 Enter 保存 */
+    e.preventDefault();
+    document.getElementById('mSave').click();
+  }
+});
+mTitle.addEventListener('input', autoResizeMTitle);
+function autoResizeMTitle() {
+  mTitle.style.height = 'auto';
+  mTitle.style.height = mTitle.scrollHeight + 'px';
+}
 
 document.getElementById('mSave').onclick = async () => {
   if (!editing) return;
@@ -1801,11 +2277,20 @@ document.getElementById('mSave').onclick = async () => {
   card.tags = mTags.value.split(/[,，]/).map(s => s.trim()).filter(Boolean);
   card.priority = mPriority.value;
   card.due = mDue.value;
+  card.starred = editingStarred;
   card.checklist = editingChecklist.filter(c => c.text.trim()).map(c => ({ id: c.id || uid(), text: c.text.trim(), done: !!c.done }));
   card.attachments = editingAttachments.map(a => {
-    if (a.kind === 'link') return { id: a.id, kind: 'link', name: a.name, size: 0, type: 'link', url: a.url };
-    return { id: a.id, kind: 'file', name: a.name, size: a.size || 0, type: a.type || '', data: a.data || '' };
+    if (a.kind === 'link') return { id: a.id, kind: 'link', name: a.name, size: 0, type: 'link', url: a.url, note: a.note || '' };
+    return { id: a.id, kind: 'file', name: a.name, size: a.size || 0, type: a.type || '', data: a.data || '', note: a.note || '' };
   });
+  card.notes = editingNotes.filter(n => n.text.trim() || (n.attachments && n.attachments.length)).map(n => ({
+    id: n.id || uid(),
+    text: n.text.trim(),
+    attachments: (n.attachments || []).map(a => {
+      if (a.kind === 'link') return { id: a.id, kind: 'link', name: a.name, size: 0, type: 'link', url: a.url };
+      return { id: a.id, kind: 'file', name: a.name, size: a.size || 0, type: a.type || '', data: a.data || '' };
+    })
+  }));
   const newListId = mList.value;
   if (newListId !== editing.listId) {
     const oldL = cb.lists.find(x => x.id === editing.listId);
@@ -1816,8 +2301,14 @@ document.getElementById('mSave').onclick = async () => {
   }
   closeModal(); render();
   showLoading('保存中...');
-  try { await saveStateToDB(state); if (autoSyncEnabled) schedulePush(); }
+  try { await saveStateToDB(state); }
   finally { hideLoading(); }
+};
+
+/* ★ 星标切换 */
+mStarBtn.onclick = () => {
+  editingStarred = !editingStarred;
+  mStarBtn.classList.toggle('starred', editingStarred);
 };
 
 document.getElementById('mEnterSubBoard').onclick = () => {
@@ -1839,7 +2330,11 @@ document.getElementById('mDelete').onclick = async () => {
 /* =========================================================
    看板点击
    ========================================================= */
-board.addEventListener('click', e => {
+board.addEventListener('click', async e => {
+  const ml = e.target.closest('[data-act="move-list-left"]');
+  if (ml) { e.stopPropagation(); moveList(ml.dataset.listId, -1); return; }
+  const mr = e.target.closest('[data-act="move-list-right"]');
+  if (mr) { e.stopPropagation(); moveList(mr.dataset.listId, 1); return; }
   const up = e.target.closest('[data-act="move-up"]');
   if (up) { e.stopPropagation(); moveCardPriority(up.dataset.cardId, -1); return; }
   const dn = e.target.closest('[data-act="move-down"]');
@@ -1862,6 +2357,18 @@ board.addEventListener('click', e => {
       if (c) { c.isExpanded = !c.isExpanded; break; }
     }
     render(); saveState(); return;
+  }
+
+  // ★ 子卡片星标切换
+  const starBtn = e.target.closest('[data-act="toggle-star"]');
+  if (starBtn) {
+    e.stopPropagation();
+    const card = findSubCardObj(starBtn.dataset.parentCardId, starBtn.dataset.subListId, starBtn.dataset.subCardId);
+    if (card) {
+      card.starred = !card.starred;
+      render(); saveState();
+    }
+    return;
   }
 
   // ★ 删除子卡片 (必须放在进入子看板逻辑之前，且阻止事件冒泡)
@@ -1917,12 +2424,12 @@ board.addEventListener('click', e => {
     if (act === 'add-card') { startAddCard(ae.closest('.list'), listId); return; }
     if (act === 'del-list') {
       const cb = boardStack[boardStack.length - 1];
-      const l = cb.lists.find(x => x.id === listId);
-      if (!l) return;
+      const idx = cb.lists.findIndex(x => x.id === listId);
+      if (idx < 0) return;
       if (cb.lists.length <= 1) { alert('至少保留一个列表'); return; }
-      if (confirm(`确定删除列表「${l.title}」？`)) {
-        cb.lists = cb.lists.filter(x => x.id !== listId);
-        render(); saveState();
+      if (confirm(`确定删除列表「${cb.lists[idx].title}」？`)) {
+        cb.lists.splice(idx, 1);
+        render(); await saveState();
       }
       return;
     }
@@ -1957,7 +2464,7 @@ function startAddCard(listEl, listId) {
     const cb = boardStack[boardStack.length - 1];
     const l = cb.lists.find(x => x.id === listId);
     if (!l) return;
-    l.cards.push({ id: uid(), title: v, desc: '', tags: [], priority: 'none', due: '', checklist: [], attachments: [], subBoard: null, isExpanded: false });
+    l.cards.push({ id: uid(), title: v, desc: '', tags: [], priority: 'none', due: '', checklist: [], attachments: [], notes: [], subBoard: null, isExpanded: false });
     render(); saveState();
   };
   ta.addEventListener('keydown', ev => {
@@ -2000,14 +2507,15 @@ document.getElementById('resetBtn').onclick = async () => {
 document.getElementById('exportBtn').onclick = () => {
   const cb = boardStack[boardStack.length - 1];
   const bn = boardStack[0].title;
-  let csv = `\uFEFF看板: ${bn}\n列表,标题,描述,标签,优先级,截止日期,待办清单,本地附件,外部链接\n`;
+  let csv = `\uFEFF看板: ${bn}\n列表,标题,描述,标签,优先级,截止日期,待办清单,本地附件,外部链接,笔记\n`;
   cb.lists.forEach(l => l.cards.forEach(c => {
     const tags = (c.tags||[]).join(' ');
     const cl = (c.checklist||[]).map(x => `${x.done?'[x]':'[ ]'}${x.text}`).join('; ');
     const fl = (c.attachments||[]).filter(a => a.kind === 'file').map(a => `${a.name}(${formatFileSize(a.size)})`).join('; ');
     const lk = (c.attachments||[]).filter(a => a.kind === 'link').map(a => `${a.name}: ${a.url}`).join('; ');
+    const nt = (c.notes||[]).map((n,i) => `[笔记${i+1}]${n.text||''}${(n.attachments||[]).length ? ' (附件:' + n.attachments.map(a=>a.name).join(',') + ')' : ''}`).join('; ');
     const clean = s => String(s||'').replace(/"/g,'""').replace(/\n/g,' ');
-    csv += [`"${clean(l.title)}"`,`"${clean(c.title)}"`,`"${clean(c.desc)}"`,`"${clean(tags)}"`,`"${c.priority||'none'}"`,`"${c.due||''}"`,`"${clean(cl)}"`,`"${clean(fl)}"`,`"${clean(lk)}"`].join(',') + '\n';
+    csv += [`"${clean(l.title)}"`,`"${clean(c.title)}"`,`"${clean(c.desc)}"`,`"${clean(tags)}"`,`"${c.priority||'none'}"`,`"${c.due||''}"`,`"${clean(cl)}"`,`"${clean(fl)}"`,`"${clean(lk)}"`,`"${clean(nt)}"`].join(',') + '\n';
   }));
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const a = document.createElement('a');
@@ -2018,12 +2526,17 @@ document.getElementById('exportBtn').onclick = () => {
 };
 
 document.getElementById('backupBtn').onclick = async () => {
-  let cnt = 0;
-  state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
-    cnt += (c.attachments||[]).filter(a => a.kind === 'file').length;
-  })));
+  let cnt = 0, noteCnt = 0, noteAttCnt = 0, pinCnt = 0, linkCnt = 0;
+  state.boards.forEach(b => {
+    pinCnt += (b.pins||[]).length;
+    linkCnt += (b.links||[]).length;
+    b.lists.forEach(l => l.cards.forEach(c => {
+      cnt += (c.attachments||[]).filter(a => a.kind === 'file').length;
+      (c.notes||[]).forEach(n => { noteCnt++; noteAttCnt += (n.attachments||[]).filter(a => a.kind === 'file').length; });
+    }));
+  });
   const tplCnt = (state.templates || []).length;
-  const msg = `📥 备份将导出：\n· 所有看板卡片\n· ${cnt} 个本地附件（Base64 内嵌）\n· ${tplCnt} 个模板\n\n继续吗？`;
+  const msg = `📥 备份将导出：\n· 所有看板卡片\n· ${cnt} 个本地附件（Base64 内嵌）\n· ${noteCnt} 个笔记块（含 ${noteAttCnt} 个附件）\n· ${pinCnt} 张剪贴板图片\n· ${linkCnt} 个链接\n· ${tplCnt} 个模板\n\n继续吗？`;
   if (!confirm(msg)) return;
   showLoading('生成 JSON...');
   try {
@@ -2036,6 +2549,98 @@ document.getElementById('backupBtn').onclick = async () => {
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     alert(`✅ 已导出，大小约 ${mb} MB`);
+  } finally { hideLoading(); }
+};
+
+/* =========================================================
+   📸 网页快照导出
+   ========================================================= */
+document.getElementById('snapshotBtn').onclick = async () => {
+  showLoading('生成网页快照...');
+  try {
+    /* 1) 先展开所有子看板以便完整呈现 */
+    const cb = boardStack[boardStack.length - 1];
+    const prevExpanded = [];
+    cb.lists.forEach(l => l.cards.forEach(c => {
+      if (c.subBoard) { prevExpanded.push({ card: c, was: c.isExpanded }); c.isExpanded = true; }
+    }));
+    render();
+    await new Promise(r => setTimeout(r, 100));
+
+    /* 2) 克隆整个文档 */
+    const clone = document.documentElement.cloneNode(true);
+
+    /* 3) 移除弹窗 overlay（只保留看板主体） */
+    clone.querySelectorAll('.overlay, #loadingOverlay, #subCardTooltip').forEach(el => el.remove());
+
+    /* 4) 移除所有 <script> 标签（快照是静态的） */
+    clone.querySelectorAll('script').forEach(el => el.remove());
+
+    /* 5) 给 header 加上快照标识 */
+    const header = clone.querySelector('header');
+    if (header) {
+      /* 移除交互按钮 */
+      header.querySelectorAll('button, select, input').forEach(el => el.remove());
+      header.querySelector('.spacer')?.remove();
+      const boardName = getCurrentBoard()?.name || '看板';
+      const ts = new Date().toLocaleString('zh-CN');
+      header.innerHTML = `
+        <span class="logo">🌰</span>
+        <span style="font-weight:700;font-size:15px;">栗子看板快照 · ${esc(boardName)}</span>
+        <div class="spacer"></div>
+        <span style="font-size:12px;color:var(--muted);">📸 ${ts}</span>
+      `;
+    }
+
+    /* 6) 星标按钮转为静态文字，然后移除操作按钮 */
+    clone.querySelectorAll('.star-btn.starred').forEach(el => {
+      const span = document.createElement('span');
+      span.className = 'card-star';
+      span.textContent = '★';
+      el.replaceWith(span);
+    });
+    clone.querySelectorAll('.card-footer, .list-bottom-actions, .list-header button, .star-btn, .del-sub-card-btn').forEach(el => el.remove());
+
+    /* 7) 剪贴板区域：移除拖放区、删除按钮 */
+    clone.querySelectorAll('.pin-drop-zone, .pin-del, .pin-fold-btn').forEach(el => el.remove());
+    /* 展开所有折叠的 pin */
+    clone.querySelectorAll('.pin-item.collapsed').forEach(el => el.classList.remove('collapsed'));
+    /* 链接区：移除添加表单和删除按钮 */
+    clone.querySelectorAll('.board-link-add, .board-link-del').forEach(el => el.remove());
+
+    /* 8) 加入打印友好样式 */
+    const style = clone.querySelector('style') || document.createElement('style');
+    const extraCSS = `
+      body { overflow: auto !important; }
+      @media print {
+        header { position: static !important; }
+        body { padding-top: 0 !important; }
+        .card { break-inside: avoid; }
+      }
+    `;
+    // 在 style 末尾追加
+    const allStyles = clone.querySelectorAll('style');
+    if (allStyles.length) allStyles[allStyles.length - 1].textContent += extraCSS;
+
+    /* 9) 生成完整 HTML */
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const snapName = getCurrentBoard()?.name || '看板';
+    const mb = (blob.size / 1024 / 1024).toFixed(2);
+    a.download = `栗子看板快照_${snapName}_${new Date().toISOString().slice(0,10)}.html`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+
+    /* 10) 恢复原来的展开状态 */
+    prevExpanded.forEach(({ card, was }) => { card.isExpanded = was; });
+    render();
+
+    alert(`✅ 快照已导出（${mb} MB）\n用浏览器打开即可离线查看。`);
+  } catch (e) {
+    console.error(e);
+    alert('❌ 快照导出失败：' + e.message);
   } finally { hideLoading(); }
 };
 
@@ -2059,11 +2664,17 @@ importFileInput.onchange = async e => {
     if (!state.currentBoardId || !state.boards.some(b => b.id === state.currentBoardId)) {
       state.currentBoardId = state.boards[0].id;
     }
-    state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
-      if (!c.checklist) c.checklist = [];
-      if (!c.attachments) c.attachments = [];
-      c.attachments.forEach(a => { if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file'; });
-    })));
+    state.boards.forEach(b => {
+      if (!b.pins) b.pins = [];
+      if (!b.links) b.links = [];
+      b.lists.forEach(l => l.cards.forEach(c => {
+        if (!c.checklist) c.checklist = [];
+        if (!c.attachments) c.attachments = [];
+        c.attachments.forEach(a => { if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file'; });
+        if (!c.notes) c.notes = [];
+        c.notes.forEach(n => { if (!n.attachments) n.attachments = []; });
+      }));
+    });
     syncBoardStack(); renderBoardSelect();
     await saveStateToDB(state);
     render();
@@ -2074,63 +2685,527 @@ importFileInput.onchange = async e => {
 };
 
 /* =========================================================
-   GitHub 同步 UI
+   图片剪贴板 (Pinboard)
    ========================================================= */
-const syncOverlay = document.getElementById('syncOverlay');
-const ghTokenInput = document.getElementById('ghTokenInput');
-const ghGistInput = document.getElementById('ghGistInput');
-const autoSyncCheck = document.getElementById('autoSyncCheck');
+const pinHeader   = document.getElementById('pinHeader');
+const pinBody     = document.getElementById('pinBody');
+const pinCollapseBtn = document.getElementById('pinCollapseBtn');
+const pinList     = document.getElementById('pinList');
+const pinDropZone = document.getElementById('pinDropZone');
+const pinFileInput = document.getElementById('pinFileInput');
 
-document.getElementById('syncBtn').onclick = () => {
-  ghTokenInput.value = ghToken;
-  ghGistInput.value = ghGistId;
-  autoSyncCheck.checked = autoSyncEnabled;
-  if (!ghToken || !ghGistId) {
-    setSyncStatus('ℹ️ 首次使用：\n1. 生成 GitHub Token（gist 权限）\n2. 创建 Gist，文件名 kanban.json，内容 {}\n3. 填入 Token 和 Gist ID\n4. 点「推送」上传当前数据', 'info');
-  } else if (_lastSyncTime) {
-    setSyncStatus('✅ 上次同步：' + _lastSyncTime.toLocaleString(), 'ok');
-  } else {
-    setSyncStatus('ℹ️ 已配置。可点「测试」验证，或直接「推送」。', 'info');
+function ensurePins(b) {
+  if (!b.pins) b.pins = [];
+  return b.pins;
+}
+
+function renderPinboard() {
+  const b = getCurrentBoard();
+  if (!b) return;
+  const pins = ensurePins(b);
+  pinList.innerHTML = pins.map((p, i) => {
+    const isFolded = p._folded || false;
+    const summary = (p.note || '').slice(0, 10) || '(无注释)';
+    const dots = (p.note || '').length > 10 ? '…' : '';
+    return `<div class="pin-item${isFolded ? ' collapsed' : ''}" data-idx="${i}">
+       <button class="pin-fold-btn" data-idx="${i}" title="${isFolded ? '展开' : '折叠'}">${isFolded ? '▶' : '▼'}</button>
+       <span class="pin-summary" data-idx="${i}"><span class="pin-summary-icon">🖼</span>${esc(summary)}${dots}</span>
+       <div class="pin-thumb" data-idx="${i}"><img src="${p.data}"></div>
+       <div class="pin-note">
+         <textarea data-idx="${i}" placeholder="添加注释…">${esc(p.note || '')}</textarea>
+       </div>
+       <button class="pin-del" data-idx="${i}" title="删除">✕</button>
+     </div>`;
+  }).join('');
+}
+
+/* 添加图片的通用逻辑 */
+async function addPinImages(files) {
+  const b = getCurrentBoard();
+  if (!b) return;
+  const pins = ensurePins(b);
+  let added = 0;
+  for (const f of files) {
+    if (!f.type.startsWith('image/')) continue;
+    if (f.size > MAX_FILE_SIZE) {
+      alert(`❌「${f.name}」大小 ${formatFileSize(f.size)}，超过 500KB 限制，已跳过。`);
+      continue;
+    }
+    try {
+      const dataURL = await fileToDataURL(f);
+      pins.push({ id: uid(), data: dataURL, note: '', name: f.name, size: f.size, type: f.type });
+      added++;
+    } catch (e) { console.error(e); }
   }
-  syncOverlay.classList.add('show');
-};
-document.getElementById('syncCloseBtn').onclick = () => syncOverlay.classList.remove('show');
-syncOverlay.addEventListener('click', e => { if (e.target === syncOverlay) syncOverlay.classList.remove('show'); });
+  if (added) {
+    pinBody.classList.remove('collapsed');
+    pinCollapseBtn.style.transform = '';
+    saveState(); renderPinboard();
+  }
+}
 
-document.getElementById('syncSaveConfigBtn').onclick = () => {
-  ghToken = ghTokenInput.value.trim();
-  ghGistId = ghGistInput.value.trim();
-  localStorage.setItem(GH_TOKEN_KEY, ghToken);
-  localStorage.setItem(GH_GIST_KEY, ghGistId);
-  setSyncStatus('✅ 配置已保存', 'ok');
+/* Ctrl+V 粘贴图片 — 全局监听 */
+document.addEventListener('paste', async (e) => {
+  /* 提取剪贴板中的图片 */
+  const items = Array.from(e.clipboardData?.items || []);
+  const imgFiles = [];
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      const f = item.getAsFile();
+      if (f) imgFiles.push(f);
+    }
+  }
+  if (!imgFiles.length) return;
+
+  /* ① 卡片编辑弹窗打开时 → 图片添加到卡片附件 */
+  if (overlay.classList.contains('show')) {
+    e.preventDefault();
+    for (const f of imgFiles) {
+      if (f.size > MAX_FILE_SIZE) {
+        alert(`❌「${f.name || '粘贴图片'}」大小 ${formatFileSize(f.size)}，超过 500KB 限制，已跳过。`);
+        continue;
+      }
+      try {
+        const dataURL = await fileToDataURL(f);
+        editingAttachments.push({
+          id: uid(), kind: 'file',
+          name: f.name || ('paste-' + Date.now() + '.png'),
+          size: f.size, type: f.type || 'image/png', data: dataURL
+        });
+      } catch (err) { console.error(err); }
+    }
+    renderAttachmentsUI();
+    return;
+  }
+
+  /* ② 焦点在输入框/文本框内时不拦截（让用户正常粘贴文字） */
+  const tag = (document.activeElement || {}).tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || (document.activeElement && document.activeElement.isContentEditable)) return;
+
+  /* ③ 其他情况 → 图片添加到剪贴板区域 */
+  e.preventDefault();
+  await addPinImages(imgFiles);
+});
+
+/* 拖拽图片到 drop zone */
+pinDropZone.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); pinDropZone.classList.add('drag-over'); });
+pinDropZone.addEventListener('dragleave', (e) => { e.preventDefault(); e.stopPropagation(); pinDropZone.classList.remove('drag-over'); });
+pinDropZone.addEventListener('drop', async (e) => {
+  e.preventDefault(); e.stopPropagation();
+  pinDropZone.classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files || []);
+  if (files.length) await addPinImages(files);
+});
+
+/* 点击 drop zone 选择文件 */
+pinDropZone.addEventListener('click', (e) => {
+  if (e.target === pinFileInput) return;
+  pinFileInput.click();
+});
+pinFileInput.onchange = async () => {
+  const files = Array.from(pinFileInput.files || []);
+  if (files.length) await addPinImages(files);
+  pinFileInput.value = '';
 };
-document.getElementById('testConnBtn').onclick = () => {
-  ghToken = ghTokenInput.value.trim();
-  ghGistId = ghGistInput.value.trim();
-  localStorage.setItem(GH_TOKEN_KEY, ghToken);
-  localStorage.setItem(GH_GIST_KEY, ghGistId);
-  testConnection();
+
+/* 点击缩略图预览 / 折叠展开 / 删除 */
+pinList.addEventListener('click', (e) => {
+  /* ★ 折叠/展开按钮 */
+  const foldBtn = e.target.closest('.pin-fold-btn');
+  if (foldBtn) {
+    const idx = +foldBtn.dataset.idx;
+    const b = getCurrentBoard();
+    if (!b) return;
+    const pin = ensurePins(b)[idx];
+    if (pin) { pin._folded = !pin._folded; renderPinboard(); }
+    return;
+  }
+  /* ★ 折叠摘要点击 → 展开 */
+  const summary = e.target.closest('.pin-summary');
+  if (summary) {
+    const idx = +summary.dataset.idx;
+    const b = getCurrentBoard();
+    if (!b) return;
+    const pin = ensurePins(b)[idx];
+    if (pin) { pin._folded = false; renderPinboard(); }
+    return;
+  }
+  const thumb = e.target.closest('.pin-thumb');
+  if (thumb) {
+    const idx = +thumb.dataset.idx;
+    const b = getCurrentBoard();
+    if (!b) return;
+    const pin = ensurePins(b)[idx];
+    if (pin) showPreviewImage(pin.data, pin.name || '粘贴图片');
+    return;
+  }
+  /* 删除 */
+  const del = e.target.closest('.pin-del');
+  if (del) {
+    const idx = +del.dataset.idx;
+    const b = getCurrentBoard();
+    if (!b) return;
+    ensurePins(b).splice(idx, 1);
+    saveState(); renderPinboard();
+  }
+});
+
+/* 注释编辑（防抖保存） */
+let _pinNoteTimer = null;
+pinList.addEventListener('input', (e) => {
+  if (e.target.tagName !== 'TEXTAREA') return;
+  clearTimeout(_pinNoteTimer);
+  const idx = +e.target.dataset.idx;
+  _pinNoteTimer = setTimeout(() => {
+    const b = getCurrentBoard();
+    if (!b) return;
+    const pin = ensurePins(b)[idx];
+    if (pin) { pin.note = e.target.value; saveState(); }
+  }, 300);
+});
+
+/* 折叠/展开 */
+pinHeader.addEventListener('click', () => {
+  pinBody.classList.toggle('collapsed');
+  pinCollapseBtn.style.transform = pinBody.classList.contains('collapsed') ? 'rotate(-90deg)' : '';
+});
+
+/* =========================================================
+   🔗 看板链接
+   ========================================================= */
+const boardLinkList = document.getElementById('boardLinkList');
+const linkUrlInput  = document.getElementById('linkUrlInput');
+const linkTitleInput = document.getElementById('linkTitleInput');
+
+function ensureLinks(b) {
+  if (!b.links) b.links = [];
+  return b.links;
+}
+
+function renderLinks() {
+  const b = getCurrentBoard();
+  if (!b) return;
+  const links = ensureLinks(b);
+  if (links.length === 0) {
+    boardLinkList.innerHTML = '';
+    return;
+  }
+  boardLinkList.innerHTML = links.map((lk, i) => {
+    const linkHtml = lk.title
+      ? `<a href="${esc(lk.url)}" target="_blank" rel="noopener" class="link-label" title="${esc(lk.url)}">${esc(lk.title)}</a>`
+      : `<a href="${esc(lk.url)}" target="_blank" rel="noopener">${esc(lk.url)}</a>`;
+    return `<div class="board-link-item" data-idx="${i}">
+      🔗 ${linkHtml}
+      <button class="board-link-del" data-idx="${i}" title="删除链接">✕</button>
+    </div>`;
+  }).join('');
+}
+
+/* 添加链接 */
+function addBoardLink() {
+  let url = linkUrlInput.value.trim();
+  if (!url) return;
+  /* 自动补 https:// */
+  if (!/^https?:\/\e//i.test(url)) url = 'https://' +8 url;
+  const title = linkaTitleInput.value.trim();
+  const b = getCurrent33Board();
+  if (!b) returnd;
+  ensureLinks(b).push({ id';
+: uid(), url, title });
+  linkUrlInput.value = '';
+  linkTitleInput.value = '';
+  saveState(); renderLinks();
+  linkTitleInput.focus();
+}
+
+document.getElementById('addLinkBtn').onclick = addBoardLink;
+linkUrlInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addBoardLink(); }
+});
+linkTitleInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); linkUrlInput.focus(); }
+});
+
+/* 删除链接 */
+boardLinkList.addEventListener('click', e => {
+  const del = e.target.closest('.board-link-del');
+  if (!del) return;
+  const idx = +del.dataset.idx;
+  const b = getCurrentBoard();
+  if (!b) return;
+  ensureLinks(b).splice(idx, 1);
+  saveState(); renderLinks();
+});
+
+/* =========================================================
+   ⏰ 到期提醒面板
+   ========================================================= */
+const dueReminderBtn = document.getElementById('dueReminderBtn');
+const dueBadge = document.getElementById('dueBadge');
+const duePanel = document.getElementById('duePanel');
+
+/* 递归收集所有有截止日期的卡片 */
+function collectDueCards() {
+  const results = [];
+  state.boards.forEach(board => {
+    function walk(lists, path) {
+      lists.forEach(l => l.cards.forEach(c => {
+        if (c.due) {
+          results.push({ card: c, boardId: board.id, boardName: board.name, path });
+        }
+        if (c.subBoard && c.subBoard.lists) {
+          walk(c.subBoard.lists, path ? path + ' › ' + c.title : c.title);
+        }
+      }));
+    }
+    walk(board.lists, '');
+  });
+  return results;
+}
+
+/* 筛选一周内到期（含已过期）的卡片 */
+function getDueWithin7Days() {
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0, 10);
+  const d7 = new Date(now);
+  d7.setDate(d7.getDate() + 7);
+  const weekStr = d7.toISOString().slice(0, 10);
+  return collectDueCards().filter(it => it.card.due <= weekStr)
+    .sort((a, b) => a.card.due.localeCompare(b.card.due));
+}
+
+function updateDueBadge() {
+  const cnt = getDueWithin7Days().length;
+  if (cnt > 0) {
+    dueBadge.textContent = cnt > 99 ? '99+' : cnt;
+    dueBadge.style.display = '';
+  } else {
+    dueBadge.style.display = 'none';
+  }
+}
+
+function renderDueReminder() {
+  const items = getDueWithin7Days();
+  updateDueBadge();
+  if (items.length === 0) {
+    duePanel.innerHTML = '<div class="due-panel-title">⏰ 到期提醒</div><div class="due-panel-empty">一周内没有到期的卡片 🎉</div>';
+    return;
+  }
+  const todayStr = new Date().toISOString().slice(0, 10);
+  /* 分组：已过期 / 今天 / 即将到期 */
+  const overdue = [], todayItems = [], upcoming = [];
+  items.forEach(it => {
+    if (it.card.due < todayStr) overdue.push(it);
+    else if (it.card.due === todayStr) todayItems.push(it);
+    else upcoming.push(it);
+  });
+
+  function daysLabel(dueStr) {
+    const diff = Math.round((new Date(dueStr) - new Date(todayStr)) / 86400000);
+    if (diff < 0) return `已过期${-diff}天`;
+    if (diff === 0) return '今天';
+    if (diff === 1) return '明天';
+    return `${diff}天后`;
+  }
+
+  let html = `<div class="due-panel-title">⏰ 到期提醒（${items.length}）</div>`;
+
+  function renderGroup(title, list, dateClass) {
+    if (!list.length) return '';
+    let g = `<div class="due-panel-group"><div class="due-panel-group-title">${title}</div>`;
+    list.forEach(it => {
+      g += `<div class="due-panel-item" data-board-id="${it.boardId}" data-card-id="${it.card.id}">
+        <span class="dpi-icon">${dateClass === 'overdue' ? '🔴' : dateClass === 'today' ? '🟡' : '🟢'}</span>
+        <span class="dpi-title">${esc(it.card.title).replace(/\n/g,' ')}</span>
+        <span class="dpi-date ${dateClass}">${daysLabel(it.card.due)}</span>
+        <span class="dpi-board" title="${esc(it.boardName)}">${esc(it.boardName)}</span>
+      </div>`;
+    });
+    g += '</div>';
+    return g;
+  }
+
+  html += renderGroup('🔴 已过期', overdue, 'overdue');
+  html += renderGroup('🟡 今天到期', todayItems, 'today');
+  html += renderGroup('🟢 即将到期', upcoming, 'soon');
+  duePanel.innerHTML = html;
+}
+
+/* 切换面板 */
+dueReminderBtn.onclick = (e) => {
+  e.stopPropagation();
+  /* 关闭星标面板 */
+  starPanel.classList.remove('show');
+  if (duePanel.classList.contains('show')) {
+    duePanel.classList.remove('show');
+  } else {
+    renderDueReminder();
+    duePanel.classList.add('show');
+  }
 };
-autoSyncCheck.onchange = () => {
-  autoSyncEnabled = autoSyncCheck.checked;
-  localStorage.setItem(AUTO_SYNC_KEY, autoSyncEnabled ? '1' : '0');
-  if (autoSyncEnabled && ghToken && ghGistId) pushToCloud({ silent: true });
+
+/* 点击面板项目 → 跳转 */
+duePanel.addEventListener('click', (e) => {
+  const item = e.target.closest('.due-panel-item');
+  if (!item) return;
+  e.stopPropagation();
+  const boardId = item.dataset.boardId;
+  const cardId = item.dataset.cardId;
+  if (state.currentBoardId !== boardId) {
+    state.currentBoardId = boardId;
+    syncBoardStack();
+    renderBoardSelect();
+  }
+  duePanel.classList.remove('show');
+  render();
+  saveState();
+  setTimeout(() => {
+    const cardEl = document.querySelector(`.card[data-id="${cardId}"]`);
+    if (cardEl) {
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      cardEl.style.transition = 'box-shadow .3s';
+      cardEl.style.boxShadow = '0 0 0 3px #      setTimeout(() => { cardEl.style.boxShadow = ''; }, 2000);
+    }
+  }, 150);
+});
+
+/* 点击外部关闭 */
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#dueReminder')) {
+    duePanel.classList.remove('show');
+  }
+});
+
+/* =========================================================
+   ★ 星标提醒面板
+   ========================================================= */
+const starReminderBtn = document.getElementById('starReminderBtn');
+const starBadge = document.getElementById('starBadge');
+const starPanel = document.getElementById('starPanel');
+
+/* 仅更新角标数字（在 render() 中调用，轻量） */
+function updateStarBadge() {
+  let cnt = 0;
+  function walk(lists) {
+    lists.forEach(l => l.cards.forEach(c => {
+      if (c.starred) cnt++;
+      if (c.subBoard && c.subBoard.lists) walk(c.subBoard.lists);
+    }));
+  }
+  state.boards.forEach(b => walk(b.lists));
+  if (cnt > 0) {
+    starBadge.textContent = cnt > 99 ? '99+' : cnt;
+    starBadge.style.display = '';
+  } else {
+    starBadge.style.display = 'none';
+  }
+}
+
+/* 递归收集所有星标卡片，返回 [{card, boardId, boardName, path}] */
+function collectStarredCards() {
+  const results = [];
+  state.boards.forEach(board => {
+    function walk(lists, path) {
+      lists.forEach(l => {
+        l.cards.forEach(c => {
+          if (c.starred) {
+            results.push({ card: c, boardId: board.id, boardName: board.name, path });
+          }
+          if (c.subBoard && c.subBoard.lists) {
+            walk(c.subBoard.lists, path ? path + ' › ' + c.title : c.title);
+          }
+        });
+      });
+    }
+    walk(board.lists, '');
+  });
+  return results;
+}
+
+function renderStarReminder() {
+  const items = collectStarredCards();
+  /* 更新角标 */
+  if (items.length > 0) {
+    starBadge.textContent = items.length > 99 ? '99+' : items.length;
+    starBadge.style.display = '';
+  } else {
+    starBadge.style.display = 'none';
+  }
+  /* 面板内容按看板分组 */
+  if (items.length === 0) {
+    starPanel.innerHTML = '<div class="star-panel-title">★ 星标提醒</div><div class="star-panel-empty">暂无星标卡片</div>';
+    return;
+  }
+  let html = '<div class="star-panel-title">★ 星标提醒（' + items.length + '）</div>';
+  const grouped = {};
+  items.forEach(it => {
+    if (!grouped[it.boardId]) grouped[it.boardId] = { name: it.boardName, items: [] };
+    grouped[it.boardId].items.push(it);
+  });
+  for (const bId in grouped) {
+    const g = grouped[bId];
+    html += `<div class="star-panel-group">`;
+    html += `<div class="star-panel-board">📋 ${esc(g.name)}</div>`;
+    g.items.forEach(it => {
+      const pathHtml = it.path ? `<span class="spi-path" title="${esc(it.path)}">${esc(it.path)}</span>` : '';
+      html += `<div class="star-panel-item" data-board-id="${bId}" data-card-id="${it.card.id}">
+        <span class="spi-star">★</span>
+        <span class="spi-title">${esc(it.card.title)}</span>
+        ${pathHtml}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  starPanel.innerHTML = html;
+}
+
+/* 切换面板 */
+starReminderBtn.onclick = (e) => {
+  e.stopPropagation();
+  /* 关闭到期面板 */
+  duePanel.classList.remove('show');
+  if (starPanel.classList.contains('show')) {
+    starPanel.classList.remove('show');
+  } else {
+    renderStarReminder();
+    starPanel.classList.add('show');
+  }
 };
-document.getElementById('syncPushBtn').onclick = () => {
-  ghToken = ghTokenInput.value.trim();
-  ghGistId = ghGistInput.value.trim();
-  localStorage.setItem(GH_TOKEN_KEY, ghToken);
-  localStorage.setItem(GH_GIST_KEY, ghGistId);
-  pushToCloud();
-};
-document.getElementById('syncPullBtn').onclick = () => {
-  ghToken = ghTokenInput.value.trim();
-  ghGistId = ghGistInput.value.trim();
-  localStorage.setItem(GH_TOKEN_KEY, ghToken);
-  localStorage.setItem(GH_GIST_KEY, ghGistId);
-  if (!confirm('拉取会用云端数据覆盖本地，确定吗？')) return;
-  pullFromCloud();
-};
+
+/* 点击面板项目 → 跳转到对应看板 */
+starPanel.addEventListener('click', (e) => {
+  const item = e.target.closest('.star-panel-item');
+  if (!item) return;
+  e.stopPropagation();
+  const boardId = item.dataset.boardId;
+  const cardId = item.dataset.cardId;
+  /* 切换到目标看板 */
+  if (state.currentBoardId !== boardId) {
+    state.currentBoardId = boardId;
+    syncBoardStack();
+    renderBoardSelect();
+  }
+  starPanel.classList.remove('show');
+  render();
+  saveState();
+  /* 延迟后高亮并滚动到目标卡片 */
+  setTimeout(() => {
+    const cardEl = document.querySelector(`.card[data-id="${cardId}"]`);
+    if (cardEl) {
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      cardEl.style.transition = 'box-shadow .3s';
+      cardEl.style.boxShadow = '0 0 0 3px #e53e3e';
+      setTimeout(() => { cardEl.style.boxShadow = ''; }, 2000);
+    }
+  }, 150);
+});
+
+/* 点击外部关闭面板 */
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#starReminder')) {
+    starPanel.classList.remove('show');
+  }
+});
 
 /* =========================================================
    初始化
@@ -2162,11 +3237,17 @@ async function init() {
       await saveStateToDB(state);
     }
     if (!state.templates) state.templates = [];
-    state.boards.forEach(b => b.lists.forEach(l => l.cards.forEach(c => {
-      if (!c.checklist) c.checklist = [];
-      if (!c.attachments) c.attachments = [];
-      c.attachments.forEach(a => { if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file'; });
-    })));
+    state.boards.forEach(b => {
+      if (!b.pins) b.pins = [];
+      if (!b.links) b.links = [];
+      b.lists.forEach(l => l.cards.forEach(c => {
+        if (!c.checklist) c.checklist = [];
+        if (!c.attachments) c.attachments = [];
+        c.attachments.forEach(a => { if (!a.kind) a.kind = (a.url && !a.data) ? 'link' : 'file'; });
+        if (!c.notes) c.notes = [];
+        c.notes.forEach(n => { if (!n.attachments) n.attachments = []; });
+      }));
+    });
   } catch (e) {
     console.error(e);
     state = defaultData();
@@ -2178,6 +3259,8 @@ async function init() {
   hideLoading();
 }
 init();
+window.addEventListener('resize', () => requestAnimationFrame(alignCardRows));
+
 </script>
 </body>
 </html>
